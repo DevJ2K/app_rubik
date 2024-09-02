@@ -16,14 +16,14 @@
 					<li class="group relative w-max">
 						<p @click="routerTo('/page1')"
 							class="cursor-pointer transition-all group-hover:text-black dark:group-hover:text-white">
-							Page 1</p>
+							Algorithm</p>
 						<span class="animate-underline"></span>
 
 					</li>
 					<li class="group relative w-max">
 						<p @click="routerTo('/page2')"
 							class="cursor-pointer transition-all group-hover:text-black dark:group-hover:text-white">
-							Page 2</p>
+							Solve</p>
 						<span class="animate-underline"></span>
 
 					</li>
@@ -56,14 +56,14 @@
 					<li class="group relative w-max">
 						<p @click="routerTo('/page1')"
 							class="cursor-pointer transition-all group-hover:text-black dark:group-hover:text-white">
-							Page 1</p>
+							Algorithm</p>
 						<span class="animate-underline"></span>
 
 					</li>
 					<li class="group relative w-max">
 						<p @click="routerTo('/page2')"
 							class="cursor-pointer transition-all group-hover:text-black dark:group-hover:text-white">
-							Page 2</p>
+							Solve</p>
 						<span class="animate-underline"></span>
 
 					</li>

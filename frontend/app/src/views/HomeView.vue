@@ -1,19 +1,9 @@
 <template>
   <main class=" text-high-contrast-text container my-12 flex size-full flex-col items-center justify-center gap-24">
     <div class=" flex w-full flex-col items-center justify-center gap-6">
-      <h1 class="text-3xl font-bold">Project name</h1>
-      <p class=" text-low-contrast-text text-center">Est nulla ea do nulla qui. Do minim eiusmod laboris ea nostrud eu consequat aliqua. Reprehenderit et nisi tempor cupidatat cupidatat nisi tempor occaecat aliquip et. Cupidatat labore sint ipsum magna ut dolore sit duis qui dolore esse. Fugiat enim id nulla qui. Laborum aute culpa qui nisi aliquip minim aliquip. Eiusmod dolore culpa laborum cillum officia esse fugiat Lorem nisi amet est labore et. Dolore commodo aliqua mollit cupidatat ex veniam quis sit non cupidatat exercitation fugiat amet. Dolore cillum labore excepteur culpa labore ea qui id sunt in magna ad nisi veniam.</p>
-      <div class="flex h-40 w-full flex-col gap-2 md:flex-row">
-        <div class="border-ui-border h-full rounded-md border-4 bg-black md:w-1/3">
-
-        </div>
-        <div class="border-ui-border h-full rounded-md border-4 bg-black md:w-1/3">
-
-        </div>
-        <div class="border-ui-border h-full rounded-md border-4 bg-black md:w-1/3">
-
-        </div>
-      </div>
+      <h1 class="text-3xl font-bold">Rubik Solver</h1>
+      <p class=" text-low-contrast-text text-center">Est laboris reprehenderit officia laborum aliqua cillum sit. Dolore in irure ad est occaecat ex occaecat.</p>
+ 
     </div>
 
     <div class="flex w-full flex-col items-center justify-center gap-6">
