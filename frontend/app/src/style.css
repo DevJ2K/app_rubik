@@ -1,0 +1,55 @@
+@tailwind base;
+/* Not for me */
+
+@tailwind components;
+/* To inject my custom styles */
+
+.my-scroll-nav {
+	/* @apply fixed; */
+	/* @apply top-0; */
+	@apply h-32;
+	@apply w-full;
+	@apply flex;
+	@apply justify-center items-center;
+	@apply z-50;
+	color: #FFF;
+	/* height: 30px; */
+	/* font-family: "Poppins", sans-serif; */
+	z-index: 1000;
+	transition: 0.4s;
+}
+
+.my-scroll-nav-active {
+	@apply h-24;
+	/* background: #fff; */
+	@apply backdrop-blur-xl;
+	@apply bg-app-bg/60;
+	@apply dark:bg-d-app-bg/60;
+	@apply shadow-lg;
+	@apply dark:shadow-2xl;
+	/* color: #000; */
+}
+
+
+
+.animate-underline {
+	@apply absolute -bottom-1 left-0 h-0.5 w-0 bg-accent-color transition-all group-hover:w-full dark:bg-d-accent-color;
+}
+
+.text-outline {
+	-webkit-text-stroke-width: 0.6px;
+	-webkit-text-stroke-color: #000;
+}
+.dark .text-outline {
+	-webkit-text-stroke-color: #fff;
+}
+
+.form-input {
+	@apply block w-full rounded-md border bg-ui-bg p-2 text-sm text-high-contrast-text outline-none  focus:bg-active-ui-bg dark:bg-d-ui-bg dark:text-d-high-contrast-text dark:focus:bg-d-active-ui-bg;
+}
+
+.form-input-border {
+	@apply border-ui-border hover:border-hover-ui-border  focus:border-accent-color dark:border-d-ui-border dark:hover:border-d-hover-ui-border dark:focus:border-d-accent-color;
+}
+
+@tailwind utilities;

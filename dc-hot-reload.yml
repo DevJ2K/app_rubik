@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      args:
+        - HOST=0.0.0.0
+        - PORT=4000
+    # command: fastapi dev app.py --host 0.0.0.0 --port 4000
+    ports:
+      - 4000:4000
+
+    volumes:
+      - ./backend:/app
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        - HOST=0.0.0.0
+        - PORT=4000
+    # command: npm run dev
+    volumes:
+      - ./frontend/app:/app
+      - /app/node_modules
+
+    ports:
+      - 4001:4000
+
+    depends_on:
+      - backend
+
+  signature:
+    build:
+      context: ./signature
+      args:
+        - PORT=4001
+    depends_on:
+      - frontend
