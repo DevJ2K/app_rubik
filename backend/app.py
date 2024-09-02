@@ -5,7 +5,7 @@ import sys
 import os
 
 # Import my package
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'project_name')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'rubik')))
 
 
 class Item(BaseModel):
@@ -49,7 +49,7 @@ async def test_post(test: Test):
 # curl -s -H 'Content-Type: application/json' -d '{ "name":"foo"}' -X POST http://127.0.0.1:8000/test/ | jq
 
 if __name__ == "__main__":
-    from project_name.main import basic_function
+    from rubik.main import basic_function
     import time
     basic_function();
     for i in range(1200):

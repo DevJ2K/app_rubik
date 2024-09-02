@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY app.py ./
 COPY requirements.txt ./
-COPY project_name ./project_name
+COPY rubik ./rubik
 
 RUN pip install -r requirements.txt
 
