@@ -9,4 +9,11 @@ def check_notation(notation: str) -> bool:
 	Returns:
 		bool: True if is valid notation.
 	"""
-	pass
+	regex = r"[FRUBLDfrubld]\d*\'?$"
+	match = re.match(regex, notation)
+	if match:
+		print(match)
+		return True
+
+	regex_parenthesis = r"\(([FRUBLDfrubld]\d*\'?$)+\)\d*$"
+	return False
