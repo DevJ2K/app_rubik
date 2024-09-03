@@ -9,11 +9,22 @@ def check_notation(notation: str) -> bool:
 	Returns:
 		bool: True if is valid notation.
 	"""
+
+	# Check basic notation
 	regex = r"[FRUBLDfrubld]\d*\'?$"
 	match = re.match(regex, notation)
 	if match:
 		print(match)
 		return True
 
-	regex_parenthesis = r"\(([FRUBLDfrubld]\d*\'?$)+\)\d*$"
+	# Check with parenthesis
+	regex_parenthesis = r"\(([FRUBLDfrubld]\d*\'?)+\)\d*$"
+	match = re.match(regex_parenthesis, notation)
+	if match:
+		print(match)
+		return True
 	return False
+
+if __name__ == "__main__":
+	# check_notation("(RUR'U')4")
+	pass
