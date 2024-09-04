@@ -71,6 +71,7 @@ def test_invalid_axis_move_notation():
 def test_valid_parenthesis_notation():
 	notations = [
 		"(RUR'U')4",
+		"(RU4R'U')4",
 		"(RUR'U')14",
 		"(RURU)4",
 	]
@@ -81,6 +82,7 @@ def test_invalid_parenthesis_notation():
 	notations = [
 		"12(RUR'U')",
 		"(RU R' U')4",
+		"(R(U)R'U')4",
 	]
 	for notation in notations:
 		assert check_notation(notation=notation) == False, f"{notation} is supposed to be an invalid notation."
