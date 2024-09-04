@@ -96,3 +96,4 @@ if __name__ == "__main__":
 	rubik = Rubik()
 	# rubik.visualize_cube()
 	rubik.apply_sequences("R2 D' B' (RU4R'U')4 D F2 R F2 R2 U L' F2 U' B' L2 R D B' R' B2 L2 	F2 L2 R2 U2 	D2")
+
