@@ -43,7 +43,7 @@ class RubikMoves:
 		regex = r"[FRUBLDfrubld]\d*\'?"
 		moves_match = re.findall(regex, self.notation)
 		if moves_match:
-			print(moves_match)
+			# print(moves_match)
 			for move in moves_match:
 				self.sequences += self.__get_move(move)
 		self.sequences *= self.repeats
