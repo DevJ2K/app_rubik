@@ -99,18 +99,19 @@ def visualize_cube_3D(
 			'4': 'green',  # face 4
 			'5': 'red',    # face 5
 			'6': 'orange', # face 6
-		}
+		},
+		spacing: float = 0.05
 ):
 
 	fig = plt.figure()
 	ax = fig.add_subplot(111, projection='3d')
 
-	draw_face_up(ax, face_up, colors, 0.07);
-	draw_face_down(ax, face_down, colors, 0.07);
-	draw_face_front(ax, face_front, colors, 0.07);
-	draw_face_back(ax, face_back, colors, 0.07);
-	draw_face_left(ax, face_left, colors, 0.07);
-	draw_face_right(ax, face_right, colors, 0.07);
+	draw_face_up(ax, face_up, colors, spacing);
+	draw_face_down(ax, face_down, colors, spacing);
+	draw_face_front(ax, face_front, colors, spacing);
+	draw_face_back(ax, face_back, colors, spacing);
+	draw_face_left(ax, face_left, colors, spacing);
+	draw_face_right(ax, face_right, colors, spacing);
 
 	# Définir les limites des axes
 	ax.set_xlim(0, 3.1)

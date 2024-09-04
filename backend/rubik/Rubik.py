@@ -3,6 +3,41 @@ from RubikMoves import RubikMoves
 from ErrorManager import *
 from parser import check_notation
 
+from apply_rubik_moves import move_up
+
+# SOLVE RUBIK
+# self.cube_up: list[list[str]] = [
+# 	['1', '1', '1'],
+# 	['1', '1', '1'],
+# 	['1', '1', '1'],
+# ]
+# self.cube_down: list[list[str]] = [
+# 	['2', '2', '2'],
+# 	['2', '2', '2'],
+# 	['2', '2', '2'],
+# ]
+# self.cube_front: list[list[str]] = [
+# 	['3', '3', '3'],
+# 	['3', '3', '3'],
+# 	['3', '3', '3'],
+# ]
+# self.cube_back: list[list[str]] = [
+# 	['4', '4', '4'],
+# 	['4', '4', '4'],
+# 	['4', '4', '4'],
+# ]
+# self.cube_left: list[list[str]] = [
+# 	['5', '5', '5'],
+# 	['5', '5', '5'],
+# 	['5', '5', '5'],
+# ]
+# self.cube_right: list[list[str]] = [
+# 	['6', '6', '6'],
+# 	['6', '6', '6'],
+# 	['6', '6', '6'],
+# ]
+
+
 class Rubik:
 	"""The class to solve an rubik cube"""
 	def __init__(self, cube: list[list[list[str]]] = None, sequences: str = None) -> None:
@@ -14,11 +49,10 @@ class Rubik:
 			'5': 'red',    # face 5
 			'6': 'orange', # face 6
 		}
-
 		self.cube_up: list[list[str]] = [
 			['1', '1', '1'],
-			['1', '1', '1'],
-			['1', '1', '1'],
+			['2', '2', '2'],
+			['3', '3', '3'],
 		]
 		self.cube_down: list[list[str]] = [
 			['2', '2', '2'],
@@ -46,11 +80,26 @@ class Rubik:
 			['6', '6', '6'],
 		]
 
+	def get_cube(self) -> list[list[list[str]]]:
+		return [
+			self.cube_up,
+			self.cube_down,
+			self.cube_front,
+			self.cube_back,
+			self.cube_left,
+			self.cube_right
+		]
+
 	def check_valid_cube(self) -> bool:
 		pass
 
-	def apply_move(self, move: RubikMoves) -> None:
-		pass
+	def apply_move(self, move: str) -> None:
+		result = self.get_cube()
+		if 'u' in move.lower():
+			result = move_up(self.get_cube(), move)
+
+		self.cube_up,self.cube_down,self.cube_front,self.cube_back,self.cube_left,self.cube_right = result
+		self.visualize_cube(window_title=f"MOVE : {move}")
 
 	def apply_sequences(self, sequences: str) -> None:
 		"""Apply sequences to the rubik cube.
@@ -72,7 +121,7 @@ class Rubik:
 			self.apply_move(move)
 		pass
 
-	def visualize_cube(self) -> None:
+	def visualize_cube(self, window_title: str = "Rubik Visualizer", spacing: float = 0.04) -> None:
 		"""Visualize cube with mathplotlib.
 		"""
 		visualize_cube_3D(
@@ -82,8 +131,9 @@ class Rubik:
 			self.cube_back,
 			self.cube_left,
 			self.cube_right,
-			"Rubik Visualizer",
-			self.COLORS
+			window_title,
+			self.COLORS,
+			spacing
 		)
 		pass
 
@@ -94,6 +144,13 @@ class Rubik:
 
 if __name__ == "__main__":
 	rubik = Rubik()
+	rubik.visualize_cube()
+	rubik.apply_move("U")
+	rubik.apply_move("U'")
+	rubik.apply_move("u")
+	rubik.apply_move("u'")
 	# rubik.visualize_cube()
-	rubik.apply_sequences("R2 D' B' (RU4R'U')4 D F2 R F2 R2 U L' F2 U' B' L2 R D B' R' B2 L2 	F2 L2 R2 U2 	D2")
+	# rubik.apply_move("U'")
+	# rubik.visualize_cube()
+	# rubik.apply_sequences("R2 D' B' (RU4R'U')4 D F2 R F2 R2 U L' F2 U' B' L2 R D B' R' B2 L2 	F2 L2 R2 U2 	D2")
 
