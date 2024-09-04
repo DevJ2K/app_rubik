@@ -1,5 +1,21 @@
 import re
 
+def check_basic_notation(notation: str) -> bool:
+	# Check basic notation
+	regex = r"[FRUBLDfrubld]\d*\'?$"
+	match = re.match(regex, notation)
+	if match:
+		return True
+	return False
+
+def check_parenthesis_notation(notation: str) -> bool:
+	# Check with parenthesis
+	regex_parenthesis = r"\(([FRUBLDfrubld]\d*\'?)+\)\d*$"
+	match = re.match(regex_parenthesis, notation)
+	if match:
+		return True
+	return False
+
 def check_notation(notation: str) -> bool:
 	"""Function to check if a notation is valid.
 
@@ -9,22 +25,9 @@ def check_notation(notation: str) -> bool:
 	Returns:
 		bool: True if is valid notation.
 	"""
+	return check_basic_notation(notation) or check_parenthesis_notation(notation)
 
-	# Check basic notation
-	regex = r"[FRUBLDfrubld]\d*\'?$"
-	match = re.match(regex, notation)
-	if match:
-		print(match)
-		return True
-
-	# Check with parenthesis
-	regex_parenthesis = r"\(([FRUBLDfrubld]\d*\'?)+\)\d*$"
-	match = re.match(regex_parenthesis, notation)
-	if match:
-		print(match)
-		return True
-	return False
 
 if __name__ == "__main__":
-	# check_notation("(RUR'U')4")
+	print(check_notation("(RU4R'U')4"))
 	pass
