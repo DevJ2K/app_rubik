@@ -5,7 +5,7 @@ from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 
-SPACING = 0.03
+SPACING = 0.05
 
 colors = {
 	'1': 'white',  # face 1
