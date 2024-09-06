@@ -2,7 +2,7 @@ import re
 
 def check_basic_notation(notation: str) -> bool:
 	# Check basic notation
-	regex = r"[FRUBLDfrubld]\d*\'?$"
+	regex = r"[FRUBLD]\d*\'?$"
 	match = re.match(regex, notation)
 	if match:
 		return True
@@ -10,7 +10,7 @@ def check_basic_notation(notation: str) -> bool:
 
 def check_parenthesis_notation(notation: str) -> bool:
 	# Check with parenthesis
-	regex_parenthesis = r"\(([FRUBLDfrubld]\d*\'?)+\)\d*$"
+	regex_parenthesis = r"\(([FRUBLD]\d*\'?)+\)\d*$"
 	match = re.match(regex_parenthesis, notation)
 	if match:
 		return True
