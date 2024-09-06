@@ -1,14 +1,13 @@
 <template>
-  <main class=" text-high-contrast-text container my-12 flex size-full flex-col items-center justify-center gap-24">
+  <main class=" container my-12 flex size-full flex-col items-center justify-center gap-24 text-high-contrast-text">
     <div class=" flex w-full flex-col items-center justify-center gap-6">
       <h1 class="text-3xl font-bold">Rubik Solver</h1>
-      <p class=" text-low-contrast-text text-center">Est laboris reprehenderit officia laborum aliqua cillum sit. Dolore in irure ad est occaecat ex occaecat.</p>
- 
+      <p class=" text-center text-low-contrast-text">Est laboris reprehenderit officia laborum aliqua cillum sit. Dolore in irure ad est occaecat ex occaecat.</p>
+
     </div>
 
-    <div class="flex w-full flex-col items-center justify-center gap-6">
-      <h1 class="text-2xl font-bold">Test Overview</h1>
-      <p class=" text-low-contrast-text text-center">Excepteur fugiat excepteur occaecat sint id reprehenderit excepteur nulla non ipsum. Pariatur aute sunt laboris tempor proident proident exercitation ad nisi deserunt sit dolor labore. Enim consectetur est est non id veniam aliquip elit exercitation. Ex aliqua duis enim incididunt incididunt.</p>
+    <div>
+
     </div>
 
     <div class="flex w-full flex-col items-center justify-center gap-6">
@@ -17,7 +16,7 @@
         <label for="test-input">Lorem ipsum :</label>
         <input type="text" id="test-input" required class="form-input form-input-border w-5/6">
         <button @click="makeRequests"
-							class="border-accent-color text-high-contrast-text hover:bg-accent-color dark:text-d-high-contrast-text group flex flex-row items-center gap-1.5 rounded-full border-2 px-6 py-2 transition-colors">
+							class="group flex flex-row items-center gap-1.5 rounded-full border-2 border-accent-color px-6 py-2 text-high-contrast-text transition-colors hover:bg-accent-color dark:text-d-high-contrast-text">
 							<span class=" font-semibold transition-colors group-hover:text-white">Submit</span>
 					</button>
       </div>
@@ -32,6 +31,7 @@
 </template>
 
 <script setup lang="ts">
+
 
 const makeRequests = async () => {
   console.log("Yo !");
