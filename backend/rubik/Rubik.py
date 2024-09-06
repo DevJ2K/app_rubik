@@ -3,7 +3,7 @@ from RubikMoves import RubikMoves
 from ErrorManager import *
 from parser import check_notation
 
-from apply_rubik_moves import move_up
+from apply_rubik_moves import move_up, move_down, move_back, move_front, move_left, move_right
 
 # SOLVE RUBIK
 # self.cube_up: list[list[str]] = [
@@ -51,8 +51,8 @@ class Rubik:
 		}
 		self.cube_up: list[list[str]] = [
 			['1', '1', '1'],
-			['2', '2', '2'],
-			['3', '3', '3'],
+			['1', '1', '1'],
+			['1', '1', '1'],
 		]
 		self.cube_down: list[list[str]] = [
 			['2', '2', '2'],
@@ -94,9 +94,37 @@ class Rubik:
 		pass
 
 	def apply_move(self, move: str) -> None:
+		"""
+		This method applies a specified move to the Rubik's cube,
+		updating its state based on the move type.
+		Depending on the letter in the move string ('U', 'D', 'F', 'B', 'L', 'R'),
+		it performs the corresponding face rotation.
+
+		Parameters:
+		move (str): A string representing the move to apply.
+					Valid values include 'U', 'D', 
+					'F', 'B', 'L' and 'R'. If the move contains a prime symbol ('), 
+					the rotation is counterclockwise.
+
+		Returns:
+		None: The cube's state is updated in place.
+		If the move is invalid, an error message is printed.
+		"""
 		result = self.get_cube()
-		if 'u' in move.lower():
+		if 'U' in move:
 			result = move_up(self.get_cube(), move)
+		elif 'D' in move:
+			result = move_down(self.get_cube(), move)
+		elif 'F' in move:
+			result = move_front(self.get_cube(), move)
+		elif 'B' in move:
+			result = move_back(self.get_cube(), move)
+		elif 'L' in move:
+			result = move_left(self.get_cube(), move)
+		elif 'R' in move:
+			result = move_right(self.get_cube(), move)
+		else:
+			print("Undefined") #Raise
 
 		self.cube_up,self.cube_down,self.cube_front,self.cube_back,self.cube_left,self.cube_right = result
 		self.visualize_cube(window_title=f"MOVE : {move}")
@@ -145,10 +173,11 @@ class Rubik:
 if __name__ == "__main__":
 	rubik = Rubik()
 	rubik.visualize_cube()
-	rubik.apply_move("U")
-	rubik.apply_move("U'")
-	rubik.apply_move("u")
-	rubik.apply_move("u'")
+	rubik.apply_move("B")
+	rubik.apply_move("B'")
+	# rubik.apply_move("U'")
+	# rubik.apply_move("u")
+	# rubik.apply_move("u'")
 	# rubik.visualize_cube()
 	# rubik.apply_move("U'")
 	# rubik.visualize_cube()
