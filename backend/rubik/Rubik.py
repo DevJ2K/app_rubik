@@ -6,36 +6,38 @@ from parser import check_notation
 from apply_rubik_moves import move_up, move_down, move_back, move_front, move_left, move_right
 
 # SOLVE RUBIK
-# self.cube_up: list[list[str]] = [
-# 	['1', '1', '1'],
-# 	['1', '1', '1'],
-# 	['1', '1', '1'],
-# ]
-# self.cube_down: list[list[str]] = [
-# 	['2', '2', '2'],
-# 	['2', '2', '2'],
-# 	['2', '2', '2'],
-# ]
-# self.cube_front: list[list[str]] = [
-# 	['3', '3', '3'],
-# 	['3', '3', '3'],
-# 	['3', '3', '3'],
-# ]
-# self.cube_back: list[list[str]] = [
-# 	['4', '4', '4'],
-# 	['4', '4', '4'],
-# 	['4', '4', '4'],
-# ]
-# self.cube_left: list[list[str]] = [
-# 	['5', '5', '5'],
-# 	['5', '5', '5'],
-# 	['5', '5', '5'],
-# ]
-# self.cube_right: list[list[str]] = [
-# 	['6', '6', '6'],
-# 	['6', '6', '6'],
-# 	['6', '6', '6'],
-# ]
+[
+	# self.cube_up: list[list[str]] = [
+	# 	['1', '1', '1'],
+	# 	['1', '1', '1'],
+	# 	['1', '1', '1'],
+	# ]
+	# self.cube_down: list[list[str]] = [
+	# 	['2', '2', '2'],
+	# 	['2', '2', '2'],
+	# 	['2', '2', '2'],
+	# ]
+	# self.cube_front: list[list[str]] = [
+	# 	['3', '3', '3'],
+	# 	['3', '3', '3'],
+	# 	['3', '3', '3'],
+	# ]
+	# self.cube_back: list[list[str]] = [
+	# 	['4', '4', '4'],
+	# 	['4', '4', '4'],
+	# 	['4', '4', '4'],
+	# ]
+	# self.cube_left: list[list[str]] = [
+	# 	['5', '5', '5'],
+	# 	['5', '5', '5'],
+	# 	['5', '5', '5'],
+	# ]
+	# self.cube_right: list[list[str]] = [
+	# 	['6', '6', '6'],
+	# 	['6', '6', '6'],
+	# 	['6', '6', '6'],
+	# ]
+]
 
 
 class Rubik:
@@ -49,36 +51,16 @@ class Rubik:
 			'5': 'red',    # face 5
 			'6': 'orange', # face 6
 		}
-		self.cube_up: list[list[str]] = [
-			['1', '1', '1'],
-			['1', '1', '1'],
-			['1', '1', '1'],
-		]
-		self.cube_down: list[list[str]] = [
-			['2', '2', '2'],
-			['2', '2', '2'],
-			['2', '2', '2'],
-		]
-		self.cube_front: list[list[str]] = [
-			['3', '3', '3'],
-			['3', '3', '3'],
-			['3', '3', '3'],
-		]
-		self.cube_back: list[list[str]] = [
-			['4', '4', '4'],
-			['4', '4', '4'],
-			['4', '4', '4'],
-		]
-		self.cube_left: list[list[str]] = [
-			['5', '5', '5'],
-			['5', '5', '5'],
-			['5', '5', '5'],
-		]
-		self.cube_right: list[list[str]] = [
-			['6', '6', '6'],
-			['6', '6', '6'],
-			['6', '6', '6'],
-		]
+
+
+		# self.cube = [[3] * 3]
+		self.cube_up: list[list[str]] = [(['1' for _ in range(3)]) for _x in range(3)]
+		self.cube_down: list[list[str]] = [(['2' for _ in range(3)]) for _x in range(3)]
+		self.cube_front: list[list[str]] = [(['3' for _ in range(3)]) for _x in range(3)]
+		self.cube_back: list[list[str]] = [(['4' for _ in range(3)]) for _x in range(3)]
+		self.cube_left: list[list[str]] = [(['5' for _ in range(3)]) for _x in range(3)]
+		self.cube_right: list[list[str]] = [(['6' for _ in range(3)]) for _x in range(3)]
+
 
 	def get_cube(self) -> list[list[list[str]]]:
 		return [
