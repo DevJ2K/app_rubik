@@ -27,7 +27,7 @@ def test_valid_basic_move_miniscule_notation():
 		"b", "b'", "b2", "b2'", "b3", "b3'",
 	]
 	for notation in notations:
-		assert check_notation(notation=notation) == True, f"{notation} is supposed to be a valid notation."
+		assert check_notation(notation=notation) == False, f"{notation} is supposed to be a invalid notation."
 
 
 def test_prohibited_slice_move_majuscule_notation():

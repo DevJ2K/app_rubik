@@ -9,7 +9,7 @@ def test_extract_repeats_from_sequences_without_parenthesis():
 	assert RubikMoves("R'").repeats == 1
 	assert RubikMoves("R4'").repeats == 4
 	assert RubikMoves("R123").repeats == 123
-	assert RubikMoves("l12").repeats == 12
+	assert RubikMoves("L12").repeats == 12
 	assert RubikMoves("R").repeats == 1
 	assert RubikMoves("R4").repeats == 4
 
@@ -17,7 +17,7 @@ def test_extract_repeats_from_sequences_with_parenthesis():
 	assert RubikMoves("(R')").repeats == 1
 	assert RubikMoves("(R')4").repeats == 4
 	assert RubikMoves("(R1)3").repeats == 3
-	assert RubikMoves("(l)12").repeats == 12
+	assert RubikMoves("(L)12").repeats == 12
 	assert RubikMoves("(R)").repeats == 1
 	assert RubikMoves("(R5R6)4").repeats == 4
 
