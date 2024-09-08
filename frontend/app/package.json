@@ -12,6 +12,7 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
   },
   "dependencies": {
+    "@tweenjs/tween.js": "^25.0.0",
     "three": "^0.168.0",
     "vue": "^3.4.29",
     "vue-router": "^4.3.3"

@@ -7,6 +7,7 @@
 
 <script setup lang="ts">
 import * as THREE from 'three';
+import * as TWEEN from '@tweenjs/tween.js'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 import { onMounted, ref } from 'vue';
@@ -28,8 +29,7 @@ const controls = new OrbitControls( camera, renderer.domElement );
 
 // Config render
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setClearColor(0x404040);
-
+renderer.setClearColor(0x202020);
 
 const createCube_ = ({ colors }: { colors?: Array<THREE.MeshBasicMaterial> | undefined } = {}) => {
   const geometry = new THREE.BoxGeometry(1, 1, 1, 2, 2, 2);
@@ -59,11 +59,11 @@ const createCube_ = ({ colors }: { colors?: Array<THREE.MeshBasicMaterial> | und
 
 
 const createCube = ({
-  colors,
+  colors = "white",
   size = 1, // Valeur par défaut pour size
   position = { x: 0, y: 0, z: 0 } // Valeur par défaut pour position
 }: {
-  colors?: Array<THREE.MeshBasicMaterial>; // Optionnel
+  colors?: String; // Optionnel
   size?: number; // Optionnel
   position?: { x: number; y: number; z: number }; // Optionnel
 } = {}) => {
@@ -71,59 +71,159 @@ const createCube = ({
   const geometry = new THREE.BoxGeometry(size, size, size);
 
   const textureLoader = new THREE.TextureLoader();
-  const texture = textureLoader.load(new URL('../assets/rubik_textures/white.png', import.meta.url).href); // Charge la texture correctement
-  console.log(texture)
+  const texture = textureLoader.load(new URL('../assets/rubik_textures/' + colors + '.png', import.meta.url).href); // Charge la texture correctement
+  // console.log(texture)
   const textureMaterial = new THREE.MeshBasicMaterial({ map: texture }); // Associe la texture au matériau
 
   // Si colors est défini, on l'utilise, sinon on applique un matériau par défaut
   const defaultMaterial = new THREE.MeshBasicMaterial({ color: 0xFF });
-  const cube = new THREE.Mesh(geometry, colors || [textureMaterial,textureMaterial,textureMaterial,textureMaterial,textureMaterial,textureMaterial]);
+  const cube = new THREE.Mesh(geometry, [textureMaterial,textureMaterial,textureMaterial,textureMaterial,textureMaterial,textureMaterial]);
 
   // Positionnement du cube
   cube.position.set(position.x, position.y, position.z);
 
+  // scene.add(cube);
+  return cube;
+}
 
-  // const wireframeGeometry = new THREE.WireframeGeometry(geometry);
-  // const wireframeMaterial = new THREE.LineBasicMaterial({ color: 0xFFFFFF, linewidth: 10 }); // Couleur noire pour les bords
-  // const wireframe = new THREE.LineSegments(wireframeGeometry, wireframeMaterial);
+const createRubik = ({
+  center = { x: 0, y: 0, z: 0 }
+}: {
+  center?: { x: number; y: number; z: number }; // Optionnel
+} = {}) => {
 
-  // Ajout du wireframe en tant qu'enfant du cube
-  // cube.add(wireframe);
+  let all_cubes: Array<THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial[], THREE.Object3DEventMap>> = [];
 
-  scene.add(cube);
-  // return cube;
+  for (let x = center.x - 1; x <= center.x + 1; x++) {
+    for (let y = center.y - 1; y <= center.y + 1; y++) {
+      for (let z = center.z - 1; z <= center.z + 1; z++) {
+        all_cubes.push(
+        createCube({
+        size: 1,
+        position: {x: x, y: y, z: z}
+      }));
+      }
+    }
+  }
+  return all_cubes
+}
+
+
+
+
+
+
+
+class Rubik3D {
+  x: number;
+  y: number;
+  z: number;
+  all_cubes: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial[], THREE.Object3DEventMap>[];
+  animation_is_playing: boolean;
+
+  tween_group: TWEEN.Group;
+
+  constructor(center_x?: number, center_y?: number, center_z?: number, ) {
+    this.x = center_x ?? 0;
+    this.y = center_y ?? 0;
+    this.z = center_z ?? 0;
+
+    this.tween_group = new TWEEN.Group();
+
+    this.all_cubes = createRubik({center: {x: this.z, y: this.y, z: this.z}})
+
+    this.animation_is_playing = false;
+    this.display();
+  }
+
+  display(): void {
+    for (let i = 0; i < this.all_cubes.length; i++) {
+      scene.add(this.all_cubes[i]);
+
+    }
+  }
+
+  private animate_rubik(cube_to_move: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial[], THREE.Object3DEventMap>[], new_rotation: { x: number; y: number; z: number }) {
+    console.log("Animating...")
+    const group = new THREE.Group();
+    for (let i = 0; i < cube_to_move.length; i++) {
+      const cube = cube_to_move[i];
+      group.add(cube)
+      console.log("Here");
+    }
+
+    console.log(group.rotation)
+    // group.rotation.y = THREE.MathUtils.degToRad(90);
+
+    scene.add(group)
+
+    const targetRotation = {
+      x: THREE.MathUtils.degToRad(new_rotation.x),
+      y: THREE.MathUtils.degToRad(new_rotation.y),
+      z: THREE.MathUtils.degToRad(new_rotation.z)
+    };
+
+    const tween = new TWEEN.Tween(group.rotation)
+      .to(targetRotation, 2000)
+      .easing(TWEEN.Easing.Cubic.InOut)
+      .onUpdate(() => {
+        // Optionnel : Si vous voulez faire quelque chose pendant l'animation
+        console.log("Here TWEEN");
+      })
+      .onComplete(() => {
+        console.log(group.rotation)
+        console.log("Rotation complete");
+      })
+      .start()
+
+      // tween.update()
+      this.tween_group.add(tween);
+  }
+
+  apply_moves(move: string): void {
+    const cube_to_move: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial[], THREE.Object3DEventMap>[] = [];
+    console.log(("=".repeat(20)) + " " + move + " " + ("=".repeat(20)));
+    if (move === "U") {
+      for (let i = 0; i < this.all_cubes.length; i++) {
+        const cube = this.all_cubes[i];
+        if (cube.position.y > 0) {
+          cube.material[2].color.setHex(0x00ffff);
+          cube_to_move.push(cube);
+          // console.log(cube.position);
+        }
+
+      }
+      this.animate_rubik(cube_to_move, {x: 0, y: -90, z: 0});
+      // console.log("HERE")
+    }
+  }
 }
 
 
 
 const initThree = () => {
   threeContainer.value.appendChild(renderer.domElement);
+  // let all_cubes = createRubik();
 
-  createCube({
-    size: 1,
-    position: {x: 0, y: 0, z: 0}
-  });
-  createCube({
-    size: 1,
-    position: {x: 1, y: 0, z: 0}
-  });
-  createCube({
-    size: 1,
-    position: {x: -1, y: 0, z: 0}
-  });
+  let rubik3D = new Rubik3D();
+  rubik3D.apply_moves("U");
+  rubik3D.apply_moves("U");
+  rubik3D.apply_moves("U");
+  // rubik3D.display()
 
-
-  const animate = () => {
-    requestAnimationFrame(animate);
+  const animate = (time: number) => {
     // line.rotation.x += 0.01;
     // line.rotation.y += 0.01;
     // cube.rotation.x += 0.01;
     // cube.rotation.y += 0.01;
     controls.update();
+    rubik3D.tween_group.update()
     renderer.render(scene, camera);
+    requestAnimationFrame(animate);
   };
 
-  animate();
+  requestAnimationFrame(animate);
+  // animate();
 
 
 }
@@ -196,7 +296,6 @@ const initThree_ = () => {
 }
 
 onMounted(() => {
-  console.log("Heree");
   initThree();
 });
 </script>
