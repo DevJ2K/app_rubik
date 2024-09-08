@@ -1,6 +1,6 @@
 <template>
   <main>
-    <h1>Page 1</h1>
+    <h1 class=" text-center">Rubik</h1>
     <div ref="threeContainer"></div>
   </main>
 </template>
@@ -29,7 +29,7 @@ const controls = new OrbitControls( camera, renderer.domElement );
 
 // Config render
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setClearColor(0x202020);
+renderer.setClearColor(0x0F0F0F);
 
 const createCube_ = ({ colors }: { colors?: Array<THREE.MeshBasicMaterial> | undefined } = {}) => {
   const geometry = new THREE.BoxGeometry(1, 1, 1, 2, 2, 2);
@@ -110,7 +110,21 @@ const createRubik = ({
 
 
 
+// Except JSON from backend
+/*
+{
+  number_moves: XY,
+  results: [
+    {
+      rubik: [[[[...]]]],
+      move: X'
+    },
+    ...
+  ]
+}
 
+
+*/
 
 
 
@@ -123,12 +137,16 @@ class Rubik3D {
 
   tween_group: TWEEN.Group;
 
+  all_tweens: Array<TWEEN.Tween>;
+
   constructor(center_x?: number, center_y?: number, center_z?: number, ) {
     this.x = center_x ?? 0;
     this.y = center_y ?? 0;
     this.z = center_z ?? 0;
 
     this.tween_group = new TWEEN.Group();
+
+    this.all_tweens = [];
 
     this.all_cubes = createRubik({center: {x: this.z, y: this.y, z: this.z}})
 
@@ -143,13 +161,25 @@ class Rubik3D {
     }
   }
 
+  play_animation(): void {
+    this.tween_group.removeAll();
+    for (let i = 0; i + 1 < this.all_tweens.length; i++) {
+      const element = this.all_tweens[i];
+      element.chain(this.all_tweens[i + 1]);
+
+    }
+    for (let i = 0; i < this.all_tweens.length; i++) {
+      this.tween_group.add(this.all_tweens[i]);
+    }
+    this.animation_is_playing = true;
+  }
+
   private animate_rubik(cube_to_move: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial[], THREE.Object3DEventMap>[], new_rotation: { x: number; y: number; z: number }) {
     console.log("Animating...")
     const group = new THREE.Group();
     for (let i = 0; i < cube_to_move.length; i++) {
       const cube = cube_to_move[i];
       group.add(cube)
-      console.log("Here");
     }
 
     console.log(group.rotation)
@@ -159,7 +189,7 @@ class Rubik3D {
 
     const targetRotation = {
       x: THREE.MathUtils.degToRad(new_rotation.x),
-      y: THREE.MathUtils.degToRad(new_rotation.y),
+      y: THREE.MathUtils.degToRad(group.rotation.y + new_rotation.y),
       z: THREE.MathUtils.degToRad(new_rotation.z)
     };
 
@@ -177,7 +207,8 @@ class Rubik3D {
       .start()
 
       // tween.update()
-      this.tween_group.add(tween);
+      this.all_tweens.push(tween);
+      // this.tween_group.add(tween);
   }
 
   apply_moves(move: string): void {
@@ -209,6 +240,7 @@ const initThree = () => {
   rubik3D.apply_moves("U");
   rubik3D.apply_moves("U");
   rubik3D.apply_moves("U");
+  rubik3D.play_animation();
   // rubik3D.display()
 
   const animate = (time: number) => {
@@ -217,7 +249,9 @@ const initThree = () => {
     // cube.rotation.x += 0.01;
     // cube.rotation.y += 0.01;
     controls.update();
-    rubik3D.tween_group.update()
+    if (rubik3D.animation_is_playing) {
+      rubik3D.tween_group.update()
+    }
     renderer.render(scene, camera);
     requestAnimationFrame(animate);
   };
