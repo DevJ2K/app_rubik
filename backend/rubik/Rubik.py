@@ -44,22 +44,22 @@ class Rubik:
 	"""The class to solve an rubik cube"""
 	def __init__(self, cube: list[list[list[str]]] = None, sequences: str = None) -> None:
 		self.COLORS = {
-			'1': 'white',  # face 1
-			'2': 'yellow', # face 2
-			'3': 'blue',   # face 3
-			'4': 'green',  # face 4
-			'5': 'red',    # face 5
-			'6': 'orange', # face 6
+			'1': 'white',  # face 1 (up)
+			'2': 'yellow', # face 2 (bottom)
+			'3': 'blue',   # face 3 (back)
+			'4': 'green',  # face 4 (front)
+			'5': 'red',    # face 5 (right)
+			'6': 'orange', # face 6 (left)
 		}
 
 
 		# self.cube = [[3] * 3]
 		self.cube_up: list[list[str]] = [(['1' for _ in range(3)]) for _x in range(3)]
 		self.cube_down: list[list[str]] = [(['2' for _ in range(3)]) for _x in range(3)]
-		self.cube_front: list[list[str]] = [(['3' for _ in range(3)]) for _x in range(3)]
-		self.cube_back: list[list[str]] = [(['4' for _ in range(3)]) for _x in range(3)]
-		self.cube_left: list[list[str]] = [(['5' for _ in range(3)]) for _x in range(3)]
-		self.cube_right: list[list[str]] = [(['6' for _ in range(3)]) for _x in range(3)]
+		self.cube_front: list[list[str]] = [(['4' for _ in range(3)]) for _x in range(3)]
+		self.cube_back: list[list[str]] = [(['3' for _ in range(3)]) for _x in range(3)]
+		self.cube_left: list[list[str]] = [(['6' for _ in range(3)]) for _x in range(3)]
+		self.cube_right: list[list[str]] = [(['5' for _ in range(3)]) for _x in range(3)]
 
 
 	def get_cube(self) -> list[list[list[str]]]:
@@ -147,10 +147,83 @@ class Rubik:
 		)
 		pass
 
+	def getEdgeOrientation(self):
+		cube_up,cube_down,cube_front,cube_back,cube_left,cube_right = self.get_cube()
+		edges = [
+			(cube_up[0][1], cube_back[0][1]),	
+			(cube_up[1][2], cube_right[0][1]),
+			(cube_up[2][1], cube_front[0][1]),
+			(cube_up[1][0], cube_left[0][1]),	
+			(cube_down[0][1], cube_front[2][1]),
+			(cube_down[1][2], cube_right[2][1]),
+			(cube_down[2][1], cube_back[2][1]),
+			(cube_down[1][0], cube_left[2][1]),
+			(cube_front[1][0], cube_left[1][2]),
+			(cube_front[1][2], cube_right[1][0]),
+			(cube_back[1][0], cube_left[1][0]),
+			(cube_back[1][2], cube_right[1][2])
+		]
+		print(edges)
+		orientation = []
+		for edge in edges:
+			if edge[0] in ['1', '2'] or edge[1] in ['1', '2']:
+				orientation.append(0)
+			else:
+				orientation.append(1)
+		return orientation
+	
+	def getCornerOrientation(self):
+		cube_up,cube_down,cube_front,cube_back,cube_left,cube_right = self.get_cube()
+		corners = [
+			(cube_up[0][0], cube_left[0][2], cube_back[0][0]),
+			(cube_up[0][2], cube_right[0][2], cube_back[0][2]),
+			(cube_up[2][2], cube_right[0][0], cube_front[0][2]),
+			(cube_up[2][0], cube_left[0][0], cube_front[0][0]),
+			(cube_down[0][0], cube_left[2][2], cube_front[2][0]),
+			(cube_down[0][2], cube_right[2][2], cube_front[2][2]),
+			(cube_down[2][2], cube_right[2][0], cube_back[2][2]),
+			(cube_down[2][0], cube_left[2][0], cube_back[2][0])
+		]
+
+		orientation = []
+		for corner in corners:
+			if corner[0] in ['1', '2']:
+				orientation.append(0)
+			elif corner[1] in ['1', '2']:
+				orientation.append(1)
+			else:
+				orientation.append(2)
+		return orientation
+	
+	def getEdgeOrientationState(self):
+		edge_orientation = self.getEdgeOrientation()
+		state = 0
+		for i in range(12):
+			state = (state << 1) | edge_orientation[i]
+		return state
+
+	def setEdgeOrientationState(self, state):
+		edge_orientation = [(state >> i) & 1 for i in range(11, -1, -1)]
+
 	def solve(self) -> None:
 		"""Solve the self.cube
 		"""
 		pass
+
+def getNeighborsEdgeOrientation(state):
+    neighbors = []
+    cube = Rubik()
+    cube.setEdgeOrientationState(state)
+    
+    moves = ['U', 'U\'', 'D', 'D\'', 'L', 'L\'', 'R', 'R\'', 'F', 'F\'', 'B', 'B\'']
+
+    for move in moves:
+        cube.apply_move(move)
+        neighbors.append(cube.getEdgeOrientationState())
+        cube.apply_move(move + '\'') 
+
+    return neighbors
+
 
 if __name__ == "__main__":
 	rubik = Rubik()
@@ -164,4 +237,3 @@ if __name__ == "__main__":
 	# rubik.apply_move("U'")
 	# rubik.visualize_cube()
 	# rubik.apply_sequences("R2 D' B' (RU4R'U')4 D F2 R F2 R2 U L' F2 U' B' L2 R D B' R' B2 L2 	F2 L2 R2 U2 	D2")
-
