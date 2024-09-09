@@ -2,6 +2,7 @@ from visualizers.rubik_visualizer import visualize_cube_3D
 from RubikMoves import RubikMoves
 from ErrorManager import *
 from parser import check_notation
+from PruningTable import PruningTable
 
 from apply_rubik_moves import move_up, move_down, move_back, move_front, move_left, move_right
 
@@ -304,6 +305,39 @@ def getNeighborsCornerOrientation(state) -> list[int]:
 			cube.apply_move(move + '\'')
 
 	return neighbors
+
+def applyEdgeOrientationMove(state, move):
+	pass
+
+def applyCornerOrientationMove(state, move):
+	pass
+
+def phase1Search(edgeOrientationState, cornerOrientationState, maxDepth, edgePruningTable: PruningTable, cornerPruningTable: PruningTable):
+	def dfs(edgeState, cornerState, depth, maxDepth, path):
+		if edgeState == 0 and cornerState == 0:
+			return path
+		if depth >= maxDepth:
+			return None
+		if edgePruningTable.getPruning(edgeState) > maxDepth - depth:
+			return None
+		if cornerPruningTable.getPruning(cornerState) > maxDepth - depth:
+			return None
+		
+		moves = ['U', 'U\'', 'D', 'D\'', 'L', 'L\'', 'R', 'R\'', 'F', 'F\'', 'B', 'B\'']
+
+		for move in moves:
+			newEdgeState = applyEdgeOrientationMove(edgeState, move)
+			newCornerState = applyCornerOrientationMove(cornerState, move)
+			result = dfs(newEdgeState, newCornerState, depth + 1, maxDepth, path + [move])
+			if result is not None:
+				return result
+		return None
+	
+	for depth in range(1, maxDepth + 1):
+		result = dfs(edgeOrientationState, cornerOrientationState, 0, depth, [])
+		if result is not None:
+			return result
+	return None
 
 
 if __name__ == "__main__":

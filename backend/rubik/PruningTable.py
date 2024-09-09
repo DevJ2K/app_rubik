@@ -4,6 +4,9 @@ from Rubik import getNeighborsEdgeOrientation
 class PruningTable:
 	def __init__(self, nbStates) -> None:
 		self.table = -1 * nbStates
+		
+	def getPruning(self, state):
+		return self.table[state]
 	
 	def generateTable(self, initialState, getNeighbors):
 		self.table[initialState] = 0
