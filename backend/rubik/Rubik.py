@@ -202,7 +202,7 @@ class Rubik:
 			state = (state << 1) | edge_orientation[i]
 		return state
 
-	def setEdgeOrientationState(self, state):
+	def setEdgeOrientationState(self, state) -> None:
 		cube = self.get_cube()
 		edges = [
 			(0, 0, 1, 3, 0, 1), # 0: up, 1: down, 2: front, 3: back, 4: left, 5: right 
@@ -226,6 +226,38 @@ class Rubik:
 			if orientation == 1:
 				cube[face1][x1][y1], cube[face2][x2][y2] = cube[face2][x2][y2], cube[face1][x1][y1]
 
+	def setCornerOrientationState(self, state):
+		cube = self.get_cube()
+		corners = [
+			(0, 0, 0, 4, 0, 2, 3, 0, 0), # 0: up, 1: down, 2: front, 3: back, 4: left, 5: right 
+			(0, 0, 2, 5, 0, 0, 3, 0, 2),
+			(0, 2, 0, 4, 0, 0, 2, 0, 0),
+			(0, 2, 2, 5, 0, 2, 2, 0, 2),
+			(1, 0, 0, 4, 2, 0, 2, 2, 0),
+			(1, 0, 2, 5, 2, 2, 2, 2, 2),
+			(1, 2, 0, 4, 2, 2, 3, 2, 0),
+			(1, 2, 2, 5, 2, 0, 3, 2, 2) 
+		]
+
+		for corner in enumerate(corners[:-1]):
+			face1, x1, y1, face2, x2, y2, face3, x3, y3 = corner
+
+			orientation = state % 3
+			state //= 3
+
+			if orientation == 1:
+				(
+					cube[face1][x1][y1], cube[face2][x2][y2], cube[face3][x3][y3]
+				) = (
+					cube[face3][x3][y3], cube[face1][x1][y1], cube[face2][x2][y2]
+				)
+			elif orientation == 2:
+				(
+					cube[face1][x1][y1], cube[face2][x2][y2], cube[face3][x3][y3]
+				) = (
+					cube[face2][x2][y2], cube[face3][x3][y3], cube[face1][x1][y1]
+				)
+
 
 	def solve(self) -> None:
 		"""Solve the self.cube
@@ -243,6 +275,20 @@ def getNeighborsEdgeOrientation(state) -> list[int]:
 		cube.apply_move(move)
 		neighbors.append(cube.getEdgeOrientationState())
 		cube.apply_move(move + '\'') 
+
+	return neighbors
+
+def getNeighborsCornerOrientation(state) -> list[int]:
+	neighbors = []
+	cube = Rubik()
+	cube.setCornerOrientationState(state)
+	
+	moves = ['U', 'U\'', 'D', 'D\'', 'L', 'L\'', 'R', 'R\'', 'F', 'F\'', 'B', 'B\'']
+
+	for move in moves:
+		cube.apply_move(move)
+		neighbors.append(cube.getCornerOrientation())
+		cube.apply_move(move + '\'')
 
 	return neighbors
 

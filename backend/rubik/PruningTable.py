@@ -23,9 +23,16 @@ class PruningTable:
     def getDistance(self, state):
         return self.table[state]
 
-def main():
+def generateEdgePruningTable():
     nbStates = 2**12
-    pruning_table = PruningTable(nbStates)
-    initial_state = 0
-    pruning_table.generate_table(initial_state, getNeighborsEdgeOrientation)
-    return pruning_table
+    pruningTable = PruningTable(nbStates)
+    initialState = 0
+    pruningTable.generate_table(initialState, getNeighborsEdgeOrientation)
+    return pruningTable
+
+def generateCornerPruningTable():
+    nbStates = 3**7
+    pruningTable = PruningTable(nbStates)
+    initialState = 0
+    pruningTable.generate_table(initialState, getNeighborsEdgeOrientation)
+    return pruningTable
