@@ -48,7 +48,7 @@ class Rubik:
 			'2': 'yellow', # face 2 (bottom)
 			'3': 'blue',   # face 3 (back)
 			'4': 'green',  # face 4 (front)
-			'5': 'red',    # face 5 (right)
+			'5': 'red',	# face 5 (right)
 			'6': 'orange', # face 6 (left)
 		}
 
@@ -147,7 +147,7 @@ class Rubik:
 		)
 		pass
 
-	def getEdgeOrientation(self):
+	def getEdgeOrientation(self) -> list[int]:
 		cube_up,cube_down,cube_front,cube_back,cube_left,cube_right = self.get_cube()
 		edges = [
 			(cube_up[0][1], cube_back[0][1]),	
@@ -172,7 +172,7 @@ class Rubik:
 				orientation.append(1)
 		return orientation
 	
-	def getCornerOrientation(self):
+	def getCornerOrientation(self) -> list[int]:
 		cube_up,cube_down,cube_front,cube_back,cube_left,cube_right = self.get_cube()
 		corners = [
 			(cube_up[0][0], cube_left[0][2], cube_back[0][0]),
@@ -195,7 +195,7 @@ class Rubik:
 				orientation.append(2)
 		return orientation
 	
-	def getEdgeOrientationState(self):
+	def getEdgeOrientationState(self) -> int:
 		edge_orientation = self.getEdgeOrientation()
 		state = 0
 		for i in range(12):
@@ -203,26 +203,48 @@ class Rubik:
 		return state
 
 	def setEdgeOrientationState(self, state):
-		edge_orientation = [(state >> i) & 1 for i in range(11, -1, -1)]
+		cube = self.get_cube()
+		edges = [
+			(0, 0, 1, 3, 0, 1), # 0: up, 1: down, 2: front, 3: back, 4: left, 5: right 
+			(0, 1, 2, 5, 0, 1),
+			(0, 2, 1, 2, 0, 1),
+			(0, 1, 0, 4, 0, 1),
+			(1, 0, 1, 2, 2, 1),
+			(1, 1, 2, 5, 2, 1),
+			(1, 2, 1, 3, 2, 1),
+			(1, 1, 0, 4, 2, 1),
+			(2, 1, 0, 4, 1, 2),
+			(2, 1, 2, 5, 1, 0),
+			(3, 1, 0, 4, 1, 0),
+			(3, 1, 2, 5, 1, 2) 
+		]
+
+		for i, edge in enumerate(edges):
+			face1, x1, y1, face2, x2, y2 = edge
+
+			orientation = (state >> (11 - i)) & 1
+			if orientation == 1:
+				cube[face1][x1][y1], cube[face2][x2][y2] = cube[face2][x2][y2], cube[face1][x1][y1]
+
 
 	def solve(self) -> None:
 		"""Solve the self.cube
 		"""
 		pass
 
-def getNeighborsEdgeOrientation(state):
-    neighbors = []
-    cube = Rubik()
-    cube.setEdgeOrientationState(state)
-    
-    moves = ['U', 'U\'', 'D', 'D\'', 'L', 'L\'', 'R', 'R\'', 'F', 'F\'', 'B', 'B\'']
+def getNeighborsEdgeOrientation(state) -> list[int]:
+	neighbors = []
+	cube = Rubik()
+	cube.setEdgeOrientationState(state)
+	
+	moves = ['U', 'U\'', 'D', 'D\'', 'L', 'L\'', 'R', 'R\'', 'F', 'F\'', 'B', 'B\'']
 
-    for move in moves:
-        cube.apply_move(move)
-        neighbors.append(cube.getEdgeOrientationState())
-        cube.apply_move(move + '\'') 
+	for move in moves:
+		cube.apply_move(move)
+		neighbors.append(cube.getEdgeOrientationState())
+		cube.apply_move(move + '\'') 
 
-    return neighbors
+	return neighbors
 
 
 if __name__ == "__main__":
