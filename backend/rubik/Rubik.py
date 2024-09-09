@@ -201,6 +201,14 @@ class Rubik:
 		for i in range(12):
 			state = (state << 1) | edge_orientation[i]
 		return state
+	
+	def getCornerOrientationState(self) -> int:
+		edge_orientation = self.getCornerOrientation()
+		state = 0
+		for valeur in edge_orientation:
+			state = state * 3 + valeur
+		return state
+		 
 
 	def setEdgeOrientationState(self, state) -> None:
 		cube = self.get_cube()
@@ -274,8 +282,10 @@ def getNeighborsEdgeOrientation(state) -> list[int]:
 	for move in moves:
 		cube.apply_move(move)
 		neighbors.append(cube.getEdgeOrientationState())
-		cube.apply_move(move + '\'') 
-
+		if '\'' in move:
+			cube.apply_move(move)
+		else:
+			cube.apply_move(move + '\'')
 	return neighbors
 
 def getNeighborsCornerOrientation(state) -> list[int]:
@@ -287,8 +297,11 @@ def getNeighborsCornerOrientation(state) -> list[int]:
 
 	for move in moves:
 		cube.apply_move(move)
-		neighbors.append(cube.getCornerOrientation())
-		cube.apply_move(move + '\'')
+		neighbors.append(cube.getCornerOrientationState())
+		if '\'' in move:
+			cube.apply_move(move)
+		else:
+			cube.apply_move(move + '\'')
 
 	return neighbors
 
