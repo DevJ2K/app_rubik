@@ -20,9 +20,15 @@ const threeContainer = ref(null);
 const scene = new THREE.Scene();
 
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-camera.position.z = 7;
-camera.position.y = 7;
-camera.position.x = 7;
+
+camera.position.x = 8;
+camera.position.y = 5;
+camera.position.z = 9;
+
+// 45deg top
+// camera.position.x = 7;
+// camera.position.y = 7;
+// camera.position.z = 7;
 
 const renderer = new THREE.WebGLRenderer();
 const controls = new OrbitControls( camera, renderer.domElement );
@@ -31,55 +37,60 @@ const controls = new OrbitControls( camera, renderer.domElement );
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setClearColor(0x0F0F0F);
 
-const createCube_ = ({ colors }: { colors?: Array<THREE.MeshBasicMaterial> | undefined } = {}) => {
-  const geometry = new THREE.BoxGeometry(1, 1, 1, 2, 2, 2);
-  const material = new THREE.MeshBasicMaterial({color: 0x00FF00});
-
-  const mesh = new THREE.Mesh(
-    geometry,
-    [
-      new THREE.MeshBasicMaterial({color: 0x00FF00}),
-      new THREE.MeshBasicMaterial({color: 0x00FF00}),
-      new THREE.MeshBasicMaterial({color: 0x00FF00}),
-      new THREE.MeshBasicMaterial({color: 0x00FF00}),
-      new THREE.MeshBasicMaterial({color: 0x00FF00}),
-      new THREE.MeshBasicMaterial({color: 0x00FF00}),
-    ]
-  );
-
-
-  mesh.material[1].color.setHex(0x00ffff);
-  mesh.material[5].color.setHex(0x00ffff);
-
-  // mesh.geometry.faces[ 5 ].color.setHex( 0x00ffff );
-
-
-  scene.add(mesh);
-}
-
-
 const createCube = ({
-  colors = "white",
+  colors = "black",
   size = 1,
   position = { x: 0, y: 0, z: 0 }
 }: {
-  colors?: String;
+  colors?: string;
   size?: number;
   position?: { x: number; y: number; z: number };
-} = {}) => {
+}) => {
   const geometry = new THREE.BoxGeometry(size, size, size);
 
   const textureLoader = new THREE.TextureLoader();
   const texture = textureLoader.load(new URL('../assets/rubik_textures/' + colors + '.png', import.meta.url).href);
 
-  const textureMaterial = new THREE.MeshBasicMaterial({ map: texture });
+  // const textureMaterial = new THREE.MeshBasicMaterial({ map: texture });
 
-  const defaultMaterial = new THREE.MeshBasicMaterial({ color: 0xFF });
-  const cube = new THREE.Mesh(geometry, [textureMaterial,textureMaterial,textureMaterial,textureMaterial,textureMaterial,textureMaterial]);
+  // const defaultMaterial = new THREE.MeshBasicMaterial({ color: 0xFF });
 
+  const cube = new THREE.Mesh(geometry, [
+    new THREE.MeshBasicMaterial({ color: 0xFF }),
+    new THREE.MeshBasicMaterial({ color: 0xFF }),
+    new THREE.MeshBasicMaterial({ color: 0xFF }),
+    new THREE.MeshBasicMaterial({ color: 0xFF }),
+    new THREE.MeshBasicMaterial({ color: 0xFF }),
+    new THREE.MeshBasicMaterial({ color: 0xFF })
+  ]);
+
+  changeCubeFaceColors({cube: cube, new_colors: colors});
   cube.position.set(position.x, position.y, position.z);
 
   return cube;
+}
+
+const changeCubeFaceColors = ({
+  cube,
+  new_colors = "black",
+  face_index = undefined
+}: {
+  cube: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial[], THREE.Object3DEventMap>
+  new_colors?: string
+  face_index?: number | undefined
+}) => {
+
+  const textureLoader = new THREE.TextureLoader();
+  const texture = textureLoader.load(new URL('../assets/rubik_textures/' + new_colors + '.png', import.meta.url).href);
+
+  if (face_index != undefined) {
+    cube.material[face_index] = new THREE.MeshBasicMaterial({ map: texture });
+  } else {
+    for (let i = 0; i < cube.material.length; i++) {
+      cube.material[i] = new THREE.MeshBasicMaterial({ map: texture });
+
+    }
+  }
 }
 
 const createRubik = ({
@@ -90,9 +101,9 @@ const createRubik = ({
 
   let all_cubes: Array<THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial[], THREE.Object3DEventMap>> = [];
 
-  for (let x = center.x - 1; x <= center.x + 1; x++) {
-    for (let y = center.y - 1; y <= center.y + 1; y++) {
-      for (let z = center.z - 1; z <= center.z + 1; z++) {
+  for (let y = center.y + 1; y >= center.y - 1; y--) {
+    for (let z = center.z - 1; z <= center.z + 1; z++) {
+      for (let x = center.x - 1; x <= center.x + 1; x++) {
         all_cubes.push(
         createCube({
         size: 1,
@@ -129,6 +140,8 @@ class Rubik3D {
   x: number;
   y: number;
   z: number;
+
+  default_faces_colors: Array<Array<Array<string>>>;
   all_cubes: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial[], THREE.Object3DEventMap>[];
 
   // Animation settings
@@ -141,59 +154,82 @@ class Rubik3D {
   current_tween: TWEEN.Tween | undefined;
   frames: Array<Object>
 
-  constructor(center_x?: number, center_y?: number, center_z?: number, ) {
+    readonly COLORS_MAP: Map<string, string> = new Map<string, string>([
+    ['1', 'white'],  // face 1
+    ['2', 'yellow'], // face 2
+    ['3', 'blue'],   // face 3
+    ['4', 'green'],  // face 4
+    ['5', 'red'],    // face 5
+    ['6', 'orange'], // face 6
+  ]);
+  constructor(default_faces_colors?: Array<Array<Array<string>>>, center_x?: number, center_y?: number, center_z?: number) {
     this.x = center_x ?? 0;
     this.y = center_y ?? 0;
     this.z = center_z ?? 0;
+
+
+    this.default_faces_colors = default_faces_colors ?? [
+      [['1', '2', '3'], ['4', '5', '6'], ['1', '2', '1']], // UP
+      [['1', '2', '3'], ['4', '2', '2'], ['5', '2', '6']], // DOWN
+      [['1', '2', '3'], ['4', '5', '6'],['3', '3', '1'],], // FRONT
+      [['4', '5', '6'], ['1', '4', '6'], ['1', '2', '3'],], // BACK
+      [['1', '2', '2'], ['1', '6', '3'], ['5', '4', '4']], // LEFT
+      [['1', '2', '2'], ['1', '6', '3'], ['5', '4', '4']]]; // RIGHT
 
     this.second_between_animation = 0;
     this.animation_speed = 1;
 
     this.all_cubes = createRubik({center: {x: this.z, y: this.y, z: this.z}});
+    this.paint_cube(this.default_faces_colors);
     this.display();
 
     this.current_frame = 0;
-    this.frames = [
-      {
-        move: "U"
-      },
-      {
-        move: "U'"
-      },
-      {
-        move: "D"
-      },
-      {
-        move: "D'"
-      },
-      {
-        move: "F"
-      },
-      {
-        move: "F'"
-      },
-      {
-        move: "B"
-      },
-      {
-        move: "B'"
-      },
-      {
-        move: "L"
-      },
-      {
-        move: "L'"
-      },
-      {
-        move: "R"
-      },
-      {
-        move: "R'"
-      },
-    ]
+
+    this.frames = []
+    // ALL MOVEMENTS
+    // this.frames = [
+    //   {
+    //     move: "U"
+    //   },
+    //   {
+    //     move: "U'"
+    //   },
+    //   {
+    //     move: "D"
+    //   },
+    //   {
+    //     move: "D'"
+    //   },
+    //   {
+    //     move: "F"
+    //   },
+    //   {
+    //     move: "F'"
+    //   },
+    //   {
+    //     move: "B"
+    //   },
+    //   {
+    //     move: "B'"
+    //   },
+    //   {
+    //     move: "L"
+    //   },
+    //   {
+    //     move: "L'"
+    //   },
+    //   {
+    //     move: "R"
+    //   },
+    //   {
+    //     move: "R'"
+    //   },
+    // ]
 
     this.animation_is_playing = false;
   }
+
+
 
 
   set change_rotation_speed(speed: number) {
@@ -204,51 +240,97 @@ class Rubik3D {
     this.second_between_animation = second;
   }
 
+  display(): void {
+    for (let i = 0; i < this.all_cubes.length; i++) {
+      scene.add(this.all_cubes[i]);
+    }
+  }
+
   async play_animation(): Promise<void> {
     this.animation_is_playing = true;
-    for (let i = 0; i < this.frames.length; i++) {
+    for (let i = this.current_frame; i < this.frames.length; i++) {
       const element = this.frames[i];
       console.log(element);
       await this.apply_moves(element.move);
-
+      this.current_frame = i;
     }
     this.current_tween = undefined;
   }
 
-  display(): void {
-    for (let i = 0; i < this.all_cubes.length; i++) {
-      scene.add(this.all_cubes[i]);
+  private selected_cubes(cube_to_select: Array<number>): THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial[], THREE.Object3DEventMap>[] {
 
+    const selected_cubes: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial[], THREE.Object3DEventMap>[] = [];
+
+    for (let i = 0; i < cube_to_select.length; i++) {
+      const nb = cube_to_select[i];
+      if (0 <= nb && nb < this.all_cubes.length) {
+        selected_cubes.push(this.all_cubes[nb]);
+      }
     }
+    return selected_cubes;
   }
 
-  // play_animation(): void {
-  //   this.tween_group.removeAll();
-  //   for (let i = 0; i + 1 < this.all_tweens.length; i++) {
-  //     const element = this.all_tweens[i];
-  //     element.chain(this.all_tweens[i + 1]);
+  paint_cube(new_faces_colors: Array<Array<Array<string>>>): void {
 
-  //   }
-  //   for (let i = 0; i < this.all_tweens.length; i++) {
-  //     this.tween_group.add(this.all_tweens[i]);
-  //   }
-  //   this.animation_is_playing = true;
-  // }
+    // All faces concatenates
+    const face_up: Array<string> = new_faces_colors[0][0].concat(new_faces_colors[0][1],new_faces_colors[0][2]);
+    const face_down: Array<string> = new_faces_colors[1][0].concat(new_faces_colors[1][1],new_faces_colors[1][2]);
+    const face_front: Array<string> = new_faces_colors[2][0].concat(new_faces_colors[2][1],new_faces_colors[2][2]);
+    const face_back: Array<string> = new_faces_colors[3][0].concat(new_faces_colors[3][1],new_faces_colors[3][2]);
+    const face_left: Array<string> = new_faces_colors[4][0].concat(new_faces_colors[4][1],new_faces_colors[4][2]);
+    const face_right: Array<string> = new_faces_colors[5][0].concat(new_faces_colors[5][1],new_faces_colors[5][2]);
 
-  private async animate_rubik(cube_to_move: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial[], THREE.Object3DEventMap>[], new_rotation: { x: number; y: number; z: number }): Promise<void> {
-    console.log("Animating...")
+    // All cubes depending faces
+    const selected_cubes_up = this.selected_cubes([0, 1, 2, 3, 4, 5, 6, 7, 8]);
+    const selected_cubes_down = this.selected_cubes([18, 19, 20, 21, 22, 23, 24, 25, 26]);
+    const selected_cubes_front = this.selected_cubes([6, 7, 8, 15, 16, 17, 24, 25, 26]);
+    const selected_cubes_back = this.selected_cubes([0, 1, 2, 9, 10, 11, 18, 19, 20]);
+    const selected_cubes_left = this.selected_cubes([6, 3, 0, 15, 12, 9, 24, 21, 18]);
+    const selected_cubes_right = this.selected_cubes([8, 5, 2, 17, 14, 11, 26, 23, 20]);
+
+    // Face_index
+    // Face_index - 0 = right
+    // Face_index - 1 = left
+    // Face_index - 2 = up
+    // Face_index - 3 = down
+    // Face_index - 4 = front
+    // Face_index - 5 = back
+    for (let i = 0; i < face_up.length && i < selected_cubes_up.length; i++) {
+      changeCubeFaceColors({cube: selected_cubes_up[i], new_colors: this.COLORS_MAP.get(face_up[i]), face_index: 2})
+    }
+    for (let i = 0; i < face_down.length && i < selected_cubes_down.length; i++) {
+      changeCubeFaceColors({cube: selected_cubes_down[i], new_colors: this.COLORS_MAP.get(face_down[i]), face_index: 3})
+    }
+    for (let i = 0; i < face_front.length && i < selected_cubes_front.length; i++) {
+      changeCubeFaceColors({cube: selected_cubes_front[i], new_colors: this.COLORS_MAP.get(face_front[i]), face_index: 4})
+    }
+    for (let i = 0; i < face_back.length && i < selected_cubes_back.length; i++) {
+      changeCubeFaceColors({cube: selected_cubes_back[i], new_colors: this.COLORS_MAP.get(face_back[i]), face_index: 5})
+    }
+    for (let i = 0; i < face_left.length && i < selected_cubes_left.length; i++) {
+      changeCubeFaceColors({cube: selected_cubes_left[i], new_colors: this.COLORS_MAP.get(face_left[i]), face_index: 1})
+    }
+    for (let i = 0; i < face_right.length && i < selected_cubes_right.length; i++) {
+      changeCubeFaceColors({cube: selected_cubes_right[i], new_colors: this.COLORS_MAP.get(face_right[i]), face_index: 0})
+    }
+
+    // To highlight selected_cubes_...
+    // let highlight_selected_test_only = [];
+    // for (let i = 0; i < highlight_selected_test_only.length; i++) {
+    //   changeCubeFaceColors({cube: highlight_selected_test_only[i], new_colors: "red"});
+    // }
+  }
+
+  private async animate_rubik(
+  cube_to_move: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial[], THREE.Object3DEventMap>[],
+  new_rotation: { x: number; y: number; z: number }): Promise<void>
+  {
     const group = new THREE.Group();
     for (let i = 0; i < cube_to_move.length; i++) {
       const cube = cube_to_move[i];
       group.add(cube)
     }
-
     scene.add(group)
-
-    // console.log(group.rotation);
-    // await new Promise<void>((resolve, reject) => {
-    //   setTimeout(resolve, 1000);
-    // })
 
     const targetRotation = {
       x: THREE.MathUtils.degToRad(group.rotation.x + new_rotation.x),
@@ -263,18 +345,16 @@ class Rubik3D {
         .onUpdate(() => {})
         .onComplete(async () => {
           console.log("Rotation complete");
-        for (let i = 0; i < cube_to_move.length; i++) {
-          const cube = cube_to_move[i];
-          cube.material[2].color.setHex(0xffffff);
-          scene.attach(cube);
-        }
-        scene.remove(group);
+          for (let i = 0; i < cube_to_move.length; i++) {
+            const cube = cube_to_move[i];
+            scene.attach(cube);
+          }
+          scene.remove(group);
 
-        await new Promise<void>((resolve) => {
-          setTimeout(resolve, 1000 * this.second_between_animation);
-        })
-
-        resolve();
+          await new Promise<void>((resolve) => {
+            setTimeout(resolve, 1000 * this.second_between_animation);
+          })
+          resolve();
         })
         .start();
     });
@@ -287,79 +367,63 @@ class Rubik3D {
     let y: number = 0;
     let z: number = 0;
 
-
-
     for (let i = 0; i < this.all_cubes.length; i++) {
       const cube = this.all_cubes[i];
 
       if (move === "U" || move === "U'") {
         y = move === "U" ? 90 : -90
         if (cube.position.y > 0) {
-            cube.material[2].color.setHex(0x00ffff);
             cube_to_move.push(cube);
         }
       }
       else if (move === "D" || move === "D'") {
         y = move === "D" ? 90 : -90
         if (cube.position.y < 0) {
-            cube.material[2].color.setHex(0x00ffff);
             cube_to_move.push(cube);
         }
       }
       else if (move === "F" || move === "F'") {
         z = move === "F" ? -90 : 90
         if (cube.position.z > 0) {
-            cube.material[2].color.setHex(0x00ffff);
             cube_to_move.push(cube);
         }
       }
       else if (move === "B" || move === "B'") {
         z = move === "B" ? 90 : -90
         if (cube.position.z < 0) {
-            cube.material[2].color.setHex(0x00ffff);
             cube_to_move.push(cube);
         }
       }
       else if (move === "L" || move === "L'") {
         x = move === "L" ? 90 : -90
         if (cube.position.x < 0) {
-            cube.material[2].color.setHex(0x00ffff);
             cube_to_move.push(cube);
         }
       }
       else if (move === "R" || move === "R'") {
         x = move === "R" ? -90 : 90
         if (cube.position.x > 0) {
-            cube.material[2].color.setHex(0x00ffff);
             cube_to_move.push(cube);
         }
       }
       else {
-        alert("Invalid movement detected !")
+        alert("Invalid movement detected !");
         console.log("Invalid movement detected !");
       }
     }
-
-
     await this.animate_rubik(cube_to_move, {x: x, y: y, z: z});
   }
 }
 
-
-
 const initThree = () => {
+  if (threeContainer.value == null) {
+    return ;
+  }
   threeContainer.value.appendChild(renderer.domElement);
-  // let all_cubes = createRubik();
-
   let rubik3D = new Rubik3D();
   rubik3D.play_animation();
-  // // rubik3D.display()
 
-  const animate = (time: number) => {
-    // line.rotation.x += 0.01;
-    // line.rotation.y += 0.01;
-    // cube.rotation.x += 0.01;
-    // cube.rotation.y += 0.01;
+  const animate = () => {
     controls.update();
     if (rubik3D.animation_is_playing && rubik3D.current_tween) {
       rubik3D.current_tween.update();
@@ -367,14 +431,43 @@ const initThree = () => {
     renderer.render(scene, camera);
     requestAnimationFrame(animate);
   };
-
   requestAnimationFrame(animate);
-  // animate();
-
-
 }
 
 onMounted(() => {
   initThree();
 });
+
+
+
+/*
+INITIAL POS____
+[[['1', '1', '1'], ['1', '1', '1'], ['1', '1', '1']], [['2', '2', '2'], ['2', '2', '2'], ['2', '2', '2']], [['3', '3', '3'], ['3', '3', '3'], ['3', '3', '3']], [['4', '4', '4'], ['4', '4', '4'], ['4', '4', '4']], [['5', '5', '5'], ['5', '5', '5'], ['5', '5', '5']], [['6', '6', '6'], ['6', '6', '6'], ['6', '6', '6']]]
+[['4', '4', '4'], ['4', '4', '4'], ['4', '4', '4']]
+MOVE : B
+[[['5', '5', '5'], ['1', '1', '1'], ['1', '1', '1']], [['6', '6', '6'], ['2', '2', '2'], ['2', '2', '2']], [['3', '3', '3'], ['3', '3', '3'], ['3', '3', '3']], [['4', '4', '4'], ['4', '4', '4'], ['4', '4', '4']], [['5', '5', '2'], ['5', '5', '2'], ['5', '5', '2']], [['6', '6', '1'], ['6', '6', '1'], ['6', '6', '1']]]
+[['3', '3', '3'], ['3', '3', '3'], ['3', '3', '3']]
+MOVE : F
+[[['5', '5', '5'], ['1', '1', '1'], ['5', '5', '5']], [['6', '6', '6'], ['2', '2', '2'], ['6', '6', '6']], [['3', '3', '3'], ['3', '3', '3'], ['3', '3', '3']], [['4', '4', '4'], ['4', '4', '4'], ['4', '4', '4']], [['2', '5', '2'], ['2', '5', '2'], ['2', '5', '2']], [['1', '6', '1'], ['1', '6', '1'], ['1', '6', '1']]]
+[['2', '2', '2'], ['5', '5', '5'], ['2', '2', '2']]
+MOVE : L
+[[['4', '5', '5'], ['4', '1', '1'], ['4', '5', '5']], [['3', '6', '6'], ['3', '2', '2'], ['3', '6', '6']], [['5', '3', '3'], ['1', '3', '3'], ['5', '3', '3']], [['6', '4', '4'], ['2', '4', '4'], ['6', '4', '4']], [['2', '2', '2'], ['5', '5', '5'], ['2', '2', '2']], [['1', '6', '1'], ['1', '6', '1'], ['1', '6', '1']]]
+[['1', '1', '1'], ['6', '6', '6'], ['1', '1', '1']]
+MOVE : R
+[[['4', '5', '3'], ['4', '1', '3'], ['4', '5', '3']], [['3', '6', '4'], ['3', '2', '4'], ['3', '6', '4']], [['5', '3', '6'], ['1', '3', '2'], ['5', '3', '6']], [['6', '4', '5'], ['2', '4', '1'], ['6', '4', '5']], [['2', '2', '2'], ['5', '5', '5'], ['2', '2', '2']], [['1', '1', '1'], ['6', '6', '6'], ['1', '1', '1']]]
+[['4', '4', '4'], ['5', '1', '5'], ['3', '3', '3']]
+MOVE : U
+[[['4', '4', '4'], ['5', '1', '5'], ['3', '3', '3']], [['3', '6', '4'], ['3', '2', '4'], ['3', '6', '4']], [['1', '1', '1'], ['1', '3', '2'], ['5', '3', '6']], [['2', '2', '2'], ['2', '4', '1'], ['6', '4', '5']], [['5', '3', '6'], ['5', '5', '5'], ['2', '2', '2']], [['6', '4', '5'], ['6', '6', '6'], ['1', '1', '1']]]
+[['6', '5', '2'], ['3', '5', '2'], ['5', '5', '2']]
+MOVE : L'
+[[['1', '4', '4'], ['1', '1', '5'], ['5', '3', '3']], [['2', '6', '4'], ['2', '2', '4'], ['6', '6', '4']], [['3', '1', '1'], ['3', '3', '2'], ['3', '3', '6']], [['4', '2', '2'], ['5', '4', '1'], ['3', '4', '5']], [['6', '5', '2'], ['3', '5', '2'], ['5', '5', '2']], [['6', '4', '5'], ['6', '6', '6'], ['1', '1', '1']]]
+[['5', '6', '1'], ['4', '6', '1'], ['6', '6', '1']]
+MOVE : R'
+[[['1', '4', '2'], ['1', '1', '1'], ['5', '3', '5']], [['2', '6', '1'], ['2', '2', '2'], ['6', '6', '6']], [['3', '1', '4'], ['3', '3', '5'], ['3', '3', '3']], [['4', '2', '4'], ['5', '4', '4'], ['3', '4', '4']], [['6', '5', '2'], ['3', '5', '2'], ['5', '5', '2']], [['5', '6', '1'], ['4', '6', '1'], ['6', '6', '1']]]
+[['2', '1', '5'], ['4', '1', '3'], ['1', '1', '5']]
+MOVE : U'
+[[['2', '1', '5'], ['4', '1', '3'], ['1', '1', '5']], [['2', '6', '1'], ['2', '2', '2'], ['6', '6', '6']], [['6', '5', '2'], ['3', '3', '5'], ['3', '3', '3']], [['5', '6', '1'], ['5', '4', '4'], ['3', '4', '4']], [['4', '2', '4'], ['3', '5', '2'], ['5', '5', '2']], [['3', '1', '4'], ['4', '6', '1'], ['6', '6', '1']]]
+
+*/
 </script>
+
