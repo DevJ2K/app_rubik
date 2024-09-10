@@ -214,42 +214,42 @@ class Rubik3D {
     ]
     // ALL MOVEMENTS
     // this.frames = [
-    //   {
-    //     move: "U"
-    //   },
-    //   {
-    //     move: "U'"
-    //   },
-    //   {
-    //     move: "D"
-    //   },
-    //   {
-    //     move: "D'"
-    //   },
-    //   {
-    //     move: "F"
-    //   },
-    //   {
-    //     move: "F'"
-    //   },
-    //   {
-    //     move: "B"
-    //   },
-    //   {
-    //     move: "B'"
-    //   },
-    //   {
-    //     move: "L"
-    //   },
-    //   {
-    //     move: "L'"
-    //   },
-    //   {
-    //     move: "R"
-    //   },
-    //   {
-    //     move: "R'"
-    //   },
+      // {
+      //   move: "U"
+      // },
+      // {
+      //   move: "U'"
+      // },
+      // {
+      //   move: "D"
+      // },
+      // {
+      //   move: "D'"
+      // },
+      // {
+      //   move: "F"
+      // },
+      // {
+      //   move: "F'"
+      // },
+      // {
+      //   move: "B"
+      // },
+      // {
+      //   move: "B'"
+      // },
+      // {
+      //   move: "L"
+      // },
+      // {
+      //   move: "L'"
+      // },
+      // {
+      //   move: "R"
+      // },
+      // {
+      //   move: "R'"
+      // },
     // ]
 
     this.animation_is_playing = false;
@@ -397,14 +397,14 @@ class Rubik3D {
       const cube = this.all_cubes[i];
 
       if (move === "U" || move === "U'") {
-        y = move === "U" ? 90 : -90
+        y = move === "U" ? -90 : 90
         if (cube.position.y > 0.1) {
             cube_to_move.push(cube);
         }
       }
       else if (move === "D" || move === "D'") {
         y = move === "D" ? 90 : -90
-        if (cube.position.y < 0.1) {
+        if (cube.position.y < -0.1) {
             cube_to_move.push(cube);
         }
       }
@@ -416,13 +416,13 @@ class Rubik3D {
       }
       else if (move === "B" || move === "B'") {
         z = move === "B" ? 90 : -90
-        if (cube.position.z < 0.1) {
+        if (cube.position.z < -0.1) {
             cube_to_move.push(cube);
         }
       }
       else if (move === "L" || move === "L'") {
         x = move === "L" ? 90 : -90
-        if (cube.position.x < 0.1) {
+        if (cube.position.x < -0.1) {
             cube_to_move.push(cube);
         }
       }
@@ -446,7 +446,8 @@ const initThree = () => {
     return ;
   }
   threeContainer.value.appendChild(renderer.domElement);
-  let rubik3D = new Rubik3D([[['2', '1', '5'], ['4', '1', '3'], ['1', '1', '5']], [['2', '6', '1'], ['2', '2', '2'], ['6', '6', '6']], [['6', '5', '2'], ['3', '3', '5'], ['3', '3', '3']], [['5', '6', '1'], ['5', '4', '4'], ['3', '4', '4']], [['4', '2', '4'], ['3', '5', '2'], ['5', '5', '2']], [['3', '1', '4'], ['4', '6', '1'], ['6', '6', '1']]]);
+  // let rubik3D = new Rubik3D()
+  let rubik3D = new Rubik3D();
   rubik3D.play_animation();
 
   const animate = () => {
