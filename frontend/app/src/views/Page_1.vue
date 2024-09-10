@@ -167,6 +167,7 @@ class Rubik3D {
     this.y = center_y ?? 0;
     this.z = center_z ?? 0;
 
+    console.log(default_faces_colors)
 
     this.default_faces_colors = default_faces_colors ?? [
       [['1', '1', '1'], ['1', '1', '1'], ['1', '1', '1']], // UP
@@ -177,7 +178,7 @@ class Rubik3D {
       [['6', '6', '6'], ['6', '6', '6'], ['6', '6', '6']]]; // RIGHT
 
     this.second_between_animation = 1;
-    this.animation_speed = 2;
+    this.animation_speed = 1;
 
     this.all_cubes = createRubik({center: {x: this.z, y: this.y, z: this.z}});
     this.paint_cube(this.default_faces_colors);
@@ -185,33 +186,63 @@ class Rubik3D {
 
     this.current_frame = 0;
 
-    // this.frames = []
     this.frames = [
       {
         move: "U"
       },
-      {
-        move: "R"
-      },
-      {
-        move: "L"
-      },
-      {
-        move: "U'"
-      },
-      {
-        move: "R'"
-      },
-      {
-        move: "L'"
-      },
-      {
-        move: "F'"
-      },
-      {
-        move: "B'"
-      },
     ]
+    // this.frames = [
+      // {
+      //   move: "U"
+      // },
+      // {
+      //   move: "R"
+      // },
+      // {
+      //   move: "L"
+      // },
+      // {
+      //   move: "U'"
+      // },
+      // {
+      //   move: "R'"
+      // },
+      // {
+      //   move: "L'"
+      // },
+      // {
+      //   move: "F'"
+      // },
+      // {
+      //   move: "B'"
+      // },
+
+
+      // {
+      //   move: "B"
+      // },
+      // {
+      //   move: "F"
+      // },
+      // {
+      //   move: "L"
+      // },
+      // {
+      //   move: "R"
+      // },
+      // {
+      //   move: "U"
+      // },
+      // {
+      //   move: "L'"
+      // },
+      // {
+      //   move: "R'"
+      // },
+      // {
+      //   move: "U'"
+      // },
+    // ]
     // ALL MOVEMENTS
     // this.frames = [
       // {
@@ -447,8 +478,9 @@ const initThree = () => {
   }
   threeContainer.value.appendChild(renderer.domElement);
   // let rubik3D = new Rubik3D()
-  let rubik3D = new Rubik3D();
-  rubik3D.play_animation();
+  let rubik3D = new Rubik3D([[['3', '2', '1'], ['4', '5', '6'], ['3', '1', '2']], [['1', '2', '3'], ['4', '5', '6'], ['3', '2', '1']], [['1', '4', '5'], ['3', '2', '1'], ['3', '3', '5']], [['4', '5', '6'], ['4', '3', '1'], ['4', '5', '4']], [['3', '3', '1'], ['5', '4', '2'], ['6', '5', '5']], [['6', '5', '4'], ['2', '3', '4'], ['2', '1', '6']]])
+  // let rubik3D = new Rubik3D([[['3', '5', '5'], ['1', '1', '1'], ['2', '6', '1']], [['4', '6', '6'], ['2', '2', '2'], ['1', '5', '2']], [['3', '1', '4'], ['5', '3', '3'], ['6', '3', '3']], [['5', '4', '4'], ['6', '4', '4'], ['6', '1', '5']], [['1', '3', '6'], ['4', '5', '2'], ['1', '5', '3']], [['2', '4', '5'], ['2', '6', '3'], ['2', '6', '4']]]);
+  // rubik3D.play_animation();
 
   const animate = () => {
     controls.update();
