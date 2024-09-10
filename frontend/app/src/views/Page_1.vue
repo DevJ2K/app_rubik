@@ -169,15 +169,15 @@ class Rubik3D {
 
 
     this.default_faces_colors = default_faces_colors ?? [
-      [['1', '2', '3'], ['4', '5', '6'], ['1', '2', '1']], // UP
-      [['1', '2', '3'], ['4', '2', '2'], ['5', '2', '6']], // DOWN
-      [['1', '2', '3'], ['4', '5', '6'],['3', '3', '1'],], // FRONT
-      [['4', '5', '6'], ['1', '4', '6'], ['1', '2', '3'],], // BACK
-      [['1', '2', '2'], ['1', '6', '3'], ['5', '4', '4']], // LEFT
-      [['1', '2', '2'], ['1', '6', '3'], ['5', '4', '4']]]; // RIGHT
+      [['1', '1', '1'], ['1', '1', '1'], ['1', '1', '1']], // UP
+      [['2', '2', '2'], ['2', '2', '2'], ['2', '2', '2']], // DOWN
+      [['3', '3', '3'], ['3', '3', '3'], ['3', '3', '3']], // FRONT
+      [['4', '4', '4'], ['4', '4', '4'], ['4', '4', '4']], // BACK
+      [['5', '5', '5'], ['5', '5', '5'], ['5', '5', '5']], // LEFT
+      [['6', '6', '6'], ['6', '6', '6'], ['6', '6', '6']]]; // RIGHT
 
-    this.second_between_animation = 0;
-    this.animation_speed = 1;
+    this.second_between_animation = 1;
+    this.animation_speed = 2;
 
     this.all_cubes = createRubik({center: {x: this.z, y: this.y, z: this.z}});
     this.paint_cube(this.default_faces_colors);
@@ -185,7 +185,33 @@ class Rubik3D {
 
     this.current_frame = 0;
 
-    this.frames = []
+    // this.frames = []
+    this.frames = [
+      {
+        move: "U"
+      },
+      {
+        move: "R"
+      },
+      {
+        move: "L"
+      },
+      {
+        move: "U'"
+      },
+      {
+        move: "R'"
+      },
+      {
+        move: "L'"
+      },
+      {
+        move: "F'"
+      },
+      {
+        move: "B'"
+      },
+    ]
     // ALL MOVEMENTS
     // this.frames = [
     //   {
@@ -372,42 +398,42 @@ class Rubik3D {
 
       if (move === "U" || move === "U'") {
         y = move === "U" ? 90 : -90
-        if (cube.position.y > 0) {
+        if (cube.position.y > 0.1) {
             cube_to_move.push(cube);
         }
       }
       else if (move === "D" || move === "D'") {
         y = move === "D" ? 90 : -90
-        if (cube.position.y < 0) {
+        if (cube.position.y < 0.1) {
             cube_to_move.push(cube);
         }
       }
       else if (move === "F" || move === "F'") {
         z = move === "F" ? -90 : 90
-        if (cube.position.z > 0) {
+        if (cube.position.z > 0.1) {
             cube_to_move.push(cube);
         }
       }
       else if (move === "B" || move === "B'") {
         z = move === "B" ? 90 : -90
-        if (cube.position.z < 0) {
+        if (cube.position.z < 0.1) {
             cube_to_move.push(cube);
         }
       }
       else if (move === "L" || move === "L'") {
         x = move === "L" ? 90 : -90
-        if (cube.position.x < 0) {
+        if (cube.position.x < 0.1) {
             cube_to_move.push(cube);
         }
       }
       else if (move === "R" || move === "R'") {
         x = move === "R" ? -90 : 90
-        if (cube.position.x > 0) {
+        if (cube.position.x > 0.1) {
             cube_to_move.push(cube);
         }
       }
       else {
-        alert("Invalid movement detected !");
+        // alert("Invalid movement detected !");
         console.log("Invalid movement detected !");
       }
     }
@@ -420,7 +446,7 @@ const initThree = () => {
     return ;
   }
   threeContainer.value.appendChild(renderer.domElement);
-  let rubik3D = new Rubik3D();
+  let rubik3D = new Rubik3D([[['2', '1', '5'], ['4', '1', '3'], ['1', '1', '5']], [['2', '6', '1'], ['2', '2', '2'], ['6', '6', '6']], [['6', '5', '2'], ['3', '3', '5'], ['3', '3', '3']], [['5', '6', '1'], ['5', '4', '4'], ['3', '4', '4']], [['4', '2', '4'], ['3', '5', '2'], ['5', '5', '2']], [['3', '1', '4'], ['4', '6', '1'], ['6', '6', '1']]]);
   rubik3D.play_animation();
 
   const animate = () => {
