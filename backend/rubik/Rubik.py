@@ -273,6 +273,9 @@ class Rubik:
 		"""
 		pass
 
+	def isOrientationSolved(self) -> bool:
+		pass
+
 def getNeighborsEdgeOrientation(state) -> list[int]:
 	neighbors = []
 	cube = Rubik()
@@ -312,29 +315,29 @@ def applyEdgeOrientationMove(state, move):
 def applyCornerOrientationMove(state, move):
 	pass
 
-def phase1Search(edgeOrientationState, cornerOrientationState, maxDepth, edgePruningTable: PruningTable, cornerPruningTable: PruningTable):
-	def dfs(edgeState, cornerState, depth, maxDepth, path):
-		if edgeState == 0 and cornerState == 0:
+def phase1Search(cube: Rubik, maxDepth, edgePruningTable: PruningTable, cornerPruningTable: PruningTable):
+	def dfs(cubeState: Rubik, depth, maxDepth, path):
+		if cubeState.isOrientationSolved():
 			return path
 		if depth >= maxDepth:
 			return None
-		if edgePruningTable.getPruning(edgeState) > maxDepth - depth:
+		if edgePruningTable.getPruning(cubeState.getEdgeOrientationState()) > maxDepth - depth:
 			return None
-		if cornerPruningTable.getPruning(cornerState) > maxDepth - depth:
+		if cornerPruningTable.getPruning(cubeState.getCornerOrientationState()) > maxDepth - depth:
 			return None
 		
 		moves = ['U', 'U\'', 'D', 'D\'', 'L', 'L\'', 'R', 'R\'', 'F', 'F\'', 'B', 'B\'']
 
 		for move in moves:
-			newEdgeState = applyEdgeOrientationMove(edgeState, move)
-			newCornerState = applyCornerOrientationMove(cornerState, move)
-			result = dfs(newEdgeState, newCornerState, depth + 1, maxDepth, path + [move])
+			newCube = cubeState.copy()
+			# apply movement
+			result = dfs(newCube, depth + 1, maxDepth, path + [move])
 			if result is not None:
 				return result
 		return None
 	
 	for depth in range(1, maxDepth + 1):
-		result = dfs(edgeOrientationState, cornerOrientationState, 0, depth, [])
+		result = dfs(cube, 0, depth, [])
 		if result is not None:
 			return result
 	return None
