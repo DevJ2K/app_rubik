@@ -190,14 +190,30 @@ if __name__ == "__main__":
 	rubik = Rubik()
 	# print(rubik.get_cube())
 	rubik.visualize_cube()
-	# rubik.apply_sequences("F F' B B' L L' R R'")
-	# rubik.apply_sequences("F' F' F'")
-	# rubik.apply_sequences("B' B'")
 
-	# rubik.apply_sequences("L' L'")
+	# ✅ UP
+	# rubik.apply_sequences("U U U U")
+	# rubik.apply_sequences("U' U' U' U'")
 
-	# rubik.apply_sequences("R R")
-	rubik.apply_sequences("R' R' R' R'")
+	# ✅ DOWN
+	# rubik.apply_sequences("D D D D")
+	# rubik.apply_sequences("D' D' D' D'")
+
+	# ✅ FRONT
+	# rubik.apply_sequences("F F F F")
+	# rubik.apply_sequences("F' F' F' F'")
+
+	# ✅ BACK
+	# rubik.apply_sequences("B B B B")
+	# rubik.apply_sequences("B' B' B' B'")
+
+	# ✅ LEFT
+	# rubik.apply_sequences("L L L L")
+	# rubik.apply_sequences("L' L' L' L'")
+
+	# ✅ RIGHT
+	# rubik.apply_sequences("R R R R")
+	# rubik.apply_sequences("R' R' R' R'")
 
 
 	# rubik.apply_move("U")
