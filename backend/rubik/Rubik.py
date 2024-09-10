@@ -53,13 +53,45 @@ class Rubik:
 		}
 
 
-		# self.cube = [[3] * 3]
+		# self.cube_up: list[list[str]] = [
+		# 	['1', '2', '3'],
+		# 	['4', '5', '6'],
+		# 	['1', '6', '3'],
+		# ]
+		# self.cube_down: list[list[str]] = [
+		# 	['1', '2', '3'],
+		# 	['4', '5', '6'],
+		# 	['1', '6', '3'],
+		# ]
+		# self.cube_front: list[list[str]] = [
+		# 	['1', '2', '3'],
+		# 	['4', '5', '6'],
+		# 	['1', '6', '3'],
+		# ]
+		# self.cube_back: list[list[str]] = [
+		# 	['1', '2', '3'],
+		# 	['4', '5', '6'],
+		# 	['1', '6', '3'],
+		# ]
+		# self.cube_left: list[list[str]] = [
+		# 	['1', '2', '3'],
+		# 	['4', '5', '6'],
+		# 	['1', '6', '3'],
+		# ]
+		# self.cube_right: list[list[str]] = [
+		# 	['1', '2', '3'],
+		# 	['4', '5', '6'],
+		# 	['1', '6', '3'],
+		# ]
+
 		self.cube_up: list[list[str]] = [(['1' for _ in range(3)]) for _x in range(3)]
-		self.cube_down: list[list[str]] = [(['2' for _ in range(3)]) for _x in range(3)]
 		self.cube_front: list[list[str]] = [(['3' for _ in range(3)]) for _x in range(3)]
-		self.cube_back: list[list[str]] = [(['4' for _ in range(3)]) for _x in range(3)]
-		self.cube_left: list[list[str]] = [(['5' for _ in range(3)]) for _x in range(3)]
 		self.cube_right: list[list[str]] = [(['6' for _ in range(3)]) for _x in range(3)]
+		self.cube_left: list[list[str]] = [(['5' for _ in range(3)]) for _x in range(3)]
+		self.cube_back: list[list[str]] = [(['4' for _ in range(3)]) for _x in range(3)]
+
+		self.cube_down: list[list[str]] = [(['2' for _ in range(3)]) for _x in range(3)]
+
 
 
 	def get_cube(self) -> list[list[list[str]]]:
@@ -84,8 +116,8 @@ class Rubik:
 
 		Parameters:
 		move (str): A string representing the move to apply.
-					Valid values include 'U', 'D', 
-					'F', 'B', 'L' and 'R'. If the move contains a prime symbol ('), 
+					Valid values include 'U', 'D',
+					'F', 'B', 'L' and 'R'. If the move contains a prime symbol ('),
 					the rotation is counterclockwise.
 
 		Returns:
@@ -109,6 +141,8 @@ class Rubik:
 			print("Undefined") #Raise
 
 		self.cube_up,self.cube_down,self.cube_front,self.cube_back,self.cube_left,self.cube_right = result
+		# print(move)
+		# print(result)
 		self.visualize_cube(window_title=f"MOVE : {move}")
 
 	def apply_sequences(self, sequences: str) -> None:
@@ -154,9 +188,24 @@ class Rubik:
 
 if __name__ == "__main__":
 	rubik = Rubik()
+	# print(rubik.get_cube())
 	rubik.visualize_cube()
-	rubik.apply_move("B")
-	rubik.apply_move("B'")
+	# rubik.apply_move("U")
+	# rubik.apply_move("U")
+	# rubik.apply_move("L")
+	# rubik.apply_sequences("L L'")
+	# rubik.apply_move("U")
+	# rubik.apply_move("R")
+	# rubik.apply_move("L")
+	# rubik.apply_move("U'")
+	# rubik.apply_move("R'")
+	# rubik.apply_move("L'")
+	# rubik.apply_move("F'")
+	# rubik.apply_move("B'")
+	# rubik.apply_sequences("U R L U' R' L' F' B'")
+	# rubik.visualize_cube()
+	# rubik.apply_move("B")
+	# rubik.apply_move("B'")
 	# rubik.apply_move("U'")
 	# rubik.apply_move("u")
 	# rubik.apply_move("u'")
