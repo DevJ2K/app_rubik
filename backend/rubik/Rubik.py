@@ -192,8 +192,9 @@ if __name__ == "__main__":
 	rubik.visualize_cube()
 	# rubik.apply_sequences("F F' B B' L L' R R'")
 	# rubik.apply_sequences("F' F' F'")
-	rubik.apply_sequences("B' B'")
+	# rubik.apply_sequences("B' B'")
 
+	rubik.apply_sequences("L' L'")
 
 
 	# rubik.apply_move("U")
