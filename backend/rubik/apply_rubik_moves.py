@@ -31,7 +31,7 @@
 
 def rotate_face_only(face: list[list[str]], prime: bool = False) -> list[list[str]]:
 	"""
-    This function takes a rubiks face as input and 
+    This function takes a rubiks face as input and
 	rotate this one depending on direction
 
     Parameters:
@@ -56,18 +56,18 @@ def rotate_face_only(face: list[list[str]], prime: bool = False) -> list[list[st
 
 def move_up(cube: list[list[list[str]]], move: str) -> list[list[list[str]]]:
 	"""
-    This function performs a rotation of the top face of a Rubik's cube and swaps 
+    This function performs a rotation of the top face of a Rubik's cube and swaps
     the corresponding rows of the adjacent faces depending on the direction
 	of the move (clockwise or counterclockwise).
 
     Parameters:
-    cube (list[list[list[str]]]): The Rubik's cube represented as a list of 6 faces, 
+    cube (list[list[list[str]]]): The Rubik's cube represented as a list of 6 faces,
                                   each face being a 2D matrix of strings.
-    move (str): Specifies the move to be applied. If the string contains a "'", 
+    move (str): Specifies the move to be applied. If the string contains a "'",
                 it indicates a counterclockwise rotation; otherwise, it's clockwise.
 
     Returns:
-    list[list[list[str]]]: The updated cube after rotating the top face and swapping 
+    list[list[list[str]]]: The updated cube after rotating the top face and swapping
                            the corresponding rows of adjacent faces.
 	"""
 	cube_up,cube_down,cube_front,cube_back,cube_left,cube_right = cube
@@ -80,7 +80,7 @@ def move_up(cube: list[list[list[str]]], move: str) -> list[list[list[str]]]:
 		cube_up = rotate_face_only(cube_up, prime)
 		cube_front[0], cube_left[0], cube_back[0], cube_right[0] = cube_right[0], cube_front[0], cube_left[0], cube_back[0]
 
-	print(cube_up)
+	# print(cube_up)
 	return [
 		cube_up,
 		cube_down,
@@ -92,18 +92,18 @@ def move_up(cube: list[list[list[str]]], move: str) -> list[list[list[str]]]:
 
 def move_down(cube: list[list[list[str]]], move: str) -> list[list[list[str]]]:
 	"""
-    This function performs a rotation of the bottom face of a Rubik's cube and swaps 
+    This function performs a rotation of the bottom face of a Rubik's cube and swaps
     the corresponding rows of the adjacent faces depending on the direction
 	of the move (clockwise or counterclockwise).
 
     Parameters:
-    cube (list[list[list[str]]]): The Rubik's cube represented as a list of 6 faces, 
+    cube (list[list[list[str]]]): The Rubik's cube represented as a list of 6 faces,
                                   each face being a 2D matrix of strings.
-    move (str): Specifies the move to be applied. If the string contains a "'", 
+    move (str): Specifies the move to be applied. If the string contains a "'",
                 it indicates a counterclockwise rotation; otherwise, it's clockwise.
 
     Returns:
-    list[list[list[str]]]: The updated cube after rotating the top face and swapping 
+    list[list[list[str]]]: The updated cube after rotating the top face and swapping
                            the corresponding rows of adjacent faces.
 	"""
 	cube_up,cube_down,cube_front,cube_back,cube_left,cube_right = cube
@@ -111,12 +111,12 @@ def move_down(cube: list[list[list[str]]], move: str) -> list[list[list[str]]]:
 
 	if prime:
 		cube_down = rotate_face_only(cube_down, prime)
-		cube_front[2], cube_left[2], cube_back[2], cube_right[2] = cube_left[2], cube_back[2], cube_right[2], cube_front[2]
+		cube_front[2], cube_left[2], cube_back[2], cube_right[2] = cube_right[2], cube_front[2], cube_left[2], cube_back[2]
 	else:
 		cube_down = rotate_face_only(cube_down, prime)
-		cube_front[2], cube_left[2], cube_back[2], cube_right[2] = cube_right[2], cube_front[2], cube_left[2], cube_back[2]
+		cube_front[2], cube_left[2], cube_back[2], cube_right[2] = cube_left[2], cube_back[2], cube_right[2], cube_front[2]
 
-	print(cube_down)
+	# print(cube_down)
 	return [
 		cube_up,
 		cube_down,
@@ -128,18 +128,18 @@ def move_down(cube: list[list[list[str]]], move: str) -> list[list[list[str]]]:
 
 def move_right(cube: list[list[list[str]]], move: str) -> list[list[list[str]]]:
 	"""
-    This function performs a rotation of the right face of a Rubik's cube and swaps 
+    This function performs a rotation of the right face of a Rubik's cube and swaps
     the corresponding rows of the adjacent faces depending on the direction
 	of the move (clockwise or counterclockwise).
 
     Parameters:
-    cube (list[list[list[str]]]): The Rubik's cube represented as a list of 6 faces, 
+    cube (list[list[list[str]]]): The Rubik's cube represented as a list of 6 faces,
                                   each face being a 2D matrix of strings.
-    move (str): Specifies the move to be applied. If the string contains a "'", 
+    move (str): Specifies the move to be applied. If the string contains a "'",
                 it indicates a counterclockwise rotation; otherwise, it's clockwise.
 
     Returns:
-    list[list[list[str]]]: The updated cube after rotating the top face and swapping 
+    list[list[list[str]]]: The updated cube after rotating the top face and swapping
                            the corresponding rows of adjacent faces.
 	"""
 	cube_up,cube_down,cube_front,cube_back,cube_left,cube_right = cube
@@ -150,29 +150,29 @@ def move_right(cube: list[list[list[str]]], move: str) -> list[list[list[str]]]:
 		(
 			cube_front[0][2], cube_front[1][2], cube_front[2][2],
 			cube_up[0][2], cube_up[1][2], cube_up[2][2],
-			cube_back[0][2], cube_back[1][2], cube_back[2][2],
-			cube_down[0][2], cube_down[1][2], cube_down[2][2]
+			cube_back[0][0], cube_back[1][0], cube_back[2][0],
+			cube_down[0][0], cube_down[1][0], cube_down[2][0]
 		) = (
 			cube_up[0][2], cube_up[1][2], cube_up[2][2],
-			cube_back[0][2], cube_back[1][2], cube_back[2][2],
-			cube_down[0][2], cube_down[1][2], cube_down[2][2],
-			cube_front[0][2], cube_front[1][2], cube_front[2][2]
+			cube_back[2][0], cube_back[1][0], cube_back[0][0],
+			cube_down[0][0], cube_down[1][0], cube_down[2][0],
+			cube_front[2][2], cube_front[1][2], cube_front[0][2]
 		)
 	else:
 		cube_right = rotate_face_only(cube_right, prime)
 		(
 			cube_front[0][2], cube_front[1][2], cube_front[2][2],
 			cube_up[0][2], cube_up[1][2], cube_up[2][2],
-			cube_back[0][2], cube_back[1][2], cube_back[2][2],
-			cube_down[0][2], cube_down[1][2], cube_down[2][2]
+			cube_back[2][0], cube_back[1][0], cube_back[0][0],
+			cube_down[0][0], cube_down[1][0], cube_down[2][0]
 		) = (
-			cube_down[0][2], cube_down[1][2], cube_down[2][2],
+			cube_down[2][0], cube_down[1][0], cube_down[0][0],
 			cube_front[0][2], cube_front[1][2], cube_front[2][2],
 			cube_up[0][2], cube_up[1][2], cube_up[2][2],
-			cube_back[0][2], cube_back[1][2], cube_back[2][2]
+			cube_back[0][0], cube_back[1][0], cube_back[2][0]
 		)
 
-	print(cube_right)
+	# printcube_right)
 	return [
 		cube_up,
 		cube_down,
@@ -184,18 +184,18 @@ def move_right(cube: list[list[list[str]]], move: str) -> list[list[list[str]]]:
 
 def move_left(cube: list[list[list[str]]], move: str) -> list[list[list[str]]]:
 	"""
-    This function performs a rotation of the left face of a Rubik's cube and swaps 
+    This function performs a rotation of the left face of a Rubik's cube and swaps
     the corresponding rows of the adjacent faces depending on the direction
 	of the move (clockwise or counterclockwise).
 
     Parameters:
-    cube (list[list[list[str]]]): The Rubik's cube represented as a list of 6 faces, 
+    cube (list[list[list[str]]]): The Rubik's cube represented as a list of 6 faces,
                                   each face being a 2D matrix of strings.
-    move (str): Specifies the move to be applied. If the string contains a "'", 
+    move (str): Specifies the move to be applied. If the string contains a "'",
                 it indicates a counterclockwise rotation; otherwise, it's clockwise.
 
     Returns:
-    list[list[list[str]]]: The updated cube after rotating the top face and swapping 
+    list[list[list[str]]]: The updated cube after rotating the top face and swapping
                            the corresponding rows of adjacent faces.
 	"""
 	cube_up,cube_down,cube_front,cube_back,cube_left,cube_right = cube
@@ -206,13 +206,13 @@ def move_left(cube: list[list[list[str]]], move: str) -> list[list[list[str]]]:
 		(
 			cube_front[0][0], cube_front[1][0], cube_front[2][0],
 			cube_up[0][0], cube_up[1][0], cube_up[2][0],
-			cube_back[0][0], cube_back[1][0], cube_back[2][0],
-			cube_down[0][0], cube_down[1][0], cube_down[2][0]
+			cube_back[2][2], cube_back[1][2], cube_back[0][2],
+			cube_down[0][2], cube_down[1][2], cube_down[2][2]
 		) = (
-			cube_down[0][0], cube_down[1][0], cube_down[2][0],
+			cube_down[2][2], cube_down[1][2], cube_down[0][2],
 			cube_front[0][0], cube_front[1][0], cube_front[2][0],
 			cube_up[0][0], cube_up[1][0], cube_up[2][0],
-			cube_back[0][0], cube_back[1][0], cube_back[2][0]
+			cube_back[0][2], cube_back[1][2], cube_back[2][2]
 		)
 
 	else:
@@ -220,16 +220,16 @@ def move_left(cube: list[list[list[str]]], move: str) -> list[list[list[str]]]:
 		(
 			cube_front[0][0], cube_front[1][0], cube_front[2][0],
 			cube_up[0][0], cube_up[1][0], cube_up[2][0],
-			cube_back[0][0], cube_back[1][0], cube_back[2][0],
-			cube_down[0][0], cube_down[1][0], cube_down[2][0]
+			cube_back[0][2], cube_back[1][2], cube_back[2][2],
+			cube_down[0][2], cube_down[1][2], cube_down[2][2]
 		) = (
 			cube_up[0][0], cube_up[1][0], cube_up[2][0],
-			cube_back[0][0], cube_back[1][0], cube_back[2][0],
-			cube_down[0][0], cube_down[1][0], cube_down[2][0],
-			cube_front[0][0], cube_front[1][0], cube_front[2][0]
+			cube_back[2][2], cube_back[1][2], cube_back[0][2],
+			cube_down[0][2], cube_down[1][2], cube_down[2][2],
+			cube_front[2][0], cube_front[1][0], cube_front[0][0]
 		)
 
-	print(cube_left)
+	# printcube_left)
 	return [
 		cube_up,
 		cube_down,
@@ -241,18 +241,18 @@ def move_left(cube: list[list[list[str]]], move: str) -> list[list[list[str]]]:
 
 def move_front(cube: list[list[list[str]]], move: str) -> list[list[list[str]]]:
 	"""
-    This function performs a rotation of the front face of a Rubik's cube and swaps 
+    This function performs a rotation of the front face of a Rubik's cube and swaps
     the corresponding rows of the adjacent faces depending on the direction
 	of the move (clockwise or counterclockwise).
 
     Parameters:
-    cube (list[list[list[str]]]): The Rubik's cube represented as a list of 6 faces, 
+    cube (list[list[list[str]]]): The Rubik's cube represented as a list of 6 faces,
                                   each face being a 2D matrix of strings.
-    move (str): Specifies the move to be applied. If the string contains a "'", 
+    move (str): Specifies the move to be applied. If the string contains a "'",
                 it indicates a counterclockwise rotation; otherwise, it's clockwise.
 
     Returns:
-    list[list[list[str]]]: The updated cube after rotating the top face and swapping 
+    list[list[list[str]]]: The updated cube after rotating the top face and swapping
                            the corresponding rows of adjacent faces.
 	"""
 	cube_up,cube_down,cube_front,cube_back,cube_left,cube_right = cube
@@ -260,16 +260,15 @@ def move_front(cube: list[list[list[str]]], move: str) -> list[list[list[str]]]:
 
 	if prime:
 		cube_front = rotate_face_only(cube_front, prime)
-		(
-			cube_up[2],
-			cube_left[0][0], cube_left[1][0], cube_left[2][0],
-			cube_down[2],
-			cube_right[0][0], cube_right[1][0], cube_right[2][0]
+		(cube_up[2],
+		cube_left[2][2], cube_left[1][2], cube_left[0][2],
+		cube_down[2],
+		cube_right[0][0], cube_right[1][0], cube_right[2][0]
 		) = (
-			[cube_right[0][0], cube_right[1][0], cube_right[2][0]],
-			cube_up[2][0], cube_up[2][1], cube_up[2][2],
-			[cube_left[0][0], cube_left[1][0], cube_left[2][0]],
-			cube_down[2][0], cube_down[2][1], cube_down[2][2]
+		[cube_right[0][0], cube_right[1][0], cube_right[2][0]],
+		cube_up[2][0], cube_up[2][1], cube_up[2][2],
+		[cube_left[2][2], cube_left[1][2], cube_left[0][2]],
+		cube_down[2][0], cube_down[2][1], cube_down[2][2]
 		)
 	else:
 		cube_front = rotate_face_only(cube_front, prime)
@@ -277,15 +276,15 @@ def move_front(cube: list[list[list[str]]], move: str) -> list[list[list[str]]]:
 			cube_up[2],
 			cube_right[0][0], cube_right[1][0], cube_right[2][0],
 			cube_down[2],
-			cube_left[0][0], cube_left[1][0], cube_left[2][0]
+			cube_left[0][2], cube_left[1][2], cube_left[2][2]
 		) = (
-			[cube_left[0][0], cube_left[1][0], cube_left[2][0]],
+			[cube_left[2][2], cube_left[1][2], cube_left[0][2]],
 			cube_up[2][0], cube_up[2][1], cube_up[2][2],
 			[cube_right[0][0], cube_right[1][0], cube_right[2][0]],
-			cube_down[2][0], cube_down[2][1], cube_down[2][2]
+			cube_down[2][2], cube_down[2][1], cube_down[2][0]
 		)
 
-	print(cube_front)
+	# print(cube_front)
 	return [
 		cube_up,
 		cube_down,
@@ -297,18 +296,18 @@ def move_front(cube: list[list[list[str]]], move: str) -> list[list[list[str]]]:
 
 def move_back(cube: list[list[list[str]]], move: str) -> list[list[list[str]]]:
 	"""
-    This function performs a rotation of the back face of a Rubik's cube and swaps 
+    This function performs a rotation of the back face of a Rubik's cube and swaps
     the corresponding rows of the adjacent faces depending on the direction
 	of the move (clockwise or counterclockwise).
 
     Parameters:
-    cube (list[list[list[str]]]): The Rubik's cube represented as a list of 6 faces, 
+    cube (list[list[list[str]]]): The Rubik's cube represented as a list of 6 faces,
                                   each face being a 2D matrix of strings.
-    move (str): Specifies the move to be applied. If the string contains a "'", 
+    move (str): Specifies the move to be applied. If the string contains a "'",
                 it indicates a counterclockwise rotation; otherwise, it's clockwise.
 
     Returns:
-    list[list[list[str]]]: The updated cube after rotating the top face and swapping 
+    list[list[list[str]]]: The updated cube after rotating the top face and swapping
                            the corresponding rows of adjacent faces.
 	"""
 	cube_up,cube_down,cube_front,cube_back,cube_left,cube_right = cube
@@ -320,12 +319,12 @@ def move_back(cube: list[list[list[str]]], move: str) -> list[list[list[str]]]:
 			cube_up[0],
 			cube_right[0][2], cube_right[1][2], cube_right[2][2],
 			cube_down[0],
-			cube_left[0][2], cube_left[1][2], cube_left[2][2]
+			cube_left[2][0], cube_left[1][0], cube_left[0][0]
 		) = (
+			[cube_left[2][0], cube_left[1][0], cube_left[0][0]],
+			cube_up[0][0], cube_up[0][1], cube_up[0][2],
 			[cube_right[0][2], cube_right[1][2], cube_right[2][2]],
-			cube_down[0][0], cube_down[0][1], cube_down[0][2],
-			[cube_left[0][2], cube_left[1][2], cube_left[2][2]],
-			cube_up[0][0], cube_up[0][1], cube_up[0][2]
+			cube_down[0][0], cube_down[0][1], cube_down[0][2]
 		)
 	else:
 		cube_back = rotate_face_only(cube_back, prime)
@@ -333,15 +332,15 @@ def move_back(cube: list[list[list[str]]], move: str) -> list[list[list[str]]]:
 			cube_up[0],
 			cube_right[0][2], cube_right[1][2], cube_right[2][2],
 			cube_down[0],
-			cube_left[0][2], cube_left[1][2], cube_left[2][2]
+			cube_left[0][0], cube_left[1][0], cube_left[2][0]
 		) = (
-			[cube_left[0][2], cube_left[1][2], cube_left[2][2]],
-			cube_up[0][0], cube_up[0][1], cube_up[0][2],
 			[cube_right[0][2], cube_right[1][2], cube_right[2][2]],
-			cube_down[0][0], cube_down[0][1], cube_down[0][2]
+			cube_down[0][0], cube_down[0][1], cube_down[0][2],
+			[cube_left[2][0], cube_left[1][0], cube_left[0][0]],
+			cube_up[0][2], cube_up[0][1], cube_up[0][0]
 		)
 
-	print(cube_back)
+	# print(cube_back)
 	return [
 		cube_up,
 		cube_down,
