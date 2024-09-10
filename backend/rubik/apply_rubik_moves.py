@@ -80,7 +80,7 @@ def move_up(cube: list[list[list[str]]], move: str) -> list[list[list[str]]]:
 		cube_up = rotate_face_only(cube_up, prime)
 		cube_front[0], cube_left[0], cube_back[0], cube_right[0] = cube_right[0], cube_front[0], cube_left[0], cube_back[0]
 
-	print(cube_up)
+	# print(cube_up)
 	return [
 		cube_up,
 		cube_down,
@@ -111,12 +111,12 @@ def move_down(cube: list[list[list[str]]], move: str) -> list[list[list[str]]]:
 
 	if prime:
 		cube_down = rotate_face_only(cube_down, prime)
-		cube_front[2], cube_left[2], cube_back[2], cube_right[2] = cube_left[2], cube_back[2], cube_right[2], cube_front[2]
+		cube_front[2], cube_left[2], cube_back[2], cube_right[2] = cube_right[2], cube_front[2], cube_left[2], cube_back[2]
 	else:
 		cube_down = rotate_face_only(cube_down, prime)
-		cube_front[2], cube_left[2], cube_back[2], cube_right[2] = cube_right[2], cube_front[2], cube_left[2], cube_back[2]
+		cube_front[2], cube_left[2], cube_back[2], cube_right[2] = cube_left[2], cube_back[2], cube_right[2], cube_front[2]
 
-	print(cube_down)
+	# print(cube_down)
 	return [
 		cube_up,
 		cube_down,
@@ -172,7 +172,7 @@ def move_right(cube: list[list[list[str]]], move: str) -> list[list[list[str]]]:
 			cube_back[0][2], cube_back[1][2], cube_back[2][2]
 		)
 
-	print(cube_right)
+	# printcube_right)
 	return [
 		cube_up,
 		cube_down,
@@ -229,7 +229,7 @@ def move_left(cube: list[list[list[str]]], move: str) -> list[list[list[str]]]:
 			cube_front[0][0], cube_front[1][0], cube_front[2][0]
 		)
 
-	print(cube_left)
+	# printcube_left)
 	return [
 		cube_up,
 		cube_down,
@@ -260,16 +260,15 @@ def move_front(cube: list[list[list[str]]], move: str) -> list[list[list[str]]]:
 
 	if prime:
 		cube_front = rotate_face_only(cube_front, prime)
-		(
-			cube_up[2],
-			cube_left[0][0], cube_left[1][0], cube_left[2][0],
-			cube_down[2],
-			cube_right[0][0], cube_right[1][0], cube_right[2][0]
+		(cube_up[2],
+		cube_left[2][2], cube_left[1][2], cube_left[0][2],
+		cube_down[2],
+		cube_right[0][0], cube_right[1][0], cube_right[2][0]
 		) = (
-			[cube_right[0][0], cube_right[1][0], cube_right[2][0]],
-			cube_up[2][0], cube_up[2][1], cube_up[2][2],
-			[cube_left[0][0], cube_left[1][0], cube_left[2][0]],
-			cube_down[2][0], cube_down[2][1], cube_down[2][2]
+		[cube_right[0][0], cube_right[1][0], cube_right[2][0]],
+		cube_up[2][0], cube_up[2][1], cube_up[2][2],
+		[cube_left[2][2], cube_left[1][2], cube_left[0][2]],
+		cube_down[2][0], cube_down[2][1], cube_down[2][2]
 		)
 	else:
 		cube_front = rotate_face_only(cube_front, prime)
@@ -277,15 +276,15 @@ def move_front(cube: list[list[list[str]]], move: str) -> list[list[list[str]]]:
 			cube_up[2],
 			cube_right[0][0], cube_right[1][0], cube_right[2][0],
 			cube_down[2],
-			cube_left[0][0], cube_left[1][0], cube_left[2][0]
+			cube_left[0][2], cube_left[1][2], cube_left[2][2]
 		) = (
-			[cube_left[0][0], cube_left[1][0], cube_left[2][0]],
+			[cube_left[2][2], cube_left[1][2], cube_left[0][2]],
 			cube_up[2][0], cube_up[2][1], cube_up[2][2],
 			[cube_right[0][0], cube_right[1][0], cube_right[2][0]],
-			cube_down[2][0], cube_down[2][1], cube_down[2][2]
+			cube_down[2][2], cube_down[2][1], cube_down[2][0]
 		)
 
-	print(cube_front)
+	# print(cube_front)
 	return [
 		cube_up,
 		cube_down,
@@ -341,7 +340,7 @@ def move_back(cube: list[list[list[str]]], move: str) -> list[list[list[str]]]:
 			cube_up[0][0], cube_up[0][1], cube_up[0][2]
 		)
 
-	print(cube_back)
+	# print(cube_back)
 	return [
 		cube_up,
 		cube_down,
