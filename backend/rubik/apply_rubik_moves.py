@@ -319,9 +319,9 @@ def move_back(cube: list[list[list[str]]], move: str) -> list[list[list[str]]]:
 			cube_up[0],
 			cube_right[0][2], cube_right[1][2], cube_right[2][2],
 			cube_down[0],
-			cube_left[0][2], cube_left[1][2], cube_left[2][2]
+			cube_left[2][0], cube_left[1][0], cube_left[0][0]
 		) = (
-			[cube_left[0][2], cube_left[1][2], cube_left[2][2]],
+			[cube_left[2][0], cube_left[1][0], cube_left[0][0]],
 			cube_up[0][0], cube_up[0][1], cube_up[0][2],
 			[cube_right[0][2], cube_right[1][2], cube_right[2][2]],
 			cube_down[0][0], cube_down[0][1], cube_down[0][2]
@@ -332,12 +332,12 @@ def move_back(cube: list[list[list[str]]], move: str) -> list[list[list[str]]]:
 			cube_up[0],
 			cube_right[0][2], cube_right[1][2], cube_right[2][2],
 			cube_down[0],
-			cube_left[0][2], cube_left[1][2], cube_left[2][2]
+			cube_left[0][0], cube_left[1][0], cube_left[2][0]
 		) = (
 			[cube_right[0][2], cube_right[1][2], cube_right[2][2]],
 			cube_down[0][0], cube_down[0][1], cube_down[0][2],
-			[cube_left[0][2], cube_left[1][2], cube_left[2][2]],
-			cube_up[0][0], cube_up[0][1], cube_up[0][2]
+			[cube_left[2][0], cube_left[1][0], cube_left[0][0]],
+			cube_up[0][2], cube_up[0][1], cube_up[0][0]
 		)
 
 	# print(cube_back)

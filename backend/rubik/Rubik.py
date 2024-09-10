@@ -53,44 +53,44 @@ class Rubik:
 		}
 
 
-		# self.cube_up: list[list[str]] = [
-		# 	['1', '2', '3'],
-		# 	['4', '5', '6'],
-		# 	['1', '6', '3'],
-		# ]
-		# self.cube_down: list[list[str]] = [
-		# 	['1', '2', '3'],
-		# 	['4', '5', '6'],
-		# 	['1', '6', '3'],
-		# ]
-		# self.cube_front: list[list[str]] = [
-		# 	['1', '2', '3'],
-		# 	['4', '5', '6'],
-		# 	['1', '6', '3'],
-		# ]
-		# self.cube_back: list[list[str]] = [
-		# 	['1', '2', '3'],
-		# 	['4', '5', '6'],
-		# 	['1', '6', '3'],
-		# ]
-		# self.cube_left: list[list[str]] = [
-		# 	['1', '2', '3'],
-		# 	['4', '5', '6'],
-		# 	['1', '6', '3'],
-		# ]
-		# self.cube_right: list[list[str]] = [
-		# 	['1', '2', '3'],
-		# 	['4', '5', '6'],
-		# 	['1', '6', '3'],
-		# ]
+		self.cube_up: list[list[str]] = [
+			['2', '5', '2'],
+			['3', '1', '2'],
+			['1', '3', '6'],
+		]
+		self.cube_down: list[list[str]] = [
+			['6', '6', '3'],
+			['6', '2', '3'],
+			['5', '5', '2'],
+		]
+		self.cube_front: list[list[str]] = [
+			['6', '5', '4'],
+			['1', '4', '1'],
+			['3', '2', '4'],
+		]
+		self.cube_back: list[list[str]] = [
+			['4', '1', '4'],
+			['4', '3', '6'],
+			['3', '4', '5'],
+		]
+		self.cube_left: list[list[str]] = [
+			['6', '2', '3'],
+			['1', '6', '4'],
+			['1', '6', '5'],
+		]
+		self.cube_right: list[list[str]] = [
+			['1', '4', '5'],
+			['3', '5', '5'],
+			['1', '2', '2'],
+		]
 
-		self.cube_up: list[list[str]] = [(['1' for _ in range(3)]) for _x in range(3)]
-		self.cube_front: list[list[str]] = [(['3' for _ in range(3)]) for _x in range(3)]
-		self.cube_right: list[list[str]] = [(['6' for _ in range(3)]) for _x in range(3)]
-		self.cube_left: list[list[str]] = [(['5' for _ in range(3)]) for _x in range(3)]
-		self.cube_back: list[list[str]] = [(['4' for _ in range(3)]) for _x in range(3)]
+		# self.cube_up: list[list[str]] = [(['1' for _ in range(3)]) for _x in range(3)]
+		# self.cube_front: list[list[str]] = [(['3' for _ in range(3)]) for _x in range(3)]
+		# self.cube_right: list[list[str]] = [(['6' for _ in range(3)]) for _x in range(3)]
+		# self.cube_left: list[list[str]] = [(['5' for _ in range(3)]) for _x in range(3)]
+		# self.cube_back: list[list[str]] = [(['4' for _ in range(3)]) for _x in range(3)]
 
-		self.cube_down: list[list[str]] = [(['2' for _ in range(3)]) for _x in range(3)]
+		# self.cube_down: list[list[str]] = [(['2' for _ in range(3)]) for _x in range(3)]
 
 
 
@@ -190,6 +190,12 @@ if __name__ == "__main__":
 	rubik = Rubik()
 	# print(rubik.get_cube())
 	rubik.visualize_cube()
+	# rubik.apply_sequences("F F' B B' L L' R R'")
+	# rubik.apply_sequences("F' F' F'")
+	rubik.apply_sequences("B' B'")
+
+
+
 	# rubik.apply_move("U")
 	# rubik.apply_move("U")
 	# rubik.apply_move("L")
