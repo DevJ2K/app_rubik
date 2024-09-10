@@ -276,6 +276,9 @@ class Rubik:
 	def isOrientationSolved(self) -> bool:
 		pass
 
+	def isPermutationSolved(self) -> bool:
+		pass
+
 def getNeighborsEdgeOrientation(state) -> list[int]:
 	neighbors = []
 	cube = Rubik()
@@ -309,14 +312,14 @@ def getNeighborsCornerOrientation(state) -> list[int]:
 
 	return neighbors
 
-def applyEdgeOrientationMove(state, move):
+def applyOrientationMove(state, move):
 	pass
 
-def applyCornerOrientationMove(state, move):
+def applyPermutationMove(state, move):
 	pass
 
-def phase1Search(cube: Rubik, maxDepth, edgePruningTable: PruningTable, cornerPruningTable: PruningTable):
-	def dfs(cubeState: Rubik, depth, maxDepth, path):
+def phase1Search(cube: Rubik, maxDepth: int, edgePruningTable: PruningTable, cornerPruningTable: PruningTable) -> list[str]:
+	def dfs(cubeState: Rubik, depth: int, maxDepth: int, path: list[str]) -> list[str]:
 		if cubeState.isOrientationSolved():
 			return path
 		if depth >= maxDepth:
@@ -342,6 +345,32 @@ def phase1Search(cube: Rubik, maxDepth, edgePruningTable: PruningTable, cornerPr
 			return result
 	return None
 
+def phase2Search(cube: Rubik, maxDepth: int, edgePermutationTable: PruningTable, cornerPermutationTable: PruningTable) -> list[str]:
+	def dfs(cubeState: Rubik, depth: int, maxDepth: int, path: list[str]) -> list[str]:
+		if cubeState.isPermutationSolved():
+			return path
+		if depth >= maxDepth:
+			return None
+		if edgePermutationTable.getPruning(cubeState.getEdgeOrientationState()) > maxDepth - depth:
+			return None
+		if cornerPermutationTable.getPruning(cubeState.getCornerOrientationState()) > maxDepth - depth:
+			return None
+		
+		moves = ["U", "U'", "D", "D'", "F", "F'", "B", "B'", "R", "R'", "L", "L'"]
+
+		for move in moves:
+			newCube = cubeState.copy()
+			# apply permutation movement
+			result = dfs(newCube, depth + 1, maxDepth, path + [move])
+			if result is not None:
+				return result
+		return None
+	
+	for depth in range(1, maxDepth + 1):
+		result = dfs(cube, 0, depth, [])
+		if result is not None:
+			return result
+	return None
 
 if __name__ == "__main__":
 	rubik = Rubik()
