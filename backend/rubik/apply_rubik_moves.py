@@ -150,26 +150,26 @@ def move_right(cube: list[list[list[str]]], move: str) -> list[list[list[str]]]:
 		(
 			cube_front[0][2], cube_front[1][2], cube_front[2][2],
 			cube_up[0][2], cube_up[1][2], cube_up[2][2],
-			cube_back[0][2], cube_back[1][2], cube_back[2][2],
-			cube_down[0][2], cube_down[1][2], cube_down[2][2]
+			cube_back[0][0], cube_back[1][0], cube_back[2][0],
+			cube_down[0][0], cube_down[1][0], cube_down[2][0]
 		) = (
 			cube_up[0][2], cube_up[1][2], cube_up[2][2],
-			cube_back[0][2], cube_back[1][2], cube_back[2][2],
-			cube_down[0][2], cube_down[1][2], cube_down[2][2],
-			cube_front[0][2], cube_front[1][2], cube_front[2][2]
+			cube_back[2][0], cube_back[1][0], cube_back[0][0],
+			cube_down[0][0], cube_down[1][0], cube_down[2][0],
+			cube_front[2][2], cube_front[1][2], cube_front[0][2]
 		)
 	else:
 		cube_right = rotate_face_only(cube_right, prime)
 		(
 			cube_front[0][2], cube_front[1][2], cube_front[2][2],
 			cube_up[0][2], cube_up[1][2], cube_up[2][2],
-			cube_back[0][2], cube_back[1][2], cube_back[2][2],
-			cube_down[0][2], cube_down[1][2], cube_down[2][2]
+			cube_back[2][0], cube_back[1][0], cube_back[0][0],
+			cube_down[0][0], cube_down[1][0], cube_down[2][0]
 		) = (
-			cube_down[0][2], cube_down[1][2], cube_down[2][2],
+			cube_down[2][0], cube_down[1][0], cube_down[0][0],
 			cube_front[0][2], cube_front[1][2], cube_front[2][2],
 			cube_up[0][2], cube_up[1][2], cube_up[2][2],
-			cube_back[0][2], cube_back[1][2], cube_back[2][2]
+			cube_back[0][0], cube_back[1][0], cube_back[2][0]
 		)
 
 	# printcube_right)
