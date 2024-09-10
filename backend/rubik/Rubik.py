@@ -284,7 +284,7 @@ def getNeighborsEdgeOrientation(state) -> list[int]:
 	cube = Rubik()
 	cube.setEdgeOrientationState(state)
 	
-	moves = ['U', 'U\'', 'D', 'D\'', 'L', 'L\'', 'R', 'R\'', 'F', 'F\'', 'B', 'B\'']
+	moves = ["U", "U'", "D", "D'", "F", "F'", "B", "B'", "R", "R'", "L", "L'"]
 
 	for move in moves:
 		cube.apply_move(move)
@@ -300,7 +300,7 @@ def getNeighborsCornerOrientation(state) -> list[int]:
 	cube = Rubik()
 	cube.setCornerOrientationState(state)
 	
-	moves = ['U', 'U\'', 'D', 'D\'', 'L', 'L\'', 'R', 'R\'', 'F', 'F\'', 'B', 'B\'']
+	moves = ["U", "U'", "D", "D'", "F", "F'", "B", "B'", "R", "R'", "L", "L'"]
 
 	for move in moves:
 		cube.apply_move(move)
@@ -329,7 +329,7 @@ def phase1Search(cube: Rubik, maxDepth: int, edgePruningTable: PruningTable, cor
 		if cornerPruningTable.getPruning(cubeState.getCornerOrientationState()) > maxDepth - depth:
 			return None
 		
-		moves = ['U', 'U\'', 'D', 'D\'', 'L', 'L\'', 'R', 'R\'', 'F', 'F\'', 'B', 'B\'']
+		moves = ["U", "U'", "D", "D'", "F", "F'", "B", "B'", "R", "R'", "L", "L'"]
 
 		for move in moves:
 			newCube = cubeState.copy()
