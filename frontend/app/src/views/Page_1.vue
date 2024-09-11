@@ -40,10 +40,12 @@ renderer.setClearColor(0x0F0F0F);
 const createCube = ({
   colors = "black",
   size = 1,
+  id = "cube",
   position = { x: 0, y: 0, z: 0 }
 }: {
   colors?: string;
   size?: number;
+  id?: string;
   position?: { x: number; y: number; z: number };
 }) => {
   const geometry = new THREE.BoxGeometry(size, size, size);
@@ -66,6 +68,8 @@ const createCube = ({
 
   changeCubeFaceColors({cube: cube, new_colors: colors});
   cube.position.set(position.x, position.y, position.z);
+
+  cube.name = id;
 
   return cube;
 }
@@ -100,15 +104,17 @@ const createRubik = ({
 } = {}) => {
 
   let all_cubes: Array<THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial[], THREE.Object3DEventMap>> = [];
-
+  // let cube_id = 0;
   for (let y = center.y + 1; y >= center.y - 1; y--) {
     for (let z = center.z - 1; z <= center.z + 1; z++) {
       for (let x = center.x - 1; x <= center.x + 1; x++) {
         all_cubes.push(
         createCube({
         size: 1,
+        // id: cube_id.toString(),
         position: {x: x, y: y, z: z}
       }));
+      // cube_id++;
       }
     }
   }
@@ -188,9 +194,10 @@ class Rubik3D {
 
     this.frames = [
       {
-        move: "U"
+        move: "U'"
       },
     ]
+    /*
     this.frames = [
       // {
       //   move: "U"
@@ -218,71 +225,32 @@ class Rubik3D {
       // },
 
 
-      {
-        move: "B"
-      },
-      {
-        move: "F"
-      },
-      {
-        move: "L"
-      },
-      {
-        move: "R"
-      },
-      {
-        move: "U"
-      },
-      {
-        move: "L'"
-      },
-      {
-        move: "R'"
-      },
-      {
-        move: "U'"
-      },
-    ]
-    // ALL MOVEMENTS
-    // this.frames = [
       // {
-      //   move: "U"
-      // },
-      // {
-      //   move: "U'"
-      // },
-      // {
-      //   move: "D"
-      // },
-      // {
-      //   move: "D'"
+      //   move: "B"
       // },
       // {
       //   move: "F"
       // },
       // {
-      //   move: "F'"
-      // },
-      // {
-      //   move: "B"
-      // },
-      // {
-      //   move: "B'"
-      // },
-      // {
       //   move: "L"
-      // },
-      // {
-      //   move: "L'"
       // },
       // {
       //   move: "R"
       // },
       // {
+      //   move: "U"
+      // },
+      // {
+      //   move: "L'"
+      // },
+      // {
       //   move: "R'"
       // },
-    // ]
-
+      // {
+      //   move: "U'"
+      // },
+    ]
+    */
     this.animation_is_playing = false;
   }
 
@@ -312,6 +280,12 @@ class Rubik3D {
       this.current_frame = i;
     }
     this.current_tween = undefined;
+
+
+    await new Promise<void>((resolve, reject) => {
+      setTimeout(resolve, 1000);
+    })
+    this.paint_cube([[['1', '1', '1'], ['1', '1', '1'], ['1', '1', '1']], [['2', '2', '2'], ['2', '2', '2'], ['2', '2', '2']], [['3', '3', '3'], ['3', '3', '3'], ['3', '3', '3']], [['4', '4', '4'], ['4', '4', '4'], ['4', '4', '4']], [['5', '5', '5'], ['5', '5', '5'], ['5', '5', '5']], [['6', '6', '6'], ['6', '6', '6'], ['6', '6', '6']]])
   }
 
   private selected_cubes(cube_to_select: Array<number>): THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial[], THREE.Object3DEventMap>[] {
@@ -338,13 +312,26 @@ class Rubik3D {
     const face_right: Array<string> = new_faces_colors[5][0].concat(new_faces_colors[5][1],new_faces_colors[5][2]);
 
     // All cubes depending faces
-    const selected_cubes_up = this.selected_cubes([0, 1, 2, 3, 4, 5, 6, 7, 8]);
-    const selected_cubes_down = this.selected_cubes([20, 19, 18, 23, 22, 21, 26, 25, 24]);
-    const selected_cubes_front = this.selected_cubes([6, 7, 8, 15, 16, 17, 24, 25, 26]);
-    const selected_cubes_back = this.selected_cubes([2, 1, 0, 11, 10, 9, 20, 19, 18]);
-    const selected_cubes_left = this.selected_cubes([0, 3, 6, 9, 12, 15, 18, 21, 24]);
-    const selected_cubes_right = this.selected_cubes([8, 5, 2, 17, 14, 11, 26, 23, 20]);
 
+    const selected_cubes_up = this.all_cubes.filter((cube) => cube.position.y > 0.1);
+    const selected_cubes_down = this.all_cubes.filter((cube) => cube.position.y < -0.1);
+    const selected_cubes_front = this.all_cubes.filter((cube) => cube.position.z > 0.1);
+    const selected_cubes_back = this.all_cubes.filter((cube) => cube.position.z < -0.1);
+    const selected_cubes_left = this.all_cubes.filter((cube) => cube.position.x < -0.1);
+    const selected_cubes_right = this.all_cubes.filter((cube) => cube.position.x > 0.1);
+
+    // console.log(selected_cubes_front)
+
+    console.log(this.all_cubes);
+
+    // const selected_cubes_up = this.selected_cubes([0, 1, 2, 3, 4, 5, 6, 7, 8]);
+    // const selected_cubes_down = this.selected_cubes([20, 19, 18, 23, 22, 21, 26, 25, 24]);
+    // const selected_cubes_front = this.selected_cubes([6, 7, 8, 15, 16, 17, 24, 25, 26]);
+    // const selected_cubes_back = this.selected_cubes([2, 1, 0, 11, 10, 9, 20, 19, 18]);
+    // const selected_cubes_left = this.selected_cubes([0, 3, 6, 9, 12, 15, 18, 21, 24]);
+    // const selected_cubes_right = this.selected_cubes([8, 5, 2, 17, 14, 11, 26, 23, 20]);
+
+    console.log(selected_cubes_front);
     // Face_index
     // Face_index - 0 = right
     // Face_index - 1 = left
@@ -352,27 +339,29 @@ class Rubik3D {
     // Face_index - 3 = down
     // Face_index - 4 = front
     // Face_index - 5 = back
-    for (let i = 0; i < face_up.length && i < selected_cubes_up.length; i++) {
-      changeCubeFaceColors({cube: selected_cubes_up[i], new_colors: this.COLORS_MAP.get(face_up[i]), face_index: 2})
-    }
-    for (let i = 0; i < face_down.length && i < selected_cubes_down.length; i++) {
-      changeCubeFaceColors({cube: selected_cubes_down[i], new_colors: this.COLORS_MAP.get(face_down[i]), face_index: 3})
-    }
+    // for (let i = 0; i < face_up.length && i < selected_cubes_up.length; i++) {
+    //   changeCubeFaceColors({cube: selected_cubes_up[i], new_colors: this.COLORS_MAP.get(face_up[i]), face_index: 2})
+    // }
+    // for (let i = 0; i < face_down.length && i < selected_cubes_down.length; i++) {
+    //   changeCubeFaceColors({cube: selected_cubes_down[i], new_colors: this.COLORS_MAP.get(face_down[i]), face_index: 3})
+    // }
     for (let i = 0; i < face_front.length && i < selected_cubes_front.length; i++) {
+      console.log(face_front[i]);
       changeCubeFaceColors({cube: selected_cubes_front[i], new_colors: this.COLORS_MAP.get(face_front[i]), face_index: 4})
+      changeCubeFaceColors({cube: selected_cubes_front[2], new_colors: "yellow", face_index: 4})
     }
-    for (let i = 0; i < face_back.length && i < selected_cubes_back.length; i++) {
-      changeCubeFaceColors({cube: selected_cubes_back[i], new_colors: this.COLORS_MAP.get(face_back[i]), face_index: 5})
-    }
-    for (let i = 0; i < face_left.length && i < selected_cubes_left.length; i++) {
-      changeCubeFaceColors({cube: selected_cubes_left[i], new_colors: this.COLORS_MAP.get(face_left[i]), face_index: 1})
-    }
-    for (let i = 0; i < face_right.length && i < selected_cubes_right.length; i++) {
-      changeCubeFaceColors({cube: selected_cubes_right[i], new_colors: this.COLORS_MAP.get(face_right[i]), face_index: 0})
-    }
+    // for (let i = 0; i < face_back.length && i < selected_cubes_back.length; i++) {
+    //   changeCubeFaceColors({cube: selected_cubes_back[i], new_colors: this.COLORS_MAP.get(face_back[i]), face_index: 5})
+    // }
+    // for (let i = 0; i < face_left.length && i < selected_cubes_left.length; i++) {
+    //   changeCubeFaceColors({cube: selected_cubes_left[i], new_colors: this.COLORS_MAP.get(face_left[i]), face_index: 1})
+    // }
+    // for (let i = 0; i < face_right.length && i < selected_cubes_right.length; i++) {
+    //   changeCubeFaceColors({cube: selected_cubes_right[i], new_colors: this.COLORS_MAP.get(face_right[i]), face_index: 0})
+    // }
 
     // To highlight selected_cubes_...
-    // let highlight_selected_test_only = [];
+    // let highlight_selected_test_only = selected_cubes_front;
     // for (let i = 0; i < highlight_selected_test_only.length; i++) {
     //   changeCubeFaceColors({cube: highlight_selected_test_only[i], new_colors: "red"});
     // }
