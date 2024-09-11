@@ -173,8 +173,6 @@ class Rubik3D {
     this.y = center_y ?? 0;
     this.z = center_z ?? 0;
 
-    console.log(default_faces_colors)
-
     this.default_faces_colors = default_faces_colors ?? [
       [['1', '1', '1'], ['1', '1', '1'], ['1', '1', '1']], // UP
       [['2', '2', '2'], ['2', '2', '2'], ['2', '2', '2']], // DOWN
@@ -296,7 +294,6 @@ class Rubik3D {
       changeCubeFaceColors({cube: selected_cubes_down[i], new_colors: this.COLORS_MAP.get(face_down[i]), face_index: 3})
     }
     for (let i = 0; i < face_front.length && i < selected_cubes_front.length; i++) {
-      console.log(face_front[i]);
       changeCubeFaceColors({cube: selected_cubes_front[i], new_colors: this.COLORS_MAP.get(face_front[i]), face_index: 4});
     }
     for (let i = 0; i < face_back.length && i < selected_cubes_back.length; i++) {
@@ -339,7 +336,7 @@ class Rubik3D {
         .easing(TWEEN.Easing.Cubic.InOut)
         .onUpdate(() => {})
         .onComplete(async () => {
-          console.log("Rotation complete");
+          // console.log("Rotation complete");
           for (let i = 0; i < cube_to_move.length; i++) {
             const cube = cube_to_move[i];
             scene.attach(cube);
