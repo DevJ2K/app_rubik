@@ -127,6 +127,6 @@ if __name__ == "__main__":
 	# for i in range(3**8):
 	# 	distance = phase1CornerPruningTable.getPruning(i)
 	# 	if distance != -1: print(distance)
-	# G1State = phase1Search(cube, 12, phase1EdgePruningTable, phase1CornerPruningTable)
+	G1State = phase1Search(cube, 12, phase1EdgePruningTable, phase1CornerPruningTable)
 	# print(G1State)
 	# print(phase1EdgePruningTable)

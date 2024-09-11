@@ -62,6 +62,9 @@ class Rubik:
 		self.cube_left: list[list[str]] = [(['O' for _ in range(3)]) for _x in range(3)]
 		self.cube_right: list[list[str]] = [(['R' for _ in range(3)]) for _x in range(3)]
 
+		self.corners = []
+		self.edges = []
+
 
 	def get_cube(self) -> list[list[list[str]]]:
 		return [
@@ -198,7 +201,7 @@ class Rubik:
 			(cube_down[2][2], cube_right[2][0], cube_back[2][2]),
 			(cube_down[2][0], cube_left[2][0], cube_back[2][0])
 		]
-		print(corners)
+		# print(corners)
 		orientation = []
 		for corner in corners:
 			if corner[0] in ['W', 'Y']:
@@ -280,14 +283,21 @@ class Rubik:
 					cube[face2][x2][y2], cube[face3][x3][y3], cube[face1][x1][y1]
 				)
 
-
 	def solve(self) -> None:
 		"""Solve the self.cube
 		"""
 		pass
 
 	def isOrientationSolved(self) -> bool:
-		pass
+		edges = self.getEdgeOrientation()
+		for edge in edges:
+			if edge == 1:
+				return False
+		corners = self.getCornerOrientation()
+		for corner in corners:
+			if corner == 1 or corner == 2:
+				return False
+		return True
 
 	def isPermutationSolved(self) -> bool:
 		pass
@@ -304,7 +314,6 @@ class Rubik:
 		self.apply_move("F")
 		self.apply_move("B")
 		self.apply_move("B")
-
 
 def applyMoveToSolve(state, move):
 	pass
@@ -329,9 +338,12 @@ def phase1Search(cube: Rubik, maxDepth: int, edgePruningTable: PruningTable, cor
 		moves = ["U", "U'", "D", "D'", "F", "F'", "B", "B'", "R", "R'", "L", "L'"]
 
 		for move in moves:
-			newCube = cubeState.copy()
-			# apply movement
-			result = dfs(newCube, depth + 1, maxDepth, path + [move])
+			cubeState.apply_move(move)
+			result = dfs(cubeState, depth + 1, maxDepth, path + [move])
+			if "'" in move:
+				cubeState.apply_move(move)
+			else:
+				cubeState.apply_move(move + "'")
 			if result is not None:
 				return result
 		return None
