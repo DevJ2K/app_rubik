@@ -339,10 +339,10 @@ class Rubik3D {
 
     // All cubes depending faces
     const selected_cubes_up = this.selected_cubes([0, 1, 2, 3, 4, 5, 6, 7, 8]);
-    const selected_cubes_down = this.selected_cubes([18, 19, 20, 21, 22, 23, 24, 25, 26]);
+    const selected_cubes_down = this.selected_cubes([20, 19, 18, 23, 22, 21, 26, 25, 24]);
     const selected_cubes_front = this.selected_cubes([6, 7, 8, 15, 16, 17, 24, 25, 26]);
-    const selected_cubes_back = this.selected_cubes([0, 1, 2, 9, 10, 11, 18, 19, 20]);
-    const selected_cubes_left = this.selected_cubes([6, 3, 0, 15, 12, 9, 24, 21, 18]);
+    const selected_cubes_back = this.selected_cubes([2, 1, 0, 11, 10, 9, 20, 19, 18]);
+    const selected_cubes_left = this.selected_cubes([0, 3, 6, 9, 12, 15, 18, 21, 24]);
     const selected_cubes_right = this.selected_cubes([8, 5, 2, 17, 14, 11, 26, 23, 20]);
 
     // Face_index
@@ -478,7 +478,7 @@ const initThree = () => {
   }
   threeContainer.value.appendChild(renderer.domElement);
   // let rubik3D = new Rubik3D()
-  let rubik3D = new Rubik3D([[['3', '2', '1'], ['4', '5', '6'], ['3', '1', '2']], [['1', '2', '3'], ['4', '5', '6'], ['3', '2', '1']], [['1', '4', '5'], ['3', '2', '1'], ['3', '3', '5']], [['4', '5', '6'], ['4', '3', '1'], ['4', '5', '4']], [['3', '3', '1'], ['5', '4', '2'], ['6', '5', '5']], [['6', '5', '4'], ['2', '3', '4'], ['2', '1', '6']]])
+  let rubik3D = new Rubik3D([[['6', '6', '2'], ['6', '1', '3'], ['1', '3', '2']], [['2', '5', '3'], ['2', '2', '3'], ['5', '5', '6']], [['6', '5', '4'], ['1', '4', '6'], ['3', '1', '4']], [['4', '4', '4'], ['4', '3', '1'], ['3', '2', '5']], [['1', '2', '3'], ['3', '6', '4'], ['1', '2', '2']], [['6', '6', '5'], ['1', '5', '5'], ['1', '4', '5']]])
   // let rubik3D = new Rubik3D([[['3', '5', '5'], ['1', '1', '1'], ['2', '6', '1']], [['4', '6', '6'], ['2', '2', '2'], ['1', '5', '2']], [['3', '1', '4'], ['5', '3', '3'], ['6', '3', '3']], [['5', '4', '4'], ['6', '4', '4'], ['6', '1', '5']], [['1', '3', '6'], ['4', '5', '2'], ['1', '5', '3']], [['2', '4', '5'], ['2', '6', '3'], ['2', '6', '4']]]);
   // rubik3D.play_animation();
 
