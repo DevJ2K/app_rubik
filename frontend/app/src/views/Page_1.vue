@@ -194,6 +194,21 @@ class Rubik3D {
 
     this.frames = [
       {
+        move: "L"
+      },
+      {
+        move: "R"
+      },
+      {
+        move: "U"
+      },
+      {
+        move: "L'"
+      },
+      {
+        move: "R'"
+      },
+      {
         move: "U'"
       },
     ]
@@ -265,6 +280,14 @@ class Rubik3D {
     this.second_between_animation = second;
   }
 
+
+  destroy(): void {
+    for (let i = 0; i < this.all_cubes.length; i++) {
+      scene.remove(this.all_cubes[i]);
+      delete this.all_cubes[i];
+    }
+  }
+
   display(): void {
     for (let i = 0; i < this.all_cubes.length; i++) {
       scene.add(this.all_cubes[i]);
@@ -313,23 +336,27 @@ class Rubik3D {
 
     // All cubes depending faces
 
-    const selected_cubes_up = this.all_cubes.filter((cube) => cube.position.y > 0.1);
-    const selected_cubes_down = this.all_cubes.filter((cube) => cube.position.y < -0.1);
-    const selected_cubes_front = this.all_cubes.filter((cube) => cube.position.z > 0.1);
-    const selected_cubes_back = this.all_cubes.filter((cube) => cube.position.z < -0.1);
-    const selected_cubes_left = this.all_cubes.filter((cube) => cube.position.x < -0.1);
-    const selected_cubes_right = this.all_cubes.filter((cube) => cube.position.x > 0.1);
+    // const selected_cubes_up = this.all_cubes.filter((cube) => cube.position.y > 0.1);
+    // const selected_cubes_down = this.all_cubes.filter((cube) => cube.position.y < -0.1);
+    // const selected_cubes_front = this.all_cubes.filter((cube) => cube.position.z > 0.1);
+    // const selected_cubes_back = this.all_cubes.filter((cube) => cube.position.z < -0.1);
+    // const selected_cubes_left = this.all_cubes.filter((cube) => cube.position.x < -0.1);
+    // const selected_cubes_right = this.all_cubes.filter((cube) => cube.position.x > 0.1);
 
     // console.log(selected_cubes_front)
 
+    this.destroy();
+    this.all_cubes = createRubik({center: {x: this.z, y: this.y, z: this.z}});
+    this.display();
+
     console.log(this.all_cubes);
 
-    // const selected_cubes_up = this.selected_cubes([0, 1, 2, 3, 4, 5, 6, 7, 8]);
-    // const selected_cubes_down = this.selected_cubes([20, 19, 18, 23, 22, 21, 26, 25, 24]);
-    // const selected_cubes_front = this.selected_cubes([6, 7, 8, 15, 16, 17, 24, 25, 26]);
-    // const selected_cubes_back = this.selected_cubes([2, 1, 0, 11, 10, 9, 20, 19, 18]);
-    // const selected_cubes_left = this.selected_cubes([0, 3, 6, 9, 12, 15, 18, 21, 24]);
-    // const selected_cubes_right = this.selected_cubes([8, 5, 2, 17, 14, 11, 26, 23, 20]);
+    const selected_cubes_up = this.selected_cubes([0, 1, 2, 3, 4, 5, 6, 7, 8]);
+    const selected_cubes_down = this.selected_cubes([20, 19, 18, 23, 22, 21, 26, 25, 24]);
+    const selected_cubes_front = this.selected_cubes([6, 7, 8, 15, 16, 17, 24, 25, 26]);
+    const selected_cubes_back = this.selected_cubes([2, 1, 0, 11, 10, 9, 20, 19, 18]);
+    const selected_cubes_left = this.selected_cubes([0, 3, 6, 9, 12, 15, 18, 21, 24]);
+    const selected_cubes_right = this.selected_cubes([8, 5, 2, 17, 14, 11, 26, 23, 20]);
 
     console.log(selected_cubes_front);
     // Face_index
@@ -339,26 +366,25 @@ class Rubik3D {
     // Face_index - 3 = down
     // Face_index - 4 = front
     // Face_index - 5 = back
-    // for (let i = 0; i < face_up.length && i < selected_cubes_up.length; i++) {
-    //   changeCubeFaceColors({cube: selected_cubes_up[i], new_colors: this.COLORS_MAP.get(face_up[i]), face_index: 2})
-    // }
-    // for (let i = 0; i < face_down.length && i < selected_cubes_down.length; i++) {
-    //   changeCubeFaceColors({cube: selected_cubes_down[i], new_colors: this.COLORS_MAP.get(face_down[i]), face_index: 3})
-    // }
+    for (let i = 0; i < face_up.length && i < selected_cubes_up.length; i++) {
+      changeCubeFaceColors({cube: selected_cubes_up[i], new_colors: this.COLORS_MAP.get(face_up[i]), face_index: 2})
+    }
+    for (let i = 0; i < face_down.length && i < selected_cubes_down.length; i++) {
+      changeCubeFaceColors({cube: selected_cubes_down[i], new_colors: this.COLORS_MAP.get(face_down[i]), face_index: 3})
+    }
     for (let i = 0; i < face_front.length && i < selected_cubes_front.length; i++) {
       console.log(face_front[i]);
-      changeCubeFaceColors({cube: selected_cubes_front[i], new_colors: this.COLORS_MAP.get(face_front[i]), face_index: 4})
-      changeCubeFaceColors({cube: selected_cubes_front[2], new_colors: "yellow", face_index: 4})
+      changeCubeFaceColors({cube: selected_cubes_front[i], new_colors: this.COLORS_MAP.get(face_front[i]), face_index: 4});
     }
-    // for (let i = 0; i < face_back.length && i < selected_cubes_back.length; i++) {
-    //   changeCubeFaceColors({cube: selected_cubes_back[i], new_colors: this.COLORS_MAP.get(face_back[i]), face_index: 5})
-    // }
-    // for (let i = 0; i < face_left.length && i < selected_cubes_left.length; i++) {
-    //   changeCubeFaceColors({cube: selected_cubes_left[i], new_colors: this.COLORS_MAP.get(face_left[i]), face_index: 1})
-    // }
-    // for (let i = 0; i < face_right.length && i < selected_cubes_right.length; i++) {
-    //   changeCubeFaceColors({cube: selected_cubes_right[i], new_colors: this.COLORS_MAP.get(face_right[i]), face_index: 0})
-    // }
+    for (let i = 0; i < face_back.length && i < selected_cubes_back.length; i++) {
+      changeCubeFaceColors({cube: selected_cubes_back[i], new_colors: this.COLORS_MAP.get(face_back[i]), face_index: 5})
+    }
+    for (let i = 0; i < face_left.length && i < selected_cubes_left.length; i++) {
+      changeCubeFaceColors({cube: selected_cubes_left[i], new_colors: this.COLORS_MAP.get(face_left[i]), face_index: 1})
+    }
+    for (let i = 0; i < face_right.length && i < selected_cubes_right.length; i++) {
+      changeCubeFaceColors({cube: selected_cubes_right[i], new_colors: this.COLORS_MAP.get(face_right[i]), face_index: 0})
+    }
 
     // To highlight selected_cubes_...
     // let highlight_selected_test_only = selected_cubes_front;
@@ -467,7 +493,7 @@ const initThree = () => {
   }
   threeContainer.value.appendChild(renderer.domElement);
   // let rubik3D = new Rubik3D()
-  let rubik3D = new Rubik3D([[['1', '5', '2'], ['1', '1', '1'], ['2', '6', '1']], [['4', '6', '6'], ['2', '2', '2'], ['5', '5', '3']], [['3', '1', '5'], ['5', '3', '3'], ['6', '3', '3']], [['4', '1', '6'], ['6', '4', '4'], ['5', '4', '4']], [['4', '3', '6'], ['2', '5', '4'], ['2', '5', '1']], [['3', '4', '5'], ['2', '6', '3'], ['2', '6', '1']]])
+  let rubik3D = new Rubik3D([[['5', '3', '1'], ['1', '1', '1'], ['1', '4', '6']], [['2', '2', '4'], ['2', '2', '2'], ['3', '2', '2']], [['6', '5', '3'], ['3', '3', '1'], ['3', '3', '5']], [['5', '6', '4'], ['4', '4', '1'], ['4', '4', '6']], [['2', '3', '3'], ['5', '5', '5'], ['1', '5', '5']], [['2', '4', '4'], ['6', '6', '6'], ['1', '6', '6']]])
   // let rubik3D = new Rubik3D([[['3', '5', '5'], ['1', '1', '1'], ['2', '6', '1']], [['4', '6', '6'], ['2', '2', '2'], ['1', '5', '2']], [['3', '1', '4'], ['5', '3', '3'], ['6', '3', '3']], [['5', '4', '4'], ['6', '4', '4'], ['6', '1', '5']], [['1', '3', '6'], ['4', '5', '2'], ['1', '5', '3']], [['2', '4', '5'], ['2', '6', '3'], ['2', '6', '4']]]);
   rubik3D.play_animation();
 
