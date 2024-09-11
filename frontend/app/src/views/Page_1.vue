@@ -212,65 +212,9 @@ class Rubik3D {
         move: "U'"
       },
     ]
-    /*
-    this.frames = [
-      // {
-      //   move: "U"
-      // },
-      // {
-      //   move: "R"
-      // },
-      // {
-      //   move: "L"
-      // },
-      // {
-      //   move: "U'"
-      // },
-      // {
-      //   move: "R'"
-      // },
-      // {
-      //   move: "L'"
-      // },
-      // {
-      //   move: "F'"
-      // },
-      // {
-      //   move: "B'"
-      // },
 
-
-      // {
-      //   move: "B"
-      // },
-      // {
-      //   move: "F"
-      // },
-      // {
-      //   move: "L"
-      // },
-      // {
-      //   move: "R"
-      // },
-      // {
-      //   move: "U"
-      // },
-      // {
-      //   move: "L'"
-      // },
-      // {
-      //   move: "R'"
-      // },
-      // {
-      //   move: "U'"
-      // },
-    ]
-    */
     this.animation_is_playing = false;
   }
-
-
-
 
   set change_rotation_speed(speed: number) {
     this.animation_speed = speed;
@@ -279,7 +223,6 @@ class Rubik3D {
   set change_second_between_movements(second: number) {
     this.second_between_animation = second;
   }
-
 
   destroy(): void {
     for (let i = 0; i < this.all_cubes.length; i++) {
@@ -298,17 +241,10 @@ class Rubik3D {
     this.animation_is_playing = true;
     for (let i = this.current_frame; i < this.frames.length; i++) {
       const element = this.frames[i];
-      console.log(element);
       await this.apply_moves(element.move);
       this.current_frame = i;
     }
     this.current_tween = undefined;
-
-
-    await new Promise<void>((resolve, reject) => {
-      setTimeout(resolve, 1000);
-    })
-    this.paint_cube([[['1', '1', '1'], ['1', '1', '1'], ['1', '1', '1']], [['2', '2', '2'], ['2', '2', '2'], ['2', '2', '2']], [['3', '3', '3'], ['3', '3', '3'], ['3', '3', '3']], [['4', '4', '4'], ['4', '4', '4'], ['4', '4', '4']], [['5', '5', '5'], ['5', '5', '5'], ['5', '5', '5']], [['6', '6', '6'], ['6', '6', '6'], ['6', '6', '6']]])
   }
 
   private selected_cubes(cube_to_select: Array<number>): THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial[], THREE.Object3DEventMap>[] {
@@ -326,6 +262,10 @@ class Rubik3D {
 
   paint_cube(new_faces_colors: Array<Array<Array<string>>>): void {
 
+    this.destroy();
+    this.all_cubes = createRubik({center: {x: this.z, y: this.y, z: this.z}});
+    this.display();
+
     // All faces concatenates
     const face_up: Array<string> = new_faces_colors[0][0].concat(new_faces_colors[0][1],new_faces_colors[0][2]);
     const face_down: Array<string> = new_faces_colors[1][0].concat(new_faces_colors[1][1],new_faces_colors[1][2]);
@@ -335,22 +275,6 @@ class Rubik3D {
     const face_right: Array<string> = new_faces_colors[5][0].concat(new_faces_colors[5][1],new_faces_colors[5][2]);
 
     // All cubes depending faces
-
-    // const selected_cubes_up = this.all_cubes.filter((cube) => cube.position.y > 0.1);
-    // const selected_cubes_down = this.all_cubes.filter((cube) => cube.position.y < -0.1);
-    // const selected_cubes_front = this.all_cubes.filter((cube) => cube.position.z > 0.1);
-    // const selected_cubes_back = this.all_cubes.filter((cube) => cube.position.z < -0.1);
-    // const selected_cubes_left = this.all_cubes.filter((cube) => cube.position.x < -0.1);
-    // const selected_cubes_right = this.all_cubes.filter((cube) => cube.position.x > 0.1);
-
-    // console.log(selected_cubes_front)
-
-    this.destroy();
-    this.all_cubes = createRubik({center: {x: this.z, y: this.y, z: this.z}});
-    this.display();
-
-    console.log(this.all_cubes);
-
     const selected_cubes_up = this.selected_cubes([0, 1, 2, 3, 4, 5, 6, 7, 8]);
     const selected_cubes_down = this.selected_cubes([20, 19, 18, 23, 22, 21, 26, 25, 24]);
     const selected_cubes_front = this.selected_cubes([6, 7, 8, 15, 16, 17, 24, 25, 26]);
@@ -358,7 +282,6 @@ class Rubik3D {
     const selected_cubes_left = this.selected_cubes([0, 3, 6, 9, 12, 15, 18, 21, 24]);
     const selected_cubes_right = this.selected_cubes([8, 5, 2, 17, 14, 11, 26, 23, 20]);
 
-    console.log(selected_cubes_front);
     // Face_index
     // Face_index - 0 = right
     // Face_index - 1 = left
@@ -492,9 +415,7 @@ const initThree = () => {
     return ;
   }
   threeContainer.value.appendChild(renderer.domElement);
-  // let rubik3D = new Rubik3D()
-  let rubik3D = new Rubik3D([[['5', '3', '1'], ['1', '1', '1'], ['1', '4', '6']], [['2', '2', '4'], ['2', '2', '2'], ['3', '2', '2']], [['6', '5', '3'], ['3', '3', '1'], ['3', '3', '5']], [['5', '6', '4'], ['4', '4', '1'], ['4', '4', '6']], [['2', '3', '3'], ['5', '5', '5'], ['1', '5', '5']], [['2', '4', '4'], ['6', '6', '6'], ['1', '6', '6']]])
-  // let rubik3D = new Rubik3D([[['3', '5', '5'], ['1', '1', '1'], ['2', '6', '1']], [['4', '6', '6'], ['2', '2', '2'], ['1', '5', '2']], [['3', '1', '4'], ['5', '3', '3'], ['6', '3', '3']], [['5', '4', '4'], ['6', '4', '4'], ['6', '1', '5']], [['1', '3', '6'], ['4', '5', '2'], ['1', '5', '3']], [['2', '4', '5'], ['2', '6', '3'], ['2', '6', '4']]]);
+  let rubik3D = new Rubik3D();
   rubik3D.play_animation();
 
   const animate = () => {
@@ -511,37 +432,5 @@ const initThree = () => {
 onMounted(() => {
   initThree();
 });
-
-
-
-/*
-INITIAL POS____
-[[['1', '1', '1'], ['1', '1', '1'], ['1', '1', '1']], [['2', '2', '2'], ['2', '2', '2'], ['2', '2', '2']], [['3', '3', '3'], ['3', '3', '3'], ['3', '3', '3']], [['4', '4', '4'], ['4', '4', '4'], ['4', '4', '4']], [['5', '5', '5'], ['5', '5', '5'], ['5', '5', '5']], [['6', '6', '6'], ['6', '6', '6'], ['6', '6', '6']]]
-[['4', '4', '4'], ['4', '4', '4'], ['4', '4', '4']]
-MOVE : B
-[[['5', '5', '5'], ['1', '1', '1'], ['1', '1', '1']], [['6', '6', '6'], ['2', '2', '2'], ['2', '2', '2']], [['3', '3', '3'], ['3', '3', '3'], ['3', '3', '3']], [['4', '4', '4'], ['4', '4', '4'], ['4', '4', '4']], [['5', '5', '2'], ['5', '5', '2'], ['5', '5', '2']], [['6', '6', '1'], ['6', '6', '1'], ['6', '6', '1']]]
-[['3', '3', '3'], ['3', '3', '3'], ['3', '3', '3']]
-MOVE : F
-[[['5', '5', '5'], ['1', '1', '1'], ['5', '5', '5']], [['6', '6', '6'], ['2', '2', '2'], ['6', '6', '6']], [['3', '3', '3'], ['3', '3', '3'], ['3', '3', '3']], [['4', '4', '4'], ['4', '4', '4'], ['4', '4', '4']], [['2', '5', '2'], ['2', '5', '2'], ['2', '5', '2']], [['1', '6', '1'], ['1', '6', '1'], ['1', '6', '1']]]
-[['2', '2', '2'], ['5', '5', '5'], ['2', '2', '2']]
-MOVE : L
-[[['4', '5', '5'], ['4', '1', '1'], ['4', '5', '5']], [['3', '6', '6'], ['3', '2', '2'], ['3', '6', '6']], [['5', '3', '3'], ['1', '3', '3'], ['5', '3', '3']], [['6', '4', '4'], ['2', '4', '4'], ['6', '4', '4']], [['2', '2', '2'], ['5', '5', '5'], ['2', '2', '2']], [['1', '6', '1'], ['1', '6', '1'], ['1', '6', '1']]]
-[['1', '1', '1'], ['6', '6', '6'], ['1', '1', '1']]
-MOVE : R
-[[['4', '5', '3'], ['4', '1', '3'], ['4', '5', '3']], [['3', '6', '4'], ['3', '2', '4'], ['3', '6', '4']], [['5', '3', '6'], ['1', '3', '2'], ['5', '3', '6']], [['6', '4', '5'], ['2', '4', '1'], ['6', '4', '5']], [['2', '2', '2'], ['5', '5', '5'], ['2', '2', '2']], [['1', '1', '1'], ['6', '6', '6'], ['1', '1', '1']]]
-[['4', '4', '4'], ['5', '1', '5'], ['3', '3', '3']]
-MOVE : U
-[[['4', '4', '4'], ['5', '1', '5'], ['3', '3', '3']], [['3', '6', '4'], ['3', '2', '4'], ['3', '6', '4']], [['1', '1', '1'], ['1', '3', '2'], ['5', '3', '6']], [['2', '2', '2'], ['2', '4', '1'], ['6', '4', '5']], [['5', '3', '6'], ['5', '5', '5'], ['2', '2', '2']], [['6', '4', '5'], ['6', '6', '6'], ['1', '1', '1']]]
-[['6', '5', '2'], ['3', '5', '2'], ['5', '5', '2']]
-MOVE : L'
-[[['1', '4', '4'], ['1', '1', '5'], ['5', '3', '3']], [['2', '6', '4'], ['2', '2', '4'], ['6', '6', '4']], [['3', '1', '1'], ['3', '3', '2'], ['3', '3', '6']], [['4', '2', '2'], ['5', '4', '1'], ['3', '4', '5']], [['6', '5', '2'], ['3', '5', '2'], ['5', '5', '2']], [['6', '4', '5'], ['6', '6', '6'], ['1', '1', '1']]]
-[['5', '6', '1'], ['4', '6', '1'], ['6', '6', '1']]
-MOVE : R'
-[[['1', '4', '2'], ['1', '1', '1'], ['5', '3', '5']], [['2', '6', '1'], ['2', '2', '2'], ['6', '6', '6']], [['3', '1', '4'], ['3', '3', '5'], ['3', '3', '3']], [['4', '2', '4'], ['5', '4', '4'], ['3', '4', '4']], [['6', '5', '2'], ['3', '5', '2'], ['5', '5', '2']], [['5', '6', '1'], ['4', '6', '1'], ['6', '6', '1']]]
-[['2', '1', '5'], ['4', '1', '3'], ['1', '1', '5']]
-MOVE : U'
-[[['2', '1', '5'], ['4', '1', '3'], ['1', '1', '5']], [['2', '6', '1'], ['2', '2', '2'], ['6', '6', '6']], [['6', '5', '2'], ['3', '3', '5'], ['3', '3', '3']], [['5', '6', '1'], ['5', '4', '4'], ['3', '4', '4']], [['4', '2', '4'], ['3', '5', '2'], ['5', '5', '2']], [['3', '1', '4'], ['4', '6', '1'], ['6', '6', '1']]]
-
-*/
 </script>
 
