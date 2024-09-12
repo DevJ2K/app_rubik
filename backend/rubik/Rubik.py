@@ -3,6 +3,8 @@ from RubikMoves import RubikMoves
 from ErrorManager import *
 from parser import check_notation
 from PruningTable import PruningTable
+import copy
+import random
 
 from apply_rubik_moves import move_up, move_down, move_back, move_front, move_left, move_right
 
@@ -45,12 +47,12 @@ class Rubik:
 	"""The class to solve an rubik cube"""
 	def __init__(self, cube: list[list[list[str]]] = None, sequences: str = None) -> None:
 		self.COLORS = {
-			'1': 'white',  # face 1 (up)
-			'2': 'yellow', # face 2 (bottom)
-			'3': 'blue',   # face 3 (back)
-			'4': 'green',  # face 4 (front)
-			'5': 'red',	# face 5 (right)
-			'6': 'orange', # face 6 (left)
+			'W': 'white',  # face 1 (up)
+			'Y': 'yellow', # face 2 (bottom)
+			'B': 'blue',   # face 3 (back)
+			'G': 'green',  # face 4 (front)
+			'R': 'red',	# face 5 (right)
+			'O': 'orange', # face 6 (left)
 		}
 
 
@@ -153,17 +155,16 @@ class Rubik:
 
 	def getEdgeOrientation(self) -> list[int]:
 		"""
-		This method calculates the orientation of the edges of the Rubik's Cube.
-		An edge is considered oriented if one of its colors is white ('W') or yellow ('Y').
-		Otherwise, the edge is considered misoriented.
+		Obtient les orientations des arêtes du Rubik's Cube.
 
-		The cube's current state is retrieved and the relevant edges are evaluated.
-		Each edge is represented by two stickers, and the function checks 
-		whether one of these stickers is 'W' or 'Y'.
+		Calcule les orientations des arêtes en examinant les couleurs des stickers adjacents. Chaque orientation est
+		déterminée par la couleur des stickers voisins.
 
-		Returns:
-		list[int]: A list of integers where 0 indicates an oriented edge 
-				   (one of the stickers is 'W' or 'Y') and 1 indicates a misoriented edge.
+		Retourne:
+		- list[int]: Liste de 12 entiers pour les orientations des arêtes (0 ou 1).
+
+		Notes:
+		- Utilise `self.get_cube()` pour accéder aux couleurs des stickers.
 		"""
 		cube_up,cube_down,cube_front,cube_back,cube_left,cube_right = self.get_cube()
 		edges = [
@@ -180,7 +181,6 @@ class Rubik:
 			(cube_back[1][0], cube_left[1][0]),
 			(cube_back[1][2], cube_right[1][2])
 		]
-		# print(edges)
 		orientation = []
 		for edge in edges:
 			if edge[0] in ['W', 'Y'] or edge[1] in ['W', 'Y']:
@@ -190,6 +190,18 @@ class Rubik:
 		return orientation
 	
 	def getCornerOrientation(self) -> list[int]:
+		"""
+		Obtient les orientations des coins du Rubik's Cube.
+
+		Calcule les orientations des coins en examinant les couleurs des stickers adjacents. Chaque orientation est
+		déterminée par la couleur des stickers voisins.
+
+		Retourne:
+		- list[int]: Liste de 8 entiers pour les orientations des coins (0, 1 ou 2).
+
+		Notes:
+		- Utilise `self.get_cube()` pour accéder aux couleurs des stickers.
+		"""
 		cube_up,cube_down,cube_front,cube_back,cube_left,cube_right = self.get_cube()
 		corners = [
 			(cube_up[0][0], cube_left[0][2], cube_back[0][0]),
@@ -201,7 +213,6 @@ class Rubik:
 			(cube_down[2][2], cube_right[2][0], cube_back[2][2]),
 			(cube_down[2][0], cube_left[2][0], cube_back[2][0])
 		]
-		# print(corners)
 		orientation = []
 		for corner in corners:
 			if corner[0] in ['W', 'Y']:
@@ -213,6 +224,17 @@ class Rubik:
 		return orientation
 	
 	def getEdgeOrientationState(self) -> int:
+		"""
+		Obtient l'état d'orientation des arêtes du Rubik's Cube.
+
+		Calcule l'état d'orientation des arêtes en convertissant les orientations en une valeur entière codée en binaire.
+
+		Retourne:
+		- int: Entier représentant l'état d'orientation des arêtes, avec chaque bit indiquant l'orientation (0 ou 1).
+
+		Notes:
+		- Utilise `self.getEdgeOrientation()` pour obtenir les orientations des arêtes.
+		"""
 		edgeOrientation = self.getEdgeOrientation()
 		state = 0
 		for i in range(12):
@@ -220,6 +242,18 @@ class Rubik:
 		return state
 	
 	def getCornerOrientationState(self) -> int:
+		"""
+		Obtient l'état d'orientation des coins du Rubik's Cube.
+
+		Calcule l'état d'orientation des coins en convertissant les orientations en une valeur entière codée en base 3.
+		
+		Retourne:
+		- int: Entier représentant l'état d'orientation des coins, avec chaque orientation codée comme 0 (aucune rotation),
+		1 (120°), ou 2 (240°).
+
+		Notes:
+		- Utilise `self.getCornerOrientation()` pour obtenir les orientations des coins.
+    	"""
 		cornerOrientation = self.getCornerOrientation()
 		state = 0
 		for i in range(8):
@@ -228,6 +262,18 @@ class Rubik:
 
 
 	def setEdgeOrientationState(self, state) -> None:
+		"""
+		Définit l'état d'orientation des arêtes du Rubik's Cube.
+
+		Ajuste l'orientation des arêtes en fonction d'un entier d'état codé en binaire, où chaque bit représente
+		l'orientation d'une arête (0 pour non-orienté, 1 pour orienté).
+
+		Paramètres:
+		- state (int): Entier représentant l'état d'orientation des arêtes.
+
+		Retourne:
+		- None: Modifie directement l'état interne du cube sans retourner de valeur.
+		"""
 		cube = self.get_cube()
 		edges = [
 			(0, 0, 1, 3, 0, 1), # 0: up, 1: down, 2: front, 3: back, 4: left, 5: right 
@@ -252,6 +298,18 @@ class Rubik:
 				cube[face1][x1][y1], cube[face2][x2][y2] = cube[face2][x2][y2], cube[face1][x1][y1]
 
 	def setCornerOrientationState(self, state):
+		"""
+		Définit l'état d'orientation des coins du Rubik's Cube.
+
+		La méthode ajuste l'orientation des coins en fonction d'un entier d'état, codé en base 3. Chaque orientation
+		possible pour un coin est représentée par 0 (aucun changement), 1 (rotation de 120°), ou 2 (rotation de 240°).
+
+		Paramètres:
+		- state (int): Entier représentant l'état d'orientation des coins.
+
+		Retourne:
+		- None: Modifie directement l'état interne du cube sans retourner de valeur.
+    	"""
 		cube = self.get_cube()
 		corners = [
 			(0, 0, 0, 4, 0, 2, 3, 0, 0), # 0: up, 1: down, 2: front, 3: back, 4: left, 5: right 
@@ -283,50 +341,154 @@ class Rubik:
 					cube[face2][x2][y2], cube[face3][x3][y3], cube[face1][x1][y1]
 				)
 
-	def solve(self) -> None:
-		"""Solve the self.cube
-		"""
-		pass
 
 	def isOrientationSolved(self) -> bool:
-		edges = self.getEdgeOrientation()
-		for edge in edges:
-			if edge == 1:
-				return False
-		corners = self.getCornerOrientation()
-		for corner in corners:
-			if corner == 1 or corner == 2:
-				return False
+		"""
+		Vérifie si l'orientation du Rubik's Cube est résolue.
+
+		La méthode vérifie si toutes les faces du cube ont une couleur uniforme en comparant chaque case au centre 
+		de chaque face. Si toutes les cases d'une face ont la même couleur que le centre, la face est considérée comme 
+		résolue.
+
+		Retourne:
+		- bool: True si toutes les faces sont uniformes, sinon False.
+
+		Notes:
+		- `self.get_cube()` doit retourner une représentation du cube en tant que liste 3D.
+		"""
+		cube = self.get_cube()
+		for face in cube:
+			center_color = face[1][1]
+			for row in face:
+				for color in row:
+					if color != center_color:
+						return False
 		return True
 
-	def isPermutationSolved(self) -> bool:
-		pass
+	def isSolved(self) -> bool:
+		return self.get_cube() == [[['W', 'W', 'W'], ['W', 'W', 'W'], ['W', 'W', 'W']], [['Y', 'Y', 'Y'], ['Y', 'Y', 'Y'], ['Y', 'Y', 'Y']], [['G', 'G', 'G'], ['G', 'G', 'G'], ['G', 'G', 'G']], [['B', 'B', 'B'], ['B', 'B', 'B'], ['B', 'B', 'B']], [['O', 'O', 'O'], ['O', 'O', 'O'], ['O', 'O', 'O']], [['R', 'R', 'R'], ['R', 'R', 'R'], ['R', 'R', 'R']]]
 
 	def shuffle(self):
 		# U D R2 L2 F2 B2
+		# U D L R R B F
 		self.apply_move("U")
 		self.apply_move("D")
+		self.apply_move("L")
 		self.apply_move("R")
 		self.apply_move("R")
-		self.apply_move("L")
-		self.apply_move("L")
-		self.apply_move("F")
-		self.apply_move("F")
 		self.apply_move("B")
-		self.apply_move("B")
+		self.apply_move("F")
 
-def applyMoveToSolve(state, move):
-	pass
+	def generateRandomCube(self, numMoves: int, mode: str) -> None:
+		"""
+		Génère un cube de Rubik mélangé en appliquant une séquence aléatoire de mouvements.
 
-def applyOrientationMove(state, move):
-	pass
+		La méthode génère une séquence de mouvements pour mélanger le cube, avec des mouvements basiques ou incluant
+		des inverses selon le mode spécifié.
 
-def applyPermutationMove(state, move):
-	pass
+		Paramètres:
+		- numMoves (int): Nombre de mouvements à appliquer pour mélanger le cube.
+		- mode (str): 'hard' pour inclure les inverses, autre chose pour des mouvements sans inverses.
+
+		Retourne:
+		- None: Modifie l'état du cube en appliquant les mouvements générés sans retourner de valeur.
+
+		Notes:
+		- Utilise `generateRandomMoves` pour créer la séquence de mouvements.
+		"""
+		def generateRandomMoves(numMoves: int, mode: str) -> list[str]:
+			"""
+			Génère une liste de mouvements aléatoires basée sur le mode spécifié.
+
+			Paramètres:
+			- numMoves (int): Nombre de mouvements à générer.
+			- mode (str): 'hard' pour inclure des inverses, autre chose pour des mouvements sans inverses.
+
+			Retourne:
+			- list[str]: Liste de mouvements aléatoires sous forme de chaînes de caractères.
+			"""
+			if mode == 'hard':
+				moves = ["U", "U'", "D", "D'", "F", "F'", "B", "B'", "L", "L'", "R", "R'"]
+			else:	
+				moves = ["U", "D", "F", "B", "L", "R"]
+			move_sequences = []
+			for _ in range(numMoves):
+				move = random.choice(moves)
+				move_sequences.append(move)
+			return move_sequences
+		moves = generateRandomMoves(numMoves, mode)
+		print('Moves: ', moves)
+		for move in moves:
+			self.apply_move(move)
+
+	def solve(self) -> None:
+		"""
+		Résout le Rubik's Cube en deux phases.
+
+		1. Phase 1: Utilise les tables de réduction d'orientation des arêtes et des coins pour trouver une solution
+		intermédiaire (G1State) qui simplifie le cube en une configuration plus facile pour la phase 2.
+		2. Phase 2: Utilise les tables de réduction de permutation des arêtes et des coins pour trouver la solution finale
+		du cube.
+
+		Les étapes incluent l'application des mouvements de Phase 1, la vérification si le cube est résolu, et l'application
+		des mouvements de Phase 2. Affiche les séquences de mouvements et les états du cube à chaque étape.
+
+		Retourne:
+		- None: La méthode modifie directement l'état du cube et affiche les résultats sans retourner de valeur.
+		"""
+		from PruningTable import generateCornerPruningTable, generateEdgePruningTable, \
+		generateEdgePruningTablePermutation, generateCornerPruningTablePermutation
+		"""Solve the self.cube
+		"""
+		phase1EdgePruningTable = generateEdgePruningTable()
+
+		phase1CornerPruningTable = generateCornerPruningTable()
+		G1State = phase1Search(self, 12, phase1EdgePruningTable, phase1CornerPruningTable)
+		print(G1State)
+		self.visualize_cube()
+		for move in G1State:
+			self.apply_move(move)
+		if self.isSolved():
+			print("Solved before Phase 2, Sequences: ", G1State)
+		self.visualize_cube()
+
+		phase2EdgePruningTable = generateEdgePruningTablePermutation()
+		phase2CornerPruningTable = generateCornerPruningTablePermutation()
+		print('fin phase 2 pruningTable')
+		print(self.get_cube())
+		result = phase2Search(self, 12, phase2EdgePruningTable, phase2CornerPruningTable)
+		print(result)
+
 
 def phase1Search(cube: Rubik, maxDepth: int, edgePruningTable: PruningTable, cornerPruningTable: PruningTable) -> list[str]:
+	"""
+    Recherche une solution pour la phase 1 du Rubik's Cube avec une recherche en profondeur (DFS). 
+    Explore les mouvements jusqu'à une profondeur maximale pour résoudre l'orientation des arêtes.
+
+    Paramètres:
+    - cube (Rubik): État actuel du Rubik's Cube.
+    - maxDepth (int): Profondeur maximale pour explorer les mouvements.
+    - edgePruningTable (PruningTable): Table de réduction pour l'orientation des arêtes.
+    - cornerPruningTable (PruningTable): Table de réduction pour l'orientation des coins.
+
+    Retourne:
+    - list[str]: Séquence de mouvements qui résout la phase 1, ou None si aucune solution n'est trouvée.
+    """
 	def dfs(cubeState: Rubik, depth: int, maxDepth: int, path: list[str]) -> list[str]:
+		"""
+        Recherche en profondeur pour trouver une séquence de mouvements résolvant l'orientation des arêtes.
+
+        Paramètres:
+        - cubeState (Rubik): État actuel du Rubik's Cube.
+        - depth (int): Profondeur actuelle.
+        - maxDepth (int): Profondeur maximale.
+        - path (list[str]): Séquence actuelle de mouvements.
+
+        Retourne:
+        - list[str]: Mouvements résolvant l'orientation, ou None si aucune solution n'est trouvée à cette profondeur.
+        """
 		if cubeState.isOrientationSolved():
+			print('here')
 			return path
 		if depth >= maxDepth:
 			return None
@@ -338,12 +500,9 @@ def phase1Search(cube: Rubik, maxDepth: int, edgePruningTable: PruningTable, cor
 		moves = ["U", "U'", "D", "D'", "F", "F'", "B", "B'", "R", "R'", "L", "L'"]
 
 		for move in moves:
-			cubeState.apply_move(move)
-			result = dfs(cubeState, depth + 1, maxDepth, path + [move])
-			if "'" in move:
-				cubeState.apply_move(move)
-			else:
-				cubeState.apply_move(move + "'")
+			newCube: Rubik = copy.deepcopy(cubeState)
+			newCube.apply_move(move)
+			result = dfs(newCube, depth + 1, maxDepth, path + [move])
 			if result is not None:
 				return result
 		return None
@@ -355,11 +514,45 @@ def phase1Search(cube: Rubik, maxDepth: int, edgePruningTable: PruningTable, cor
 	return None
 
 def phase2Search(cube: Rubik, maxDepth: int, edgePermutationTable: PruningTable, cornerPermutationTable: PruningTable) -> list[str]:
+	"""
+    Cette fonction recherche une solution pour la phase 2 de la résolution du Rubik's Cube en utilisant 
+    une approche de recherche en profondeur (DFS). Elle explore les mouvements possibles jusqu'à une 
+    profondeur maximale spécifiée pour trouver une séquence de mouvements qui résout la permutation des arêtes
+    et des coins du Rubik's Cube.
+
+    Paramètres:
+    - cube (Rubik): L'état actuel du Rubik's Cube à résoudre.
+    - maxDepth (int): La profondeur maximale jusqu'à laquelle explorer les mouvements.
+    - edgePermutationTable (PruningTable): Table de réduction pour la permutation des arêtes. Permet d'éviter
+      l'exploration de certains états en fonction de la permutation des arêtes.
+    - cornerPermutationTable (PruningTable): Table de réduction pour la permutation des coins. Permet d'éviter
+      l'exploration de certains états en fonction de la permutation des coins.
+
+    Retourne:
+    - list[str]: Une liste de mouvements sous forme de chaînes de caractères qui résout la phase 2, ou
+      None si aucune solution n'est trouvée dans la profondeur spécifiée.
+    """
 	def dfs(cubeState: Rubik, depth: int, maxDepth: int, path: list[str]) -> list[str]:
-		if cubeState.isPermutationSolved():
+		"""
+        Fonction auxiliaire pour effectuer la recherche en profondeur (DFS) afin de trouver une séquence
+        de mouvements qui résout la permutation des arêtes et des coins du Rubik's Cube.
+
+        Paramètres:
+        - cubeState (Rubik): L'état actuel du Rubik's Cube à explorer.
+        - depth (int): La profondeur actuelle de la recherche.
+        - maxDepth (int): La profondeur maximale jusqu'à laquelle explorer les mouvements.
+        - path (list[str]): La séquence actuelle de mouvements explorée.
+
+        Retourne:
+        - list[str]: Une liste de mouvements qui résout la permutation des arêtes et des coins, ou None
+          si aucune solution n'est trouvée à cette profondeur.
+        """
+		print(path)
+		if cubeState.isSolved():
 			return path
-		if depth >= maxDepth:
+		if depth > maxDepth:
 			return None
+
 		if edgePermutationTable.getPruning(cubeState.getEdgeOrientationState()) > maxDepth - depth:
 			return None
 		if cornerPermutationTable.getPruning(cubeState.getCornerOrientationState()) > maxDepth - depth:
@@ -368,8 +561,8 @@ def phase2Search(cube: Rubik, maxDepth: int, edgePermutationTable: PruningTable,
 		moves = ["U", "U'", "D", "D'", "F", "F'", "B", "B'", "R", "R'", "L", "L'"]
 
 		for move in moves:
-			newCube = cubeState.copy()
-			# apply permutation movement
+			newCube: Rubik = copy.deepcopy(cubeState)
+			newCube.apply_move(move)
 			result = dfs(newCube, depth + 1, maxDepth, path + [move])
 			if result is not None:
 				return result
@@ -383,13 +576,8 @@ def phase2Search(cube: Rubik, maxDepth: int, edgePermutationTable: PruningTable,
 
 if __name__ == "__main__":
 	rubik = Rubik()
-	# phase1EdgePruningTable = generateEdgePruningTable()
-	# phase1CornerPruningTable = generateCornerPruningTable()
-	# print(phase1EdgePruningTable)
-	rubik.shuffle()
-	# rubik.visualize_cube()
-	# print(rubik.get_cube())
-	rubik.getCornerOrientation()
+	rubik.generateRandomCube(7, mode='easy') # easy <=> no inverse moves, hard <=> all moves
+	rubik.solve()
 	# rubik.apply_move("B")
 	# rubik.apply_move("B'")
 	# rubik.apply_move("U'")
