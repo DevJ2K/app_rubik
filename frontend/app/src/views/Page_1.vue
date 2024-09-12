@@ -30,7 +30,7 @@ let rubik3D: Rubik3D;
 let INTERSECTED: THREE.Mesh | null;
 let INTERSECTED_FACE_INDEX: number | undefined | null;
 
-let mousedown_coordinates: Object = Object();
+let mousedown_coordinates: Object = Object.create(null);
 
 function onCanvaMousedown( event: MouseEvent ) {
   mousedown_coordinates.x = event.clientX;
@@ -150,7 +150,7 @@ const initThree = () => {
     return ;
   }
   rubik3D = new Rubik3D(scene);
-  // rubik3D.play_animation();
+  rubik3D.play_animation();
 
   requestAnimationFrame(animate);
   window.addEventListener( 'resize', onWindowResize );
