@@ -12,12 +12,13 @@
 import * as THREE from 'three';
 import * as TWEEN from '@tweenjs/tween.js'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { createRubik, changeCubeFaceColors } from '@/js/rubik_utils';
 
 import { onMounted, onUnmounted, ref } from 'vue';
 
 // Déclarer une référence pour le conteneur
 const threeContainer = ref(null);
-let canva: HTMLElement | undefined;
+let canva: HTMLElement | null;
 let scene: THREE.Scene;
 let camera: THREE.PerspectiveCamera;
 let pointer: THREE.Vector2;
@@ -26,101 +27,11 @@ let renderer: THREE.WebGLRenderer;
 let controls: OrbitControls;
 
 
-let INTERSECTED;
-let INTERSECTED_FACE_INDEX;
+let INTERSECTED: THREE.Mesh | null;
+let INTERSECTED_FACE_INDEX: number | undefined | null;
 
 // Init RUBIK
 let rubik3D: Rubik3D;
-
-
-const createCube = ({
-  colors = 0x989898,
-  size = 1,
-  id = "cube",
-  position = { x: 0, y: 0, z: 0 }
-}: {
-  colors?: number;
-  size?: number;
-  id?: string;
-  position?: { x: number; y: number; z: number };
-}) => {
-  const geometry = new THREE.BoxGeometry(size, size, size);
-
-  const textureLoader = new THREE.TextureLoader();
-  const texture = textureLoader.load(new URL('../assets/rubik_textures/white.png', import.meta.url).href);
-
-  // const cube = new THREE.Mesh(geometry, [
-  //   new THREE.MeshBasicMaterial({ color: 0x0 }),
-  //   new THREE.MeshBasicMaterial({ color: 0x0 }),
-  //   new THREE.MeshBasicMaterial({ color: 0x0 }),
-  //   new THREE.MeshBasicMaterial({ color: 0x0 }),
-  //   new THREE.MeshBasicMaterial({ color: 0x0 }),
-  //   new THREE.MeshBasicMaterial({ color: 0x0 })
-  // ]);
-  const cube = new THREE.Mesh(geometry, [
-    new THREE.MeshBasicMaterial({ map: texture }),
-    new THREE.MeshBasicMaterial({ map: texture }),
-    new THREE.MeshBasicMaterial({ map: texture }),
-    new THREE.MeshBasicMaterial({ map: texture }),
-    new THREE.MeshBasicMaterial({ map: texture }),
-    new THREE.MeshBasicMaterial({ map: texture })
-  ]);
-
-  changeCubeFaceColors({cube: cube, new_colors: colors});
-  cube.position.set(position.x, position.y, position.z);
-
-  cube.name = id;
-
-  return cube;
-}
-
-const changeCubeFaceColors = ({
-  cube,
-  new_colors = 0x989898,
-  face_index = undefined
-}: {
-  cube: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial[], THREE.Object3DEventMap>
-  new_colors?: number
-  face_index?: number | undefined
-}) => {
-
-  const textureLoader = new THREE.TextureLoader();
-  const texture = textureLoader.load(new URL('../assets/rubik_textures/' + new_colors + '.png', import.meta.url).href);
-
-  if (face_index != undefined) {
-    // cube.material[face_index] = new THREE.MeshBasicMaterial({ map: texture });
-    cube.material[face_index].color.setHex(new_colors);
-  } else {
-    for (let i = 0; i < cube.material.length; i++) {
-      // cube.material[i] = new THREE.MeshBasicMaterial({ map: texture });
-      cube.material[i].color.setHex(new_colors);
-    }
-  }
-}
-
-const createRubik = ({
-  center = { x: 0, y: 0, z: 0 }
-}: {
-  center?: { x: number; y: number; z: number }; // Optionnel
-} = {}) => {
-
-  let all_cubes: Array<THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial[], THREE.Object3DEventMap>> = [];
-  // let cube_id = 0;
-  for (let y = center.y + 1; y >= center.y - 1; y--) {
-    for (let z = center.z - 1; z <= center.z + 1; z++) {
-      for (let x = center.x - 1; x <= center.x + 1; x++) {
-        all_cubes.push(
-        createCube({
-        size: 1,
-        // id: cube_id.toString(),
-        position: {x: x, y: y, z: z}
-      }));
-      // cube_id++;
-      }
-    }
-  }
-  return all_cubes
-}
 
 
 
@@ -408,50 +319,57 @@ class Rubik3D {
   }
 }
 
-
 function checkPointerIntersects() {
+  raycaster.setFromCamera(pointer, camera);
+  const intersects = raycaster.intersectObjects(scene.children, false);
 
-raycaster.setFromCamera(pointer, camera);
-const intersects = raycaster.intersectObjects(scene.children, false);
+  if (intersects.length > 0) {
+    const intersectedObject: THREE.Mesh = intersects[0].object;
+    const faceIndex = intersects[0].face?.materialIndex;
 
-if (intersects.length > 0) {
+    // If the prev Intersected object is not the same
+    if (INTERSECTED != intersectedObject || INTERSECTED_FACE_INDEX != faceIndex) {
 
-  // Vérifie si on est sur un nouvel objet ou une nouvelle face
-  if (INTERSECTED != intersects[0].object || INTERSECTED_FACE_INDEX != intersects[0].faceIndex) {
 
-    // Réinitialise la couleur de la dernière face intersectée
-    if (INTERSECTED) {
-      // INTERSECTED.material[INTERSECTED_FACE_INDEX].color.setHex(INTERSECTED.currentHex);
+    // @ts-ignore: Edit the prev Intersected object color if is existing
+      if (INTERSECTED && INTERSECTED.material && INTERSECTED_FACE_INDEX != null && INTERSECTED.material[INTERSECTED_FACE_INDEX]) {
+        // @ts-ignore
+        INTERSECTED.material[INTERSECTED_FACE_INDEX].color.setHex(INTERSECTED.currentHex);
+
+      }
+      // Update the Intersected object
+      INTERSECTED = intersectedObject;
+      INTERSECTED_FACE_INDEX = faceIndex;
+
+      //  @ts-ignore
+      if (INTERSECTED.material && INTERSECTED_FACE_INDEX != null && INTERSECTED.material[INTERSECTED_FACE_INDEX]) {
+        // @ts-ignore
+        INTERSECTED.currentHex = INTERSECTED.material[INTERSECTED_FACE_INDEX].color.getHex();
+
+
+        // @ts-ignore
+        INTERSECTED.material[INTERSECTED_FACE_INDEX].color.offsetHSL(0, 0, 0.25);
+        // INTERSECTED.material[INTERSECTED_FACE_INDEX].color.setHex(0xd4d4d4);
+      }
     }
 
-    // Stocke l'objet et la face actuelle
-    INTERSECTED = intersects[0].object;
-    INTERSECTED_FACE_INDEX = intersects[0].faceIndex;
+  } else {
+    // @ts-ignore
+    if (INTERSECTED && INTERSECTED.material && INTERSECTED.material[INTERSECTED_FACE_INDEX]) {
+      // @ts-ignore
+      INTERSECTED.material[INTERSECTED_FACE_INDEX].color.setHex(INTERSECTED.currentHex);
+      // @ts-ignore
+      INTERSECTED.material[INTERSECTED_FACE_INDEX].color.offsetHSL(0, 0, 0);
+    }
 
-    // Sauvegarde la couleur de la face actuelle
-    console.log(INTERSECTED.material[INTERSECTED_FACE_INDEX])
-    INTERSECTED.currentHex = INTERSECTED.material[INTERSECTED_FACE_INDEX].color.getHex();
-
-    // Applique la nouvelle couleur uniquement à la face sous le curseur
-    INTERSECTED.material[INTERSECTED_FACE_INDEX].color.setHex(0xd4d4d4);
+    INTERSECTED = null;
+    INTERSECTED_FACE_INDEX = null;
   }
-
-} else {
-
-  // Réinitialise la couleur de la dernière face intersectée
-  if (INTERSECTED) {
-    INTERSECTED.material[INTERSECTED_FACE_INDEX].color.setHex(INTERSECTED.currentHex);
-  }
-
-  // Réinitialise les variables
-  INTERSECTED = null;
-  INTERSECTED_FACE_INDEX = null;
-}
 }
 
 const animate = () => {
   controls.update();
-  // checkPointerIntersects();
+  checkPointerIntersects();
   if (rubik3D.animation_is_playing && rubik3D.current_tween) {
     rubik3D.current_tween.update();
   }
@@ -464,12 +382,13 @@ const initThree = () => {
     return ;
   }
   const canva: HTMLElement = threeContainer.value;
-  console.log("HERE");
 
   // INIT THREE JS
   scene = new THREE.Scene();
   camera = new THREE.PerspectiveCamera(75, canva.offsetWidth / canva.offsetHeight, 0.1, 1000);
   pointer = new THREE.Vector2();
+  pointer.x = -1;
+  pointer.y = 1;
   raycaster = new THREE.Raycaster();
 
   camera.position.x = 3;
@@ -488,7 +407,7 @@ const initThree = () => {
 
   // canva = threeContainer.value;
 
-  if (canva == null) {
+  if (!canva) {
     return ;
   }
   rubik3D = new Rubik3D();
@@ -507,28 +426,32 @@ const initThree = () => {
 }
 
 function onWindowResize() {
-  if (canva == undefined) {
+  if (!canva) {
     return ;
   }
-  console.log("RESIZING");
   camera.aspect = canva.offsetWidth / canva.offsetHeight;
   camera.updateProjectionMatrix();
-  console.log(canva);
+  // console.log(canva);
   renderer.setSize( canva.offsetWidth, canva.offsetHeight );
 }
 
 function onPointerMove( event: MouseEvent ) {
-  if (canva == undefined) {
+  if (!canva) {
     return ;
   }
-  pointer.x = ( event.clientX / canva.offsetWidth ) * 2 - 1;
-  pointer.y = - ( event.clientY / canva.offsetHeight ) * 2 + 1;
+    // Correction pour tenir compte des décalages du canvas
+  const rect = canva.getBoundingClientRect();
+
+  pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+  pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+  // pointer.x = ( event.clientX / canva.offsetWidth ) * 2 - 1;
+  // pointer.y = - ( event.clientY / canva.offsetHeight ) * 2 + 1;
 }
 
 
 onMounted(() => {
   canva = document.getElementById('rubik_canvas');
-  if (canva != null) {
+  if (canva) {
     initThree();
   }
 });
