@@ -25,34 +25,30 @@ let raycaster: THREE.Raycaster;
 let renderer: THREE.WebGLRenderer;
 let controls: OrbitControls;
 
+let rubik3D: Rubik3D;
 
 let INTERSECTED: THREE.Mesh | null;
 let INTERSECTED_FACE_INDEX: number | undefined | null;
 
-// Init RUBIK
-let rubik3D: Rubik3D;
 
 
+function onCanvaClick( event:MouseEvent ) {
+  raycaster.setFromCamera(pointer, camera);
+  const intersects = raycaster.intersectObjects(scene.children, false);
 
-// Except JSON from backend
-/*
-{
-  number_moves: XY,
-  results: [
-    {
-      rubik: [[[[...]]]],
-      move: X'
-    },
-    ...
-  ]
+  if (intersects.length > 0) {
+    INTERSECTED = intersects[0].object;
+    INTERSECTED_FACE_INDEX = intersects[0].face?.materialIndex
+
+    // @ts-ignore
+    if (INTERSECTED.material && INTERSECTED_FACE_INDEX != null && INTERSECTED.material[INTERSECTED_FACE_INDEX]) {
+        // @ts-ignore
+        INTERSECTED.material[INTERSECTED_FACE_INDEX].color.setHex(0xFF00FF);
+        // @ts-ignore
+        INTERSECTED.currentHex = INTERSECTED.material[INTERSECTED_FACE_INDEX].color.getHex();
+      }
+  }
 }
-
-
-*/
-
-
-
-
 
 function checkPointerIntersects() {
   raycaster.setFromCamera(pointer, camera);
@@ -150,7 +146,7 @@ const initThree = () => {
   requestAnimationFrame(animate);
   window.addEventListener( 'resize', onWindowResize );
   document.addEventListener( 'mousemove', onPointerMove );
-
+  canva.addEventListener('click', onCanvaClick );
 
 }
 
@@ -185,6 +181,7 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener( 'resize', onWindowResize );
   document.removeEventListener( 'mousemove', onPointerMove );
+  canva?.removeEventListener('click', onCanvaClick );
 })
 </script>
 
