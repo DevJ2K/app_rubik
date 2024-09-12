@@ -1,7 +1,10 @@
 <template>
-  <main>
+  <main class="flex size-full h-screen flex-col items-center justify-center">
     <h1 class=" text-center">Rubik</h1>
-    <div ref="threeContainer"></div>
+    <div class="rubik_canvas_div">
+      <!-- <canvas id="rubik_canvas" width="200" height="200"></canvas> -->
+    </div>
+    <div id="rubik_canvas" ref="threeContainer" class="size-96 min-h-96 min-w-96"></div>
   </main>
 </template>
 
@@ -10,40 +13,33 @@ import * as THREE from 'three';
 import * as TWEEN from '@tweenjs/tween.js'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-import { onMounted, ref } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 
 // Déclarer une référence pour le conteneur
 const threeContainer = ref(null);
+let canva: HTMLElement | undefined;
+let scene: THREE.Scene;
+let camera: THREE.PerspectiveCamera;
+let pointer: THREE.Vector2;
+let raycaster: THREE.Raycaster;
+let renderer: THREE.WebGLRenderer;
+let controls: OrbitControls;
 
 
-// INIT THREE JS
-const scene = new THREE.Scene();
+let INTERSECTED;
+let INTERSECTED_FACE_INDEX;
 
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+// Init RUBIK
+let rubik3D: Rubik3D;
 
-camera.position.x = 8;
-camera.position.y = 5;
-camera.position.z = 9;
-
-// 45deg top
-// camera.position.x = 7;
-// camera.position.y = 7;
-// camera.position.z = 7;
-
-const renderer = new THREE.WebGLRenderer();
-const controls = new OrbitControls( camera, renderer.domElement );
-
-// Config render
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setClearColor(0x0F0F0F);
 
 const createCube = ({
-  colors = "black",
+  colors = 0x989898,
   size = 1,
   id = "cube",
   position = { x: 0, y: 0, z: 0 }
 }: {
-  colors?: string;
+  colors?: number;
   size?: number;
   id?: string;
   position?: { x: number; y: number; z: number };
@@ -51,19 +47,23 @@ const createCube = ({
   const geometry = new THREE.BoxGeometry(size, size, size);
 
   const textureLoader = new THREE.TextureLoader();
-  const texture = textureLoader.load(new URL('../assets/rubik_textures/' + colors + '.png', import.meta.url).href);
+  const texture = textureLoader.load(new URL('../assets/rubik_textures/white.png', import.meta.url).href);
 
-  // const textureMaterial = new THREE.MeshBasicMaterial({ map: texture });
-
-  // const defaultMaterial = new THREE.MeshBasicMaterial({ color: 0xFF });
-
+  // const cube = new THREE.Mesh(geometry, [
+  //   new THREE.MeshBasicMaterial({ color: 0x0 }),
+  //   new THREE.MeshBasicMaterial({ color: 0x0 }),
+  //   new THREE.MeshBasicMaterial({ color: 0x0 }),
+  //   new THREE.MeshBasicMaterial({ color: 0x0 }),
+  //   new THREE.MeshBasicMaterial({ color: 0x0 }),
+  //   new THREE.MeshBasicMaterial({ color: 0x0 })
+  // ]);
   const cube = new THREE.Mesh(geometry, [
-    new THREE.MeshBasicMaterial({ color: 0xFF }),
-    new THREE.MeshBasicMaterial({ color: 0xFF }),
-    new THREE.MeshBasicMaterial({ color: 0xFF }),
-    new THREE.MeshBasicMaterial({ color: 0xFF }),
-    new THREE.MeshBasicMaterial({ color: 0xFF }),
-    new THREE.MeshBasicMaterial({ color: 0xFF })
+    new THREE.MeshBasicMaterial({ map: texture }),
+    new THREE.MeshBasicMaterial({ map: texture }),
+    new THREE.MeshBasicMaterial({ map: texture }),
+    new THREE.MeshBasicMaterial({ map: texture }),
+    new THREE.MeshBasicMaterial({ map: texture }),
+    new THREE.MeshBasicMaterial({ map: texture })
   ]);
 
   changeCubeFaceColors({cube: cube, new_colors: colors});
@@ -76,11 +76,11 @@ const createCube = ({
 
 const changeCubeFaceColors = ({
   cube,
-  new_colors = "black",
+  new_colors = 0x989898,
   face_index = undefined
 }: {
   cube: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial[], THREE.Object3DEventMap>
-  new_colors?: string
+  new_colors?: number
   face_index?: number | undefined
 }) => {
 
@@ -88,11 +88,12 @@ const changeCubeFaceColors = ({
   const texture = textureLoader.load(new URL('../assets/rubik_textures/' + new_colors + '.png', import.meta.url).href);
 
   if (face_index != undefined) {
-    cube.material[face_index] = new THREE.MeshBasicMaterial({ map: texture });
+    // cube.material[face_index] = new THREE.MeshBasicMaterial({ map: texture });
+    cube.material[face_index].color.setHex(new_colors);
   } else {
     for (let i = 0; i < cube.material.length; i++) {
-      cube.material[i] = new THREE.MeshBasicMaterial({ map: texture });
-
+      // cube.material[i] = new THREE.MeshBasicMaterial({ map: texture });
+      cube.material[i].color.setHex(new_colors);
     }
   }
 }
@@ -160,13 +161,13 @@ class Rubik3D {
   current_tween: TWEEN.Tween | undefined;
   frames: Array<Object>
 
-    readonly COLORS_MAP: Map<string, string> = new Map<string, string>([
-    ['1', 'white'],  // face 1
-    ['2', 'yellow'], // face 2
-    ['3', 'blue'],   // face 3
-    ['4', 'green'],  // face 4
-    ['5', 'red'],    // face 5
-    ['6', 'orange'], // face 6
+    readonly COLORS_MAP: Map<string, number> = new Map<string, number>([
+    ['1', 0xFFFFFF],  // face 1
+    ['2', 0xFFFF00], // face 2
+    ['3', 0x0000FF],   // face 3
+    ['4', 0x00FF00],  // face 4
+    ['5', 0xFF0000],    // face 5
+    ['6', 0xff9700], // face 6
   ]);
   constructor(default_faces_colors?: Array<Array<Array<string>>>, center_x?: number, center_y?: number, center_z?: number) {
     this.x = center_x ?? 0;
@@ -191,24 +192,24 @@ class Rubik3D {
     this.current_frame = 0;
 
     this.frames = [
-      {
-        move: "L"
-      },
-      {
-        move: "R"
-      },
-      {
-        move: "U"
-      },
-      {
-        move: "L'"
-      },
-      {
-        move: "R'"
-      },
-      {
-        move: "U'"
-      },
+      // {
+      //   move: "L"
+      // },
+      // {
+      //   move: "R"
+      // },
+      // {
+      //   move: "U"
+      // },
+      // {
+      //   move: "L'"
+      // },
+      // {
+      //   move: "R'"
+      // },
+      // {
+      //   move: "U'"
+      // },
     ]
 
     this.animation_is_playing = false;
@@ -407,27 +408,134 @@ class Rubik3D {
   }
 }
 
+
+function checkPointerIntersects() {
+
+raycaster.setFromCamera(pointer, camera);
+const intersects = raycaster.intersectObjects(scene.children, false);
+
+if (intersects.length > 0) {
+
+  // Vérifie si on est sur un nouvel objet ou une nouvelle face
+  if (INTERSECTED != intersects[0].object || INTERSECTED_FACE_INDEX != intersects[0].faceIndex) {
+
+    // Réinitialise la couleur de la dernière face intersectée
+    if (INTERSECTED) {
+      // INTERSECTED.material[INTERSECTED_FACE_INDEX].color.setHex(INTERSECTED.currentHex);
+    }
+
+    // Stocke l'objet et la face actuelle
+    INTERSECTED = intersects[0].object;
+    INTERSECTED_FACE_INDEX = intersects[0].faceIndex;
+
+    // Sauvegarde la couleur de la face actuelle
+    console.log(INTERSECTED.material[INTERSECTED_FACE_INDEX])
+    INTERSECTED.currentHex = INTERSECTED.material[INTERSECTED_FACE_INDEX].color.getHex();
+
+    // Applique la nouvelle couleur uniquement à la face sous le curseur
+    INTERSECTED.material[INTERSECTED_FACE_INDEX].color.setHex(0xd4d4d4);
+  }
+
+} else {
+
+  // Réinitialise la couleur de la dernière face intersectée
+  if (INTERSECTED) {
+    INTERSECTED.material[INTERSECTED_FACE_INDEX].color.setHex(INTERSECTED.currentHex);
+  }
+
+  // Réinitialise les variables
+  INTERSECTED = null;
+  INTERSECTED_FACE_INDEX = null;
+}
+}
+
+const animate = () => {
+  controls.update();
+  // checkPointerIntersects();
+  if (rubik3D.animation_is_playing && rubik3D.current_tween) {
+    rubik3D.current_tween.update();
+  }
+  renderer.render(scene, camera);
+  requestAnimationFrame(animate);
+};
+
 const initThree = () => {
   if (threeContainer.value == null) {
     return ;
   }
-  threeContainer.value.appendChild(renderer.domElement);
-  let rubik3D = new Rubik3D();
+  const canva: HTMLElement = threeContainer.value;
+  console.log("HERE");
+
+  // INIT THREE JS
+  scene = new THREE.Scene();
+  camera = new THREE.PerspectiveCamera(75, canva.offsetWidth / canva.offsetHeight, 0.1, 1000);
+  pointer = new THREE.Vector2();
+  raycaster = new THREE.Raycaster();
+
+  camera.position.x = 3;
+  camera.position.y = 3;
+  camera.position.z = 3;
+
+  renderer = new THREE.WebGLRenderer({antialias: true, alpha: true});
+  controls = new OrbitControls( camera, renderer.domElement );
+
+  // Config render
+  renderer.setSize(canva.offsetWidth, canva.offsetHeight);
+  renderer.setClearColor(0x0F0F0F, 1);
+  canva.appendChild(renderer.domElement);
+
+
+
+  // canva = threeContainer.value;
+
+  if (canva == null) {
+    return ;
+  }
+  rubik3D = new Rubik3D();
   rubik3D.play_animation();
 
-  const animate = () => {
-    controls.update();
-    if (rubik3D.animation_is_playing && rubik3D.current_tween) {
-      rubik3D.current_tween.update();
-    }
-    renderer.render(scene, camera);
-    requestAnimationFrame(animate);
-  };
+  // canva.appendChild(renderer.domElement);
+
+
+
   requestAnimationFrame(animate);
+
+  window.addEventListener( 'resize', onWindowResize );
+  document.addEventListener( 'mousemove', onPointerMove );
+
+
 }
 
+function onWindowResize() {
+  if (canva == undefined) {
+    return ;
+  }
+  console.log("RESIZING");
+  camera.aspect = canva.offsetWidth / canva.offsetHeight;
+  camera.updateProjectionMatrix();
+  console.log(canva);
+  renderer.setSize( canva.offsetWidth, canva.offsetHeight );
+}
+
+function onPointerMove( event: MouseEvent ) {
+  if (canva == undefined) {
+    return ;
+  }
+  pointer.x = ( event.clientX / canva.offsetWidth ) * 2 - 1;
+  pointer.y = - ( event.clientY / canva.offsetHeight ) * 2 + 1;
+}
+
+
 onMounted(() => {
-  initThree();
+  canva = document.getElementById('rubik_canvas');
+  if (canva != null) {
+    initThree();
+  }
 });
+
+onUnmounted(() => {
+  window.removeEventListener( 'resize', onWindowResize );
+  document.removeEventListener( 'mousemove', onPointerMove );
+})
 </script>
 
