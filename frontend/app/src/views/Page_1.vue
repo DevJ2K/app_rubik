@@ -30,9 +30,18 @@ let rubik3D: Rubik3D;
 let INTERSECTED: THREE.Mesh | null;
 let INTERSECTED_FACE_INDEX: number | undefined | null;
 
+let mousedown_coordinates: Object = Object();
 
+function onCanvaMousedown( event: MouseEvent ) {
+  mousedown_coordinates.x = event.clientX;
+  mousedown_coordinates.y = event.clientY;
+}
 
-function onCanvaClick( event:MouseEvent ) {
+function onCanvaMouseup( event: MouseEvent ) {
+
+  if (mousedown_coordinates.x != event.clientX || mousedown_coordinates.y != event.clientY) {
+    return ;
+  }
   raycaster.setFromCamera(pointer, camera);
   const intersects = raycaster.intersectObjects(scene.children, false);
 
@@ -146,7 +155,8 @@ const initThree = () => {
   requestAnimationFrame(animate);
   window.addEventListener( 'resize', onWindowResize );
   document.addEventListener( 'mousemove', onPointerMove );
-  canva.addEventListener('click', onCanvaClick );
+  canva.addEventListener('mousedown', onCanvaMousedown );
+  canva.addEventListener('mouseup', onCanvaMouseup );
 
 }
 
@@ -181,7 +191,8 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener( 'resize', onWindowResize );
   document.removeEventListener( 'mousemove', onPointerMove );
-  canva?.removeEventListener('click', onCanvaClick );
+  canva?.removeEventListener('mousedown', onCanvaMousedown );
+  canva?.removeEventListener('mouseup', onCanvaMouseup );
 })
 </script>
 
