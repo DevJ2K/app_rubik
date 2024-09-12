@@ -182,7 +182,7 @@ class Rubik:
 			(cube_back[1][2], cube_right[1][2])
 		]
 		orientation = []
-		for edge in edges:
+		for edge in edges[:-1]:
 			if edge[0] in ['W', 'Y'] or edge[1] in ['W', 'Y']:
 				orientation.append(0)
 			else:
@@ -214,7 +214,7 @@ class Rubik:
 			(cube_down[2][0], cube_left[2][0], cube_back[2][0])
 		]
 		orientation = []
-		for corner in corners:
+		for corner in corners[:-1]:
 			if corner[0] in ['W', 'Y']:
 				orientation.append(0)
 			elif corner[1] in ['W', 'Y']:
@@ -237,7 +237,7 @@ class Rubik:
 		"""
 		edgeOrientation = self.getEdgeOrientation()
 		state = 0
-		for i in range(12):
+		for i in range(11):
 			state = (state << 1) | edgeOrientation[i]
 		return state
 	
@@ -256,7 +256,7 @@ class Rubik:
     	"""
 		cornerOrientation = self.getCornerOrientation()
 		state = 0
-		for i in range(8):
+		for i in range(7):
 			state = state * 3 + cornerOrientation[i]
 		return state
 
@@ -356,6 +356,23 @@ class Rubik:
 		Notes:
 		- `self.get_cube()` doit retourner une représentation du cube en tant que liste 3D.
 		"""
+		# cube = self.get_cube()
+		# for face in cube:
+		# 	center_color = face[1][1]
+		# 	for row in face:
+		# 		for color in row:
+		# 			if color != center_color:
+		# 				return False
+		# return True
+		# edgeOrientation = self.getEdgeOrientation()
+		cornerOrientation = self.getCornerOrientation()
+		# if any(orientation != 0 for orientation in edgeOrientation):
+		# 	return False
+		if any(orientation != 0 for orientation in cornerOrientation):
+			return False
+		return True
+
+	def isSolved(self) -> bool:
 		cube = self.get_cube()
 		for face in cube:
 			center_color = face[1][1]
@@ -364,9 +381,6 @@ class Rubik:
 					if color != center_color:
 						return False
 		return True
-
-	def isSolved(self) -> bool:
-		return self.get_cube() == [[['W', 'W', 'W'], ['W', 'W', 'W'], ['W', 'W', 'W']], [['Y', 'Y', 'Y'], ['Y', 'Y', 'Y'], ['Y', 'Y', 'Y']], [['G', 'G', 'G'], ['G', 'G', 'G'], ['G', 'G', 'G']], [['B', 'B', 'B'], ['B', 'B', 'B'], ['B', 'B', 'B']], [['O', 'O', 'O'], ['O', 'O', 'O'], ['O', 'O', 'O']], [['R', 'R', 'R'], ['R', 'R', 'R'], ['R', 'R', 'R']]]
 
 	def shuffle(self):
 		# U D R2 L2 F2 B2
@@ -438,10 +452,13 @@ class Rubik:
 		"""
 		from PruningTable import generateCornerPruningTable, generateEdgePruningTable, \
 		generateEdgePruningTablePermutation, generateCornerPruningTablePermutation
-		"""Solve the self.cube
-		"""
-		phase1EdgePruningTable = generateEdgePruningTable()
 
+		phase1EdgePruningTable = generateEdgePruningTable()
+		# for i in range(2**11):
+		# 	distance = phase1EdgePruningTable.getPruning(i)
+		# 	# if distance != -1: print(distance)
+		# 	print(distance)
+		# print(len(phase1EdgePruningTable.table))
 		phase1CornerPruningTable = generateCornerPruningTable()
 		G1State = phase1Search(self, 12, phase1EdgePruningTable, phase1CornerPruningTable)
 		print(G1State)
@@ -455,9 +472,10 @@ class Rubik:
 		phase2EdgePruningTable = generateEdgePruningTablePermutation()
 		phase2CornerPruningTable = generateCornerPruningTablePermutation()
 		print('fin phase 2 pruningTable')
-		print(self.get_cube())
+		# print(self.get_cube())
 		result = phase2Search(self, 12, phase2EdgePruningTable, phase2CornerPruningTable)
 		print(result)
+		self.visualize_cube()
 
 
 def phase1Search(cube: Rubik, maxDepth: int, edgePruningTable: PruningTable, cornerPruningTable: PruningTable) -> list[str]:
@@ -474,7 +492,7 @@ def phase1Search(cube: Rubik, maxDepth: int, edgePruningTable: PruningTable, cor
     Retourne:
     - list[str]: Séquence de mouvements qui résout la phase 1, ou None si aucune solution n'est trouvée.
     """
-	def dfs(cubeState: Rubik, depth: int, maxDepth: int, path: list[str]) -> list[str]:
+	def dfs(cubeState: Rubik, depth: int, path: list[str]) -> list[str]:
 		"""
         Recherche en profondeur pour trouver une séquence de mouvements résolvant l'orientation des arêtes.
 
@@ -492,8 +510,8 @@ def phase1Search(cube: Rubik, maxDepth: int, edgePruningTable: PruningTable, cor
 			return path
 		if depth >= maxDepth:
 			return None
-		if edgePruningTable.getPruning(cubeState.getEdgeOrientationState()) > maxDepth - depth:
-			return None
+		# if edgePruningTable.getPruning(cubeState.getEdgeOrientationState()) > maxDepth - depth:
+		# 	return None
 		if cornerPruningTable.getPruning(cubeState.getCornerOrientationState()) > maxDepth - depth:
 			return None
 		
@@ -502,16 +520,17 @@ def phase1Search(cube: Rubik, maxDepth: int, edgePruningTable: PruningTable, cor
 		for move in moves:
 			newCube: Rubik = copy.deepcopy(cubeState)
 			newCube.apply_move(move)
-			result = dfs(newCube, depth + 1, maxDepth, path + [move])
+			result = dfs(newCube, depth + 1, path + [move])
 			if result is not None:
 				return result
 		return None
 	
-	for depth in range(1, maxDepth + 1):
-		result = dfs(cube, 0, depth, [])
-		if result is not None:
-			return result
-	return None
+	# for depth in range(1, maxDepth + 1):
+	# 	result = dfs(cube, 0, depth, [])
+	# 	if result is not None:
+	# 		return result
+	# return None
+	return dfs(cube, 0, [])
 
 def phase2Search(cube: Rubik, maxDepth: int, edgePermutationTable: PruningTable, cornerPermutationTable: PruningTable) -> list[str]:
 	"""
@@ -547,7 +566,7 @@ def phase2Search(cube: Rubik, maxDepth: int, edgePermutationTable: PruningTable,
         - list[str]: Une liste de mouvements qui résout la permutation des arêtes et des coins, ou None
           si aucune solution n'est trouvée à cette profondeur.
         """
-		print(path)
+		# print(path)
 		if cubeState.isSolved():
 			return path
 		if depth > maxDepth:
@@ -576,7 +595,8 @@ def phase2Search(cube: Rubik, maxDepth: int, edgePermutationTable: PruningTable,
 
 if __name__ == "__main__":
 	rubik = Rubik()
-	rubik.generateRandomCube(7, mode='easy') # easy <=> no inverse moves, hard <=> all moves
+	# rubik.shuffle()
+	rubik.generateRandomCube(5, mode='easy') # easy <=> no inverse moves, hard <=> all moves
 	rubik.solve()
 	# rubik.apply_move("B")
 	# rubik.apply_move("B'")

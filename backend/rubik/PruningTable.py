@@ -8,7 +8,7 @@ class PruningTable:
 	def getPruning(self, state):
 		return self.table[state]
 	
-	def generateTable(self, getNeighbors: function) -> None:
+	def generateTable(self, getNeighbors) -> None:
 		"""
 		Remplit la table de réduction en utilisant une recherche en largeur (BFS).
 
@@ -25,6 +25,7 @@ class PruningTable:
 		self.setPruning(0, 0)
 
 		while queue:
+			print('QUEUE: ', queue)
 			currentState = queue.pop(0)
 			currentDistance = self.getPruning(currentState)
 
@@ -161,7 +162,7 @@ def generateEdgePruningTable() -> PruningTable:
     Retourne:
     - PruningTable: La table de réduction générée pour les orientations des arêtes.
     """
-	nbStates = 2**12
+	nbStates = 2**11
 	pruningTable = PruningTable(nbStates)
 	pruningTable.generateTable(getNeighborsEdgeOrientation)
 	return pruningTable
@@ -176,7 +177,7 @@ def generateCornerPruningTable() -> PruningTable:
     Retourne:
     - PruningTable: La table de réduction générée pour les orientations des coins.
     """
-	nbStates = 3**8
+	nbStates = 3**7
 	pruningTable = PruningTable(nbStates)
 	pruningTable.generateTable(getNeighborsCornerOrientation)
 	return pruningTable
