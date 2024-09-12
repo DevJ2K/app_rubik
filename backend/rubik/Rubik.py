@@ -168,10 +168,10 @@ class Rubik:
 		"""
 		cube_up,cube_down,cube_front,cube_back,cube_left,cube_right = self.get_cube()
 		edges = [
-			(cube_up[0][1], cube_back[0][1]),	
+			(cube_up[0][1], cube_back[0][1]),
 			(cube_up[1][2], cube_right[0][1]),
 			(cube_up[2][1], cube_front[0][1]),
-			(cube_up[1][0], cube_left[0][1]),	
+			(cube_up[1][0], cube_left[0][1]),
 			(cube_down[0][1], cube_front[2][1]),
 			(cube_down[1][2], cube_right[2][1]),
 			(cube_down[2][1], cube_back[2][1]),
@@ -187,6 +187,7 @@ class Rubik:
 				orientation.append(0)
 			else:
 				orientation.append(1)
+		print(orientation)
 		return orientation
 	
 	def getCornerOrientation(self) -> list[int]:
@@ -364,11 +365,16 @@ class Rubik:
 		# 			if color != center_color:
 		# 				return False
 		# return True
-		# edgeOrientation = self.getEdgeOrientation()
+		solvedEdgeOrientation = [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1]
+		solvedCornerOrientation = [0] * 8
+
+		edgeOrientation = self.getEdgeOrientation()
 		cornerOrientation = self.getCornerOrientation()
-		# if any(orientation != 0 for orientation in edgeOrientation):
-		# 	return False
-		if any(orientation != 0 for orientation in cornerOrientation):
+		if edgeOrientation != solvedEdgeOrientation:
+			print('here 1')
+			return False
+		if cornerOrientation != solvedCornerOrientation:
+			print('here 2')
 			return False
 		return True
 
@@ -510,8 +516,8 @@ def phase1Search(cube: Rubik, maxDepth: int, edgePruningTable: PruningTable, cor
 			return path
 		if depth >= maxDepth:
 			return None
-		# if edgePruningTable.getPruning(cubeState.getEdgeOrientationState()) > maxDepth - depth:
-		# 	return None
+		if edgePruningTable.getPruning(cubeState.getEdgeOrientationState()) > maxDepth - depth:
+			return None
 		if cornerPruningTable.getPruning(cubeState.getCornerOrientationState()) > maxDepth - depth:
 			return None
 		
@@ -551,7 +557,7 @@ def phase2Search(cube: Rubik, maxDepth: int, edgePermutationTable: PruningTable,
     - list[str]: Une liste de mouvements sous forme de chaînes de caractères qui résout la phase 2, ou
       None si aucune solution n'est trouvée dans la profondeur spécifiée.
     """
-	def dfs(cubeState: Rubik, depth: int, maxDepth: int, path: list[str]) -> list[str]:
+	def dfs(cubeState: Rubik, depth: int, path: list[str]) -> list[str]:
 		"""
         Fonction auxiliaire pour effectuer la recherche en profondeur (DFS) afin de trouver une séquence
         de mouvements qui résout la permutation des arêtes et des coins du Rubik's Cube.
@@ -582,16 +588,17 @@ def phase2Search(cube: Rubik, maxDepth: int, edgePermutationTable: PruningTable,
 		for move in moves:
 			newCube: Rubik = copy.deepcopy(cubeState)
 			newCube.apply_move(move)
-			result = dfs(newCube, depth + 1, maxDepth, path + [move])
+			result = dfs(newCube, depth + 1, path + [move])
 			if result is not None:
 				return result
 		return None
 	
-	for depth in range(1, maxDepth + 1):
-		result = dfs(cube, 0, depth, [])
-		if result is not None:
-			return result
-	return None
+	# for depth in range(1, maxDepth + 1):
+	# 	result = dfs(cube, 0, depth, [])
+	# 	if result is not None:
+	# 		return result
+	# return None
+	return dfs(cube, 0, [])
 
 if __name__ == "__main__":
 	rubik = Rubik()
