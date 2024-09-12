@@ -73,9 +73,9 @@ class Rubik3D {
 		this.current_frame = 0;
 
 		this.frames = [
-			// {
-			//   move: "L"
-			// },
+			{
+				move: "L"
+			},
 			// {
 			//   move: "R"
 			// },
@@ -118,6 +118,7 @@ class Rubik3D {
 	}
 
 	async play_animation(): Promise<void> {
+		// console.log(this.all_cubes);
 		this.animation_is_playing = true;
 		for (let i = this.current_frame; i < this.frames.length; i++) {
 			const element = this.frames[i];
@@ -125,7 +126,10 @@ class Rubik3D {
 			this.current_frame = i;
 		}
 		this.current_tween = undefined;
-		}
+		this.sort_cubes_by_position();
+		console.log(this.all_cubes);
+		await this.update_face_colors();
+	}
 
 		private selected_cubes(cube_to_select: Array<number>): THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial[], THREE.Object3DEventMap>[] {
 
@@ -140,17 +144,98 @@ class Rubik3D {
 		return selected_cubes;
 	}
 
+	sort_cubes_by_position(): void {
+		let sorted_cube_up: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial[], THREE.Object3DEventMap>[] = [];
 
-	update_face_colors(): void {
+		let selected_cubes_up = [];
+		let sorted_cube_up_line_1 = [];
+		let sorted_cube_up_line_2 = [];
+		let sorted_cube_up_line_3 = [];
+
+
+		selected_cubes_up = this.all_cubes.filter((cube) => {
+			return cube.position.y > 0.1;
+		})
+
+
+		sorted_cube_up_line_1 = selected_cubes_up.filter((cube) => {
+			return cube.position.z < -0.1;
+		}).sort((a, b) => {
+			if (a.position.x < b.position.x) { return (-1)}
+			else if (a.position.x > b.position.x) { return (1) }
+			else { return (0) }
+		});
+
+		sorted_cube_up_line_2 = selected_cubes_up.filter((cube) => {
+			return cube.position.z < 0.1 && cube.position.z > -0.1;
+		}).sort((a, b) => {
+			if (a.position.x < b.position.x) { return (-1)}
+			else if (a.position.x > b.position.x) { return (1) }
+			else { return (0) }
+		});
+
+		sorted_cube_up_line_3 = selected_cubes_up.filter((cube) => {
+			return cube.position.z > 0.1;
+		}).sort((a, b) => {
+			console.log("A : " + a.name + " : " + a.position.x);
+			console.log("B : " + b.name + " : " + b.position.x);
+
+			if (a.position.x < b.position.x) { return (-1)}
+			else if (a.position.x > b.position.x) { return (1) }
+			else { return (0) }
+		});
+
+		sorted_cube_up = sorted_cube_up.concat(sorted_cube_up_line_1, sorted_cube_up_line_2, sorted_cube_up_line_3);
+
+		let selected_cubes_middle = [];
+		let selected_cubes_down = [];
+
+		this.all_cubes = sorted_cube_up;
+		return ;
+
+		this.all_cubes = this.all_cubes.sort((a, b) => {
+			// Comparer d'abord par la coordonnée y (axe vertical)
+			if (a.position.y !== b.position.y) {
+				return b.position.y - a.position.y;
+			}
+			// Si y est égal, comparer par la coordonnée z (profondeur)
+			if (a.position.z !== b.position.z) {
+				return a.position.z - b.position.z;
+			}
+			// Si z est égal, comparer par la coordonnée x (axe horizontal)
+			return a.position.x - b.position.x;
+		});
+	}
+
+	async update_face_colors(): Promise<void> {
+		// All cubes depending face
+		const selected_cubes_up = this.selected_cubes([0, 1, 2, 3, 4, 5, 6, 7, 8]);
+		const selected_cubes_down = this.selected_cubes([20, 19, 18, 23, 22, 21, 26, 25, 24]);
+		const selected_cubes_front = this.selected_cubes([6, 7, 8, 15, 16, 17, 24, 25, 26]);
+		const selected_cubes_back = this.selected_cubes([2, 1, 0, 11, 10, 9, 20, 19, 18]);
+		const selected_cubes_left = this.selected_cubes([0, 3, 6, 9, 12, 15, 18, 21, 24]);
+		const selected_cubes_right = this.selected_cubes([8, 5, 2, 17, 14, 11, 26, 23, 20]);
+
+		// To highlight selected_cubes_...
+		const highlight_selected_test_only = selected_cubes_up;
+		for (let i = 0; i < highlight_selected_test_only.length; i++) {
+			changeCubeFaceColors({cube: highlight_selected_test_only[i], new_colors: 0xFF00FF});
+			await new Promise<void>((resolve, reject) => {
+				setTimeout(resolve, 500);
+			})
+		}
+
 		// Elle doit recuperer la couleur de chaque phrase et mettre a jour le tableau triple dimensionnel.
 		// Ex. elle parcourt selected_cubes_up et met a jour [0][0]...[2][2] en fonction de .getHex() en comparant au dictionnaire this.COLORS_MAP
 	}
 
 	paint_cube(new_face_colors: Array<Array<Array<string>>>): void {
 
-		this.destroy();
-		this.all_cubes = createRubik({center: {x: this.z, y: this.y, z: this.z}});
-		this.display();
+		// this.destroy();
+		// this.all_cubes = createRubik({center: {x: this.z, y: this.y, z: this.z}});
+		// this.display();
+		// console.log()
+		// this.sort_cubes_by_position();
 
 		// All face concatenates
 		const face_up: Array<string> = new_face_colors[0][0].concat(new_face_colors[0][1],new_face_colors[0][2]);
