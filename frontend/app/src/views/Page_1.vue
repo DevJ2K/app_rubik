@@ -39,9 +39,15 @@ function onCanvaMousedown( event: MouseEvent ) {
 
 function onCanvaMouseup( event: MouseEvent ) {
 
-  if (mousedown_coordinates.x != event.clientX || mousedown_coordinates.y != event.clientY) {
+  if (mousedown_coordinates.x - 10 > event.clientX || mousedown_coordinates.x + 10 < event.clientX) {
+    // console.log("HERE1");
     return ;
   }
+  if (mousedown_coordinates.y - 10 > event.clientY || mousedown_coordinates.y + 10 < event.clientY) {
+    // console.log("HERE2");
+    return ;
+  }
+
   raycaster.setFromCamera(pointer, camera);
   const intersects = raycaster.intersectObjects(scene.children, false);
 

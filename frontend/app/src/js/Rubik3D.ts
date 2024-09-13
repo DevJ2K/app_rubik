@@ -373,7 +373,7 @@ class Rubik3D {
 			}
 		}
 		this.face_colors[5] = [temp_face_array.slice(0, 3),temp_face_array.slice(3, 6),temp_face_array.slice(6, 9)]
-		console.log(this.face_colors);
+		// console.log(this.face_colors);
 	}
 
 	paint_cube(new_face_colors: Array<Array<Array<string>>>): void {
