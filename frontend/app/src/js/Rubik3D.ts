@@ -144,53 +144,177 @@ class Rubik3D {
 		return selected_cubes;
 	}
 
+	/**
+	 * Check if a < b and return value between -1, 0, 1
+	 * @param  {[type]} a_pos
+	 * @param  {[type]} b_pos
+	 * @return {[type]}
+	 */
+	private condition_minus_position(a_pos: number, b_pos: number): number {
+		if (a_pos < b_pos) {
+			return (-1);
+		}
+		else if (a_pos > b_pos) {
+			return (1);
+		}
+		else {
+			return (0);
+		}
+	}
+
 	sort_cubes_by_position(): void {
-		let sorted_cube_up: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial[], THREE.Object3DEventMap>[] = [];
+		const empty_mesh_array: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial[], THREE.Object3DEventMap>[] = []
 
-		let selected_cubes_up = [];
-		let sorted_cube_up_line_1 = [];
-		let sorted_cube_up_line_2 = [];
-		let sorted_cube_up_line_3 = [];
-
-
-		selected_cubes_up = this.all_cubes.filter((cube) => {
-			return cube.position.y > 0.1;
-		})
+		// let sorted_cube_up: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial[], THREE.Object3DEventMap>[] = [];
+		// let sorted_cube_down: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial[], THREE.Object3DEventMap>[] = [];
+		// let sorted_cube_front: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial[], THREE.Object3DEventMap>[] = [];
+		// let sorted_cube_back: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial[], THREE.Object3DEventMap>[] = [];
+		// let sorted_cube_left: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial[], THREE.Object3DEventMap>[] = [];
+		// let sorted_cube_right: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial[], THREE.Object3DEventMap>[] = [];
 
 
-		sorted_cube_up_line_1 = selected_cubes_up.filter((cube) => {
-			return cube.position.z < -0.1;
-		}).sort((a, b) => {
-			if (a.position.x < b.position.x) { return (-1)}
-			else if (a.position.x > b.position.x) { return (1) }
-			else { return (0) }
-		});
+		const selected_cubes_up = this.all_cubes.filter((cube) => { return cube.position.y > 0.1; });
+		const selected_cubes_middle = this.all_cubes.filter((cube) => { return cube.position.y < 0.1 && cube.position.y > -0.1; });
+		const selected_cubes_down = this.all_cubes.filter((cube) => { return cube.position.y < -0.1;});
 
-		sorted_cube_up_line_2 = selected_cubes_up.filter((cube) => {
-			return cube.position.z < 0.1 && cube.position.z > -0.1;
-		}).sort((a, b) => {
-			if (a.position.x < b.position.x) { return (-1)}
-			else if (a.position.x > b.position.x) { return (1) }
-			else { return (0) }
-		});
 
-		sorted_cube_up_line_3 = selected_cubes_up.filter((cube) => {
-			return cube.position.z > 0.1;
-		}).sort((a, b) => {
-			console.log("A : " + a.name + " : " + a.position.x);
-			console.log("B : " + b.name + " : " + b.position.x);
+		// const selected_cubes_front = this.all_cubes.filter((cube) => { return cube.position.z > 0.1;});
+		// const selected_cubes_back = this.all_cubes.filter((cube) => { return cube.position.z < -0.1;});
+		// const selected_cubes_left = this.all_cubes.filter((cube) => { return cube.position.x < -0.1;});
+		// const selected_cubes_right = this.all_cubes.filter((cube) => { return cube.position.x > 0.1;});
 
-			if (a.position.x < b.position.x) { return (-1)}
-			else if (a.position.x > b.position.x) { return (1) }
-			else { return (0) }
-		});
+		const sorted_cube_up = empty_mesh_array.concat(
+			selected_cubes_up.filter((cube) => {
+				return cube.position.z < -0.1;
+			}).sort((a, b) => {
+				return this.condition_minus_position(a.position.x, b.position.x);
+			}),
+			selected_cubes_up.filter((cube) => {
+				return cube.position.z < 0.1 && cube.position.z > -0.1;
+			}).sort((a, b) => {
+				return this.condition_minus_position(a.position.x, b.position.x);
+			}),
+			selected_cubes_up.filter((cube) => {
+				return cube.position.z > 0.1;
+			}).sort((a, b) => {
+				return this.condition_minus_position(a.position.x, b.position.x);
+			})
+		);
 
-		sorted_cube_up = sorted_cube_up.concat(sorted_cube_up_line_1, sorted_cube_up_line_2, sorted_cube_up_line_3);
+		const sorted_cube_middle = empty_mesh_array.concat(
+			selected_cubes_middle.filter((cube) => {
+				return cube.position.z < -0.1;
+			}).sort((a, b) => {
+				return this.condition_minus_position(a.position.x, b.position.x);
+			}),
+			selected_cubes_middle.filter((cube) => {
+				return cube.position.z < 0.1 && cube.position.z > -0.1;
+			}).sort((a, b) => {
+				return this.condition_minus_position(a.position.x, b.position.x);
+			}),
+			selected_cubes_middle.filter((cube) => {
+				return cube.position.z > 0.1;
+			}).sort((a, b) => {
+				return this.condition_minus_position(a.position.x, b.position.x);
+			})
+		);
 
-		let selected_cubes_middle = [];
-		let selected_cubes_down = [];
+		const sorted_cube_down = empty_mesh_array.concat(
+			selected_cubes_down.filter((cube) => {
+				return cube.position.z < -0.1;
+			}).sort((a, b) => {
+				return this.condition_minus_position(a.position.x, b.position.x);
+			}),
+			selected_cubes_down.filter((cube) => {
+				return cube.position.z < 0.1 && cube.position.z > -0.1;
+			}).sort((a, b) => {
+				return this.condition_minus_position(a.position.x, b.position.x);
+			}),
+			selected_cubes_down.filter((cube) => {
+				return cube.position.z > 0.1;
+			}).sort((a, b) => {
+				return this.condition_minus_position(a.position.x, b.position.x);
+			})
+		);
 
-		this.all_cubes = sorted_cube_up;
+		// const sorted_cube_front = empty_mesh_array.concat(
+		// 	selected_cubes_front.filter((cube) => {
+		// 		return cube.position.y > 0.1;
+		// 	}).sort((a, b) => {
+		// 		return this.condition_minus_position(a.position.x, b.position.x);
+		// 	}),
+		// 	selected_cubes_front.filter((cube) => {
+		// 		return cube.position.y < 0.1 && cube.position.y > -0.1;
+		// 	}).sort((a, b) => {
+		// 		return this.condition_minus_position(a.position.x, b.position.x);
+		// 	}),
+		// 	selected_cubes_front.filter((cube) => {
+		// 		return cube.position.y < -0.1;
+		// 	}).sort((a, b) => {
+		// 		return this.condition_minus_position(a.position.x, b.position.x);
+		// 	})
+		// );
+
+
+		// const sorted_cube_back = empty_mesh_array.concat(
+		// 	selected_cubes_back.filter((cube) => {
+		// 		return cube.position.y > 0.1;
+		// 	}).sort((a, b) => {
+		// 		return this.condition_minus_position(b.position.x, a.position.x);
+		// 	}),
+		// 	selected_cubes_back.filter((cube) => {
+		// 		return cube.position.y < 0.1 && cube.position.y > -0.1;
+		// 	}).sort((a, b) => {
+		// 		return this.condition_minus_position(b.position.x, a.position.x);
+		// 	}),
+		// 	selected_cubes_back.filter((cube) => {
+		// 		return cube.position.y < -0.1;
+		// 	}).sort((a, b) => {
+		// 		return this.condition_minus_position(b.position.x, a.position.x);
+		// 	})
+		// );
+
+
+		// const sorted_cube_left = empty_mesh_array.concat(
+		// 	selected_cubes_left.filter((cube) => {
+		// 		return cube.position.y > 0.1;
+		// 	}).sort((a, b) => {
+		// 		return this.condition_minus_position(b.position.z, a.position.z);
+		// 	}),
+		// 	selected_cubes_left.filter((cube) => {
+		// 		return cube.position.y < 0.1 && cube.position.y > -0.1;
+		// 	}).sort((a, b) => {
+		// 		return this.condition_minus_position(b.position.z, a.position.z);
+		// 	}),
+		// 	selected_cubes_left.filter((cube) => {
+		// 		return cube.position.y < -0.1;
+		// 	}).sort((a, b) => {
+		// 		return this.condition_minus_position(b.position.z, a.position.z);
+		// 	})
+		// );
+
+
+		// const sorted_cube_right = empty_mesh_array.concat(
+		// 	selected_cubes_right.filter((cube) => {
+		// 		return cube.position.y > 0.1;
+		// 	}).sort((a, b) => {
+		// 		return this.condition_minus_position(b.position.z, a.position.z);
+		// 	}),
+		// 	selected_cubes_right.filter((cube) => {
+		// 		return cube.position.y < 0.1 && cube.position.y > -0.1;
+		// 	}).sort((a, b) => {
+		// 		return this.condition_minus_position(b.position.z, a.position.z);
+		// 	}),
+		// 	selected_cubes_right.filter((cube) => {
+		// 		return cube.position.y < -0.1;
+		// 	}).sort((a, b) => {
+		// 		return this.condition_minus_position(b.position.z, a.position.z);
+		// 	})
+		// );
+
+		this.all_cubes = sorted_cube_up.concat(sorted_cube_middle, sorted_cube_down);
+
+		// this.all_cubes = sorted_cube_up.concat(sorted_cube_down, sorted_cube_front, sorted_cube_back, sorted_cube_left, sorted_cube_right);
 		return ;
 
 		this.all_cubes = this.all_cubes.sort((a, b) => {
@@ -208,6 +332,7 @@ class Rubik3D {
 	}
 
 	async update_face_colors(): Promise<void> {
+		console.log(this.all_cubes);
 		// All cubes depending face
 		const selected_cubes_up = this.selected_cubes([0, 1, 2, 3, 4, 5, 6, 7, 8]);
 		const selected_cubes_down = this.selected_cubes([20, 19, 18, 23, 22, 21, 26, 25, 24]);
@@ -217,7 +342,7 @@ class Rubik3D {
 		const selected_cubes_right = this.selected_cubes([8, 5, 2, 17, 14, 11, 26, 23, 20]);
 
 		// To highlight selected_cubes_...
-		const highlight_selected_test_only = selected_cubes_up;
+		const highlight_selected_test_only = selected_cubes_right;
 		for (let i = 0; i < highlight_selected_test_only.length; i++) {
 			changeCubeFaceColors({cube: highlight_selected_test_only[i], new_colors: 0xFF00FF});
 			await new Promise<void>((resolve, reject) => {
