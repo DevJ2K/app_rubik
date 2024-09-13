@@ -16,14 +16,10 @@ const createCube = ({
 	const textureLoader = new THREE.TextureLoader();
 	const texture = textureLoader.load(new URL('../assets/rubik_textures/white.png', import.meta.url).href);
 
-	// const cube = new THREE.Mesh(geometry, [
-	//   new THREE.MeshBasicMaterial({ color: 0x0 }),
-	//   new THREE.MeshBasicMaterial({ color: 0x0 }),
-	//   new THREE.MeshBasicMaterial({ color: 0x0 }),
-	//   new THREE.MeshBasicMaterial({ color: 0x0 }),
-	//   new THREE.MeshBasicMaterial({ color: 0x0 }),
-	//   new THREE.MeshBasicMaterial({ color: 0x0 })
-	// ]);
+	// texture.minFilter = THREE.LinearFilter;
+	// texture.minFilter = THREE.NearestMipMapLinearFilter;
+	// texture.magFilter = THREE.LinearFilter;
+
 	const cube = new THREE.Mesh(geometry, [
 	new THREE.MeshBasicMaterial({ map: texture }),
 	new THREE.MeshBasicMaterial({ map: texture }),
@@ -33,7 +29,7 @@ const createCube = ({
 	new THREE.MeshBasicMaterial({ map: texture })
 	]);
 
-	changeCubeFaceColors({cube: cube, new_colors: "colors"});
+	changeCubeFaceColors({cube: cube, new_colors: colors});
 	cube.position.set(position.x, position.y, position.z);
 
 	cube.name = id;
@@ -41,13 +37,13 @@ const createCube = ({
 	return cube;
 }
 
-function radiansToDegrees(radians: number) {
-    return Math.round(radians * (180 / Math.PI));
-}
+// function radiansToDegrees(radians: number) {
+//     return Math.round(radians * (180 / Math.PI));
+// }
 
-function normalizeAngle(degrees: number) {
-    return (degrees % 360 + 360) % 360;
-}
+// function normalizeAngle(degrees: number) {
+//     return (degrees % 360 + 360) % 360;
+// }
 
 const getCubeFaceIndex = ({
 	cube,
@@ -80,11 +76,6 @@ const getCubeFaceIndex = ({
 		if (intersects.length > 0) {
 			return intersects[0].face?.materialIndex;
 		}
-		// console.log(x_rotation);
-		// if (x_rotation === 0) { return UP }
-		// if (x_rotation === 90) { return BACK }
-		// if (x_rotation === 180) { return DOWN }
-		// if (x_rotation === 270) { return FRONT }
 	}
 	else if (face == "down") {
 		const cubePosition = new THREE.Vector3(
@@ -97,10 +88,6 @@ const getCubeFaceIndex = ({
 		if (intersects.length > 0) {
 			return intersects[0].face?.materialIndex;
 		}
-		// if (x_rotation === 0) { return DOWN }
-		// if (x_rotation === 90) { return FRONT }
-		// if (x_rotation === 180) { return UP }
-		// if (x_rotation === 270) { return BACK }
 	}
 	else if (face == "front") {
 		const cubePosition = new THREE.Vector3(
@@ -113,10 +100,6 @@ const getCubeFaceIndex = ({
 		if (intersects.length > 0) {
 			return intersects[0].face?.materialIndex;
 		}
-		// if (x_rotation === 0) { return FRONT }
-		// if (x_rotation === 90) { return UP }
-		// if (x_rotation === 180) { return BACK }
-		// if (x_rotation === 270) { return DOWN }
 	}
 	else if (face == "back") {
 		const cubePosition = new THREE.Vector3(
@@ -129,10 +112,6 @@ const getCubeFaceIndex = ({
 		if (intersects.length > 0) {
 			return intersects[0].face?.materialIndex;
 		}
-		// if (x_rotation === 0) { return BACK }
-		// if (x_rotation === 90) { return DOWN }
-		// if (x_rotation === 180) { return FRONT }
-		// if (x_rotation === 270) { return UP }
 	}
 	else if (face == "left") {
 		const cubePosition = new THREE.Vector3(
@@ -145,10 +124,6 @@ const getCubeFaceIndex = ({
 		if (intersects.length > 0) {
 			return intersects[0].face?.materialIndex;
 		}
-		// if (z_rotation === 0) { return LEFT }
-		// if (z_rotation === 90) { return UP }
-		// if (z_rotation === 180) { return RIGHT }
-		// if (z_rotation === 270) { return DOWN }
 	}
 	else if (face == "right") {
 		const cubePosition = new THREE.Vector3(
@@ -161,10 +136,6 @@ const getCubeFaceIndex = ({
 		if (intersects.length > 0) {
 			return intersects[0].face?.materialIndex;
 		}
-		// if (z_rotation === 0) { return RIGHT }
-		// if (z_rotation === 90) { return DOWN }
-		// if (z_rotation === 180) { return LEFT }
-		// if (z_rotation === 270) { return UP }
 	}
 	return (-1);
 }
@@ -179,19 +150,14 @@ const changeCubeFaceColors = ({
 	face?: string | undefined
 }) => {
 
-	const textureLoader = new THREE.TextureLoader();
-	const texture = textureLoader.load(new URL('../assets/rubik_textures/' + new_colors + '.png', import.meta.url).href);
-
 	if (face != undefined) {
-		// cube.material[face_index] = new THREE.MeshBasicMaterial({ map: texture });
-		const face_index: number = getCubeFaceIndex({cube: cube, face: face});
-		if (face_index == -1) {
+		const face_index: number | undefined = getCubeFaceIndex({cube: cube, face: face});
+		if (face_index == undefined || face_index == -1) {
 			return ;
 		}
 		cube.material[face_index].color.setHex(new_colors);
 	} else {
 		for (let i = 0; i < cube.material.length; i++) {
-			// cube.material[i] = new THREE.MeshBasicMaterial({ map: texture });
 			cube.material[i].color.setHex(new_colors);
 		}
 	}
