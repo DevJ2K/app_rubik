@@ -1,4 +1,4 @@
-import { createRubik, changeCubeFaceColors } from '@/js/rubik_utils';
+import { createRubik, changeCubeFaceColors, getCubeFaceIndex } from '@/js/rubik_utils';
 import * as THREE from 'three';
 import * as TWEEN from '@tweenjs/tween.js'
 
@@ -18,6 +18,15 @@ import * as TWEEN from '@tweenjs/tween.js'
 
 
 */
+
+function getKeyByValue(map: Map<string, number>, value: number): string | undefined {
+    for (const [key, val] of map.entries()) {
+        if (val === value) {
+            return key;
+        }
+    }
+    return undefined;  // Si la valeur n'est pas trouvée
+}
 
 class Rubik3D {
 	// Cube info
@@ -41,6 +50,7 @@ class Rubik3D {
 	frames: Array<Object>
 
 	readonly COLORS_MAP: Map<string, number> = new Map<string, number>([
+		['-1', 0x000000],  // face undefined
 		['1', 0xFFFFFF],  // face 1
 		['2', 0xFFFF00], // face 2
 		['3', 0x0000FF],   // face 3
@@ -64,7 +74,7 @@ class Rubik3D {
 			[['6', '6', '6'], ['6', '6', '6'], ['6', '6', '6']]]; // RIGHT
 
 		this.second_between_animation = 0;
-		this.animation_speed = 0.5;
+		this.animation_speed = 0.2;
 
 		this.all_cubes = createRubik({center: {x: this.x, y: this.y, z: this.z}});
 		this.paint_cube(this.face_colors);
@@ -130,14 +140,15 @@ class Rubik3D {
 		}
 		this.current_tween = undefined;
 		// this.sort_cubes_by_position();
-		this.paint_cube([
-			[['1', '1', '1'], ['1', '1', '1'], ['1', '1', '1']], // UP
-			[['2', '2', '2'], ['2', '2', '2'], ['2', '2', '2']], // DOWN
-			[['3', '3', '3'], ['3', '3', '3'], ['3', '3', '3']], // FRONT
-			[['4', '4', '4'], ['4', '4', '4'], ['4', '4', '4']], // BACK
-			[['5', '5', '5'], ['5', '5', '5'], ['5', '5', '5']], // LEFT
-			[['6', '6', '6'], ['6', '6', '6'], ['6', '6', '6']]])
-		// await this.update_face_colors();
+		// this.paint_cube([
+		// 	[['1', '1', '1'], ['1', '1', '1'], ['1', '1', '1']], // UP
+		// 	[['2', '2', '2'], ['2', '2', '2'], ['2', '2', '2']], // DOWN
+		// 	[['3', '3', '3'], ['3', '3', '3'], ['3', '3', '3']], // FRONT
+		// 	[['4', '4', '4'], ['4', '4', '4'], ['4', '4', '4']], // BACK
+		// 	[['5', '5', '5'], ['5', '5', '5'], ['5', '5', '5']], // LEFT
+		// 	[['6', '6', '6'], ['6', '6', '6'], ['6', '6', '6']]])
+		console.log(this.face_colors);
+		await this.update_face_colors();
 	}
 
 		private selected_cubes(cube_to_select: Array<number>): THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial[], THREE.Object3DEventMap>[] {
@@ -236,7 +247,7 @@ class Rubik3D {
 	}
 
 	async update_face_colors(): Promise<void> {
-		console.log(this.all_cubes);
+		this.sort_cubes_by_position();
 		// All cubes depending face
 		const selected_cubes_up = this.selected_cubes([0, 1, 2, 3, 4, 5, 6, 7, 8]);
 		const selected_cubes_down = this.selected_cubes([20, 19, 18, 23, 22, 21, 26, 25, 24]);
@@ -246,16 +257,125 @@ class Rubik3D {
 		const selected_cubes_right = this.selected_cubes([8, 5, 2, 17, 14, 11, 26, 23, 20]);
 
 		// To highlight selected_cubes_...
-		const highlight_selected_test_only = selected_cubes_right;
-		for (let i = 0; i < highlight_selected_test_only.length; i++) {
-			changeCubeFaceColors({cube: highlight_selected_test_only[i], new_colors: 0xFF00FF});
-			await new Promise<void>((resolve, reject) => {
-				setTimeout(resolve, 500);
-			})
-		}
+		// const highlight_selected_test_only = selected_cubes_up;
+		// for (let i = 0; i < highlight_selected_test_only.length; i++) {
+		// 	changeCubeFaceColors({cube: highlight_selected_test_only[i], new_colors: 0xFF00FF});
+		// 	await new Promise<void>((resolve, reject) => {
+		// 		setTimeout(resolve, 500);
+		// 	})
+		// }
 
-		// Elle doit recuperer la couleur de chaque phrase et mettre a jour le tableau triple dimensionnel.
-		// Ex. elle parcourt selected_cubes_up et met a jour [0][0]...[2][2] en fonction de .getHex() en comparant au dictionnaire this.COLORS_MAP
+		let temp_face_array: string[];
+
+		temp_face_array = [];
+		for (let i = 0; i < selected_cubes_up.length; i++) {
+			const element = selected_cubes_up[i];
+			const face_index = getCubeFaceIndex({cube: element, face: "up"});
+			if (face_index != undefined) {
+				const result = getKeyByValue(this.COLORS_MAP, element.material[face_index].color.getHex());
+				if (result != undefined) {
+					temp_face_array.push(result);
+				} else {
+					temp_face_array.push("-1");
+				}
+			} else {
+				temp_face_array.push("-1");
+			}
+		}
+		this.face_colors[0] = [temp_face_array.slice(0, 3),temp_face_array.slice(3, 6),temp_face_array.slice(6, 9)]
+
+
+		temp_face_array = [];
+		for (let i = 0; i < selected_cubes_down.length; i++) {
+			const element = selected_cubes_down[i];
+			const face_index = getCubeFaceIndex({cube: element, face: "down"});
+			if (face_index != undefined) {
+				const result = getKeyByValue(this.COLORS_MAP, element.material[face_index].color.getHex());
+				if (result != undefined) {
+					temp_face_array.push(result);
+				} else {
+					temp_face_array.push("-1");
+				}
+			} else {
+				temp_face_array.push("-1");
+			}
+		}
+		this.face_colors[1] = [temp_face_array.slice(0, 3),temp_face_array.slice(3, 6),temp_face_array.slice(6, 9)]
+
+
+		temp_face_array = [];
+		for (let i = 0; i < selected_cubes_front.length; i++) {
+			const element = selected_cubes_front[i];
+			const face_index = getCubeFaceIndex({cube: element, face: "front"});
+			if (face_index != undefined) {
+				const result = getKeyByValue(this.COLORS_MAP, element.material[face_index].color.getHex());
+				if (result != undefined) {
+					temp_face_array.push(result);
+				} else {
+					temp_face_array.push("-1");
+				}
+			} else {
+				temp_face_array.push("-1");
+			}
+		}
+		this.face_colors[2] = [temp_face_array.slice(0, 3),temp_face_array.slice(3, 6),temp_face_array.slice(6, 9)]
+
+
+		temp_face_array = [];
+		for (let i = 0; i < selected_cubes_back.length; i++) {
+			const element = selected_cubes_back[i];
+			const face_index = getCubeFaceIndex({cube: element, face: "back"});
+			if (face_index != undefined) {
+				const result = getKeyByValue(this.COLORS_MAP, element.material[face_index].color.getHex());
+				if (result != undefined) {
+					temp_face_array.push(result);
+				} else {
+					temp_face_array.push("-1");
+				}
+			} else {
+				temp_face_array.push("-1");
+			}
+		}
+		this.face_colors[3] = [temp_face_array.slice(0, 3),temp_face_array.slice(3, 6),temp_face_array.slice(6, 9)]
+
+
+		temp_face_array = [];
+		for (let i = 0; i < selected_cubes_left.length; i++) {
+			const element = selected_cubes_left[i];
+			const face_index = getCubeFaceIndex({cube: element, face: "left"});
+			if (face_index != undefined) {
+				const result = getKeyByValue(this.COLORS_MAP, element.material[face_index].color.getHex());
+				if (result != undefined) {
+					temp_face_array.push(result);
+				} else {
+					temp_face_array.push("-1");
+				}
+			} else {
+				temp_face_array.push("-1");
+			}
+		}
+		this.face_colors[4] = [temp_face_array.slice(0, 3),temp_face_array.slice(3, 6),temp_face_array.slice(6, 9)]
+
+
+		temp_face_array = [];
+		for (let i = 0; i < selected_cubes_right.length; i++) {
+			const element = selected_cubes_right[i];
+			const face_index = getCubeFaceIndex({cube: element, face: "right"});
+			if (face_index != undefined) {
+				const result = getKeyByValue(this.COLORS_MAP, element.material[face_index].color.getHex());
+				if (result != undefined) {
+					temp_face_array.push(result);
+				} else {
+					temp_face_array.push("-1");
+				}
+			} else {
+				temp_face_array.push("-1");
+			}
+		}
+		this.face_colors[5] = [temp_face_array.slice(0, 3),temp_face_array.slice(3, 6),temp_face_array.slice(6, 9)]
+
+
+		console.log(this.face_colors);
 	}
 
 	paint_cube(new_face_colors: Array<Array<Array<string>>>): void {
