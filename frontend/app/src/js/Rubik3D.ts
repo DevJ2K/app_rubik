@@ -74,22 +74,25 @@ class Rubik3D {
 
 		this.frames = [
 			{
-				move: "L"
+				move: "F"
+			},
+			{
+			move: "B"
+			},
+			{
+			move: "R"
 			},
 			// {
-			//   move: "R"
+			// move: "U"
 			// },
 			// {
-			//   move: "U"
+			// move: "L'"
 			// },
 			// {
-			//   move: "L'"
+			// move: "R'"
 			// },
 			// {
-			//   move: "R'"
-			// },
-			// {
-			//   move: "U'"
+			// move: "U'"
 			// },
 		]
 
@@ -126,9 +129,15 @@ class Rubik3D {
 			this.current_frame = i;
 		}
 		this.current_tween = undefined;
-		this.sort_cubes_by_position();
-		console.log(this.all_cubes);
-		await this.update_face_colors();
+		// this.sort_cubes_by_position();
+		this.paint_cube([
+			[['1', '1', '1'], ['1', '1', '1'], ['1', '1', '1']], // UP
+			[['2', '2', '2'], ['2', '2', '2'], ['2', '2', '2']], // DOWN
+			[['3', '3', '3'], ['3', '3', '3'], ['3', '3', '3']], // FRONT
+			[['4', '4', '4'], ['4', '4', '4'], ['4', '4', '4']], // BACK
+			[['5', '5', '5'], ['5', '5', '5'], ['5', '5', '5']], // LEFT
+			[['6', '6', '6'], ['6', '6', '6'], ['6', '6', '6']]])
+		// await this.update_face_colors();
 	}
 
 		private selected_cubes(cube_to_select: Array<number>): THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial[], THREE.Object3DEventMap>[] {
@@ -165,23 +174,9 @@ class Rubik3D {
 	sort_cubes_by_position(): void {
 		const empty_mesh_array: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial[], THREE.Object3DEventMap>[] = []
 
-		// let sorted_cube_up: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial[], THREE.Object3DEventMap>[] = [];
-		// let sorted_cube_down: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial[], THREE.Object3DEventMap>[] = [];
-		// let sorted_cube_front: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial[], THREE.Object3DEventMap>[] = [];
-		// let sorted_cube_back: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial[], THREE.Object3DEventMap>[] = [];
-		// let sorted_cube_left: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial[], THREE.Object3DEventMap>[] = [];
-		// let sorted_cube_right: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial[], THREE.Object3DEventMap>[] = [];
-
-
 		const selected_cubes_up = this.all_cubes.filter((cube) => { return cube.position.y > 0.1; });
 		const selected_cubes_middle = this.all_cubes.filter((cube) => { return cube.position.y < 0.1 && cube.position.y > -0.1; });
 		const selected_cubes_down = this.all_cubes.filter((cube) => { return cube.position.y < -0.1;});
-
-
-		// const selected_cubes_front = this.all_cubes.filter((cube) => { return cube.position.z > 0.1;});
-		// const selected_cubes_back = this.all_cubes.filter((cube) => { return cube.position.z < -0.1;});
-		// const selected_cubes_left = this.all_cubes.filter((cube) => { return cube.position.x < -0.1;});
-		// const selected_cubes_right = this.all_cubes.filter((cube) => { return cube.position.x > 0.1;});
 
 		const sorted_cube_up = empty_mesh_array.concat(
 			selected_cubes_up.filter((cube) => {
@@ -237,98 +232,7 @@ class Rubik3D {
 			})
 		);
 
-		// const sorted_cube_front = empty_mesh_array.concat(
-		// 	selected_cubes_front.filter((cube) => {
-		// 		return cube.position.y > 0.1;
-		// 	}).sort((a, b) => {
-		// 		return this.condition_minus_position(a.position.x, b.position.x);
-		// 	}),
-		// 	selected_cubes_front.filter((cube) => {
-		// 		return cube.position.y < 0.1 && cube.position.y > -0.1;
-		// 	}).sort((a, b) => {
-		// 		return this.condition_minus_position(a.position.x, b.position.x);
-		// 	}),
-		// 	selected_cubes_front.filter((cube) => {
-		// 		return cube.position.y < -0.1;
-		// 	}).sort((a, b) => {
-		// 		return this.condition_minus_position(a.position.x, b.position.x);
-		// 	})
-		// );
-
-
-		// const sorted_cube_back = empty_mesh_array.concat(
-		// 	selected_cubes_back.filter((cube) => {
-		// 		return cube.position.y > 0.1;
-		// 	}).sort((a, b) => {
-		// 		return this.condition_minus_position(b.position.x, a.position.x);
-		// 	}),
-		// 	selected_cubes_back.filter((cube) => {
-		// 		return cube.position.y < 0.1 && cube.position.y > -0.1;
-		// 	}).sort((a, b) => {
-		// 		return this.condition_minus_position(b.position.x, a.position.x);
-		// 	}),
-		// 	selected_cubes_back.filter((cube) => {
-		// 		return cube.position.y < -0.1;
-		// 	}).sort((a, b) => {
-		// 		return this.condition_minus_position(b.position.x, a.position.x);
-		// 	})
-		// );
-
-
-		// const sorted_cube_left = empty_mesh_array.concat(
-		// 	selected_cubes_left.filter((cube) => {
-		// 		return cube.position.y > 0.1;
-		// 	}).sort((a, b) => {
-		// 		return this.condition_minus_position(b.position.z, a.position.z);
-		// 	}),
-		// 	selected_cubes_left.filter((cube) => {
-		// 		return cube.position.y < 0.1 && cube.position.y > -0.1;
-		// 	}).sort((a, b) => {
-		// 		return this.condition_minus_position(b.position.z, a.position.z);
-		// 	}),
-		// 	selected_cubes_left.filter((cube) => {
-		// 		return cube.position.y < -0.1;
-		// 	}).sort((a, b) => {
-		// 		return this.condition_minus_position(b.position.z, a.position.z);
-		// 	})
-		// );
-
-
-		// const sorted_cube_right = empty_mesh_array.concat(
-		// 	selected_cubes_right.filter((cube) => {
-		// 		return cube.position.y > 0.1;
-		// 	}).sort((a, b) => {
-		// 		return this.condition_minus_position(b.position.z, a.position.z);
-		// 	}),
-		// 	selected_cubes_right.filter((cube) => {
-		// 		return cube.position.y < 0.1 && cube.position.y > -0.1;
-		// 	}).sort((a, b) => {
-		// 		return this.condition_minus_position(b.position.z, a.position.z);
-		// 	}),
-		// 	selected_cubes_right.filter((cube) => {
-		// 		return cube.position.y < -0.1;
-		// 	}).sort((a, b) => {
-		// 		return this.condition_minus_position(b.position.z, a.position.z);
-		// 	})
-		// );
-
 		this.all_cubes = sorted_cube_up.concat(sorted_cube_middle, sorted_cube_down);
-
-		// this.all_cubes = sorted_cube_up.concat(sorted_cube_down, sorted_cube_front, sorted_cube_back, sorted_cube_left, sorted_cube_right);
-		return ;
-
-		this.all_cubes = this.all_cubes.sort((a, b) => {
-			// Comparer d'abord par la coordonnée y (axe vertical)
-			if (a.position.y !== b.position.y) {
-				return b.position.y - a.position.y;
-			}
-			// Si y est égal, comparer par la coordonnée z (profondeur)
-			if (a.position.z !== b.position.z) {
-				return a.position.z - b.position.z;
-			}
-			// Si z est égal, comparer par la coordonnée x (axe horizontal)
-			return a.position.x - b.position.x;
-		});
 	}
 
 	async update_face_colors(): Promise<void> {
@@ -360,7 +264,7 @@ class Rubik3D {
 		// this.all_cubes = createRubik({center: {x: this.z, y: this.y, z: this.z}});
 		// this.display();
 		// console.log()
-		// this.sort_cubes_by_position();
+		this.sort_cubes_by_position();
 
 		// All face concatenates
 		const face_up: Array<string> = new_face_colors[0][0].concat(new_face_colors[0][1],new_face_colors[0][2]);
@@ -386,22 +290,22 @@ class Rubik3D {
 		// Face_index - 4 = front
 		// Face_index - 5 = back
 		for (let i = 0; i < face_up.length && i < selected_cubes_up.length; i++) {
-			changeCubeFaceColors({cube: selected_cubes_up[i], new_colors: this.COLORS_MAP.get(face_up[i]), face_index: 2})
+			changeCubeFaceColors({cube: selected_cubes_up[i], new_colors: this.COLORS_MAP.get(face_up[i]), face: "up"})
 		}
 		for (let i = 0; i < face_down.length && i < selected_cubes_down.length; i++) {
-			changeCubeFaceColors({cube: selected_cubes_down[i], new_colors: this.COLORS_MAP.get(face_down[i]), face_index: 3})
+			changeCubeFaceColors({cube: selected_cubes_down[i], new_colors: this.COLORS_MAP.get(face_down[i]), face: "down"})
 		}
 		for (let i = 0; i < face_front.length && i < selected_cubes_front.length; i++) {
-			changeCubeFaceColors({cube: selected_cubes_front[i], new_colors: this.COLORS_MAP.get(face_front[i]), face_index: 4});
+			changeCubeFaceColors({cube: selected_cubes_front[i], new_colors: this.COLORS_MAP.get(face_front[i]), face: "front"});
 		}
 		for (let i = 0; i < face_back.length && i < selected_cubes_back.length; i++) {
-			changeCubeFaceColors({cube: selected_cubes_back[i], new_colors: this.COLORS_MAP.get(face_back[i]), face_index: 5})
+			changeCubeFaceColors({cube: selected_cubes_back[i], new_colors: this.COLORS_MAP.get(face_back[i]), face: "back"})
 		}
 		for (let i = 0; i < face_left.length && i < selected_cubes_left.length; i++) {
-			changeCubeFaceColors({cube: selected_cubes_left[i], new_colors: this.COLORS_MAP.get(face_left[i]), face_index: 1})
+			changeCubeFaceColors({cube: selected_cubes_left[i], new_colors: this.COLORS_MAP.get(face_left[i]), face: "left"})
 		}
 		for (let i = 0; i < face_right.length && i < selected_cubes_right.length; i++) {
-			changeCubeFaceColors({cube: selected_cubes_right[i], new_colors: this.COLORS_MAP.get(face_right[i]), face_index: 0})
+			changeCubeFaceColors({cube: selected_cubes_right[i], new_colors: this.COLORS_MAP.get(face_right[i]), face: "right"})
 		}
 
 		// To highlight selected_cubes_...

@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
 const createCube = ({
-	colors = 0x989898,
+	colors = 0x000000, //0x989898,
 	size = 1,
 	id = "cube",
 	position = { x: 0, y: 0, z: 0 }
@@ -33,7 +33,7 @@ const createCube = ({
 	new THREE.MeshBasicMaterial({ map: texture })
 	]);
 
-	changeCubeFaceColors({cube: cube, new_colors: colors});
+	changeCubeFaceColors({cube: cube, new_colors: "colors"});
 	cube.position.set(position.x, position.y, position.z);
 
 	cube.name = id;
