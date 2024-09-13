@@ -52,9 +52,10 @@ function onCanvaMouseup( event: MouseEvent ) {
     // @ts-ignore
     if (INTERSECTED.material && INTERSECTED_FACE_INDEX != null && INTERSECTED.material[INTERSECTED_FACE_INDEX]) {
         // @ts-ignore
-        INTERSECTED.material[INTERSECTED_FACE_INDEX].color.setHex(0xFF00FF);
+        INTERSECTED.material[INTERSECTED_FACE_INDEX].color.setHex(0x0000FF);
         // @ts-ignore
         INTERSECTED.currentHex = INTERSECTED.material[INTERSECTED_FACE_INDEX].color.getHex();
+        rubik3D.update_face_colors();
       }
   }
 }

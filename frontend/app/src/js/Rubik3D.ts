@@ -147,8 +147,8 @@ class Rubik3D {
 		// 	[['4', '4', '4'], ['4', '4', '4'], ['4', '4', '4']], // BACK
 		// 	[['5', '5', '5'], ['5', '5', '5'], ['5', '5', '5']], // LEFT
 		// 	[['6', '6', '6'], ['6', '6', '6'], ['6', '6', '6']]])
-		console.log(this.face_colors);
-		await this.update_face_colors();
+		// console.log(this.face_colors);
+		this.update_face_colors();
 	}
 
 		private selected_cubes(cube_to_select: Array<number>): THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial[], THREE.Object3DEventMap>[] {
@@ -246,7 +246,7 @@ class Rubik3D {
 		this.all_cubes = sorted_cube_up.concat(sorted_cube_middle, sorted_cube_down);
 	}
 
-	async update_face_colors(): Promise<void> {
+	update_face_colors(): void {
 		this.sort_cubes_by_position();
 		// All cubes depending face
 		const selected_cubes_up = this.selected_cubes([0, 1, 2, 3, 4, 5, 6, 7, 8]);
@@ -373,8 +373,6 @@ class Rubik3D {
 			}
 		}
 		this.face_colors[5] = [temp_face_array.slice(0, 3),temp_face_array.slice(3, 6),temp_face_array.slice(6, 9)]
-
-
 		console.log(this.face_colors);
 	}
 
@@ -458,7 +456,6 @@ class Rubik3D {
 			.easing(TWEEN.Easing.Cubic.InOut)
 			.onUpdate(() => {})
 			.onComplete(async () => {
-				// console.log("Rotation complete");
 				for (let i = 0; i < cube_to_move.length; i++) {
 				const cube = cube_to_move[i];
 				this.scene.attach(cube);
@@ -521,11 +518,11 @@ class Rubik3D {
 			}
 			}
 			else {
-			// alert("Invalid movement detected !");
 			console.log("Invalid movement detected !");
 			}
 		}
 		await this.animate_rubik(cube_to_move, {x: x, y: y, z: z});
+		this.update_face_colors();
 	}
 }
 
