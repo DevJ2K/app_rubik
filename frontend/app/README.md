@@ -1,4 +1,11 @@
-# frontend
+# TODO RUBIK FRONT
+
+- [ ] Clean Code
+- [ ] Color initialization
+- [ ] UI Design with Figma in neumorphism
+- [ ] Simulate request data structures
+
+<!-- # frontend
 
 This template should help get you started developing with Vue 3 in Vite.
 
@@ -36,4 +43,4 @@ npm run build
 
 ```sh
 npm run lint
-```
+``` -->
