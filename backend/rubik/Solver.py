@@ -1,4 +1,5 @@
 from Rubik import Rubik
+from collections import deque
 
 class Solver:
 	def __init__(self, cube: Rubik) -> None:
@@ -117,10 +118,35 @@ class Solver:
 				if c == faces[(faces.find(edgeNames[i][j]) + 3) % 6]:
 					id += 1
 		return id
+	
+	def loadFile(self, phase: int):
+		try:
+			with open('./database/phasebis' + str(phase), 'a') as file:
+				return file
+		except FileNotFoundError:
+			print(f'File {file} doesn\'t exist.')
+		except PermissionError:
+			print(f'Not enough permissions to open {file}')
+		except Exception as e:
+			print(f'Unexpected error: {e}')
+
+	def BFS(self, step: int, queue: deque, phase: int):
+		outfile = self.loadFile(phase)
+		if step == 0:
+			id = self.getPhaseId(queue[0], phase)
+			outfile.write(id + " " + "I")
+			self.phaseTable[phase][id] = ""
+
+		while queue:
+			curr = queue.popleft()
+			count = 0
+			for i in range(6):
+				for j in range(3):
+					curr
 
 	
 if __name__ == "__main__":
-	pass
 	cube = Rubik()
 	solver = Solver(cube)
-	
+	queue = deque()
+	solver.BFS(0, queue, 1)
