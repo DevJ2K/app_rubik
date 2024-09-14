@@ -131,18 +131,28 @@ class Solver:
 			print(f'Unexpected error: {e}')
 
 	def BFS(self, step: int, queue: deque, phase: int):
+		moves = ["U", "D", "F", "B", "R", "L"]
 		outfile = self.loadFile(phase)
 		if step == 0:
 			id = self.getPhaseId(queue[0], phase)
 			outfile.write(id + " " + "I")
 			self.phaseTable[phase][id] = ""
 
+		next = deque()
 		while queue:
 			curr = queue.popleft()
 			count = 0
 			for i in range(6):
 				for j in range(3):
-					curr
+					curr.moveMutiple(moves[i], 1)
+					if allowedMoves[j] == 1:
+						id = self.getPhaseId(curr, phase)
+						if self.phaseTable[phase].find(id) == -1: #not found
+							outfile.write(j + " " + moves[i])
+							next.append(curr)
+					count += 1	
+				curr.mmoveMultiple(moves[i], 1)
+		return self.BFS(step + 1, next)
 
 	
 if __name__ == "__main__":
