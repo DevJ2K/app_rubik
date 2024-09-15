@@ -134,27 +134,29 @@ class Solver:
 
 	def nextPhase(self, phase):
 		match phase:
-			case 1: #phase 2
+			case 0: #phase 2
 				self.allowedMoves[0] = 0
 				self.allowedMoves[2] = 0
 				self.allowedMoves[9] = 0
 				self.allowedMoves[11] = 0
-			case 2:
+			case 1:
 				self.allowedMoves[3] = 0
 				self.allowedMoves[5] = 0
 				self.allowedMoves[12] = 0
 				self.allowedMoves[14] = 0
-			case 3:
+			case 2:
 				self.allowedMoves[6] = 0
 				self.allowedMoves[8] = 0
 				self.allowedMoves[15] = 0
 				self.allowedMoves[17] = 0
+			case _:
+				return
 
 	def BFS(self, step: int, queue: deque, phase: int, outfile):
 		moves = ["F", "R", "U", "B", "L", "D"]
 		
 		if step == 0:
-			id = self.getPhaseId(queue[0], 1)
+			id = self.getPhaseId(queue[0], phase + 1)
 			outfile.write(str(id) + " " + "I" + '\n')
 			self.phaseTable[phase][id] = ""
 		next = deque()
@@ -165,7 +167,7 @@ class Solver:
 				for j in range(3):
 					curr.applyMultipleMoves(moves[i], 1)
 					if self.allowedMoves[count] == 1:
-						id = self.getPhaseId(curr, 1)
+						id = self.getPhaseId(curr, phase + 1)
 						if id not in self.phaseTable[phase]: #not found
 							newState = copy.deepcopy(curr)
 							newState.movesList = moves[i] + str(3 - j) + newState.movesList
@@ -180,12 +182,13 @@ class Solver:
 
 
 if __name__ == "__main__":
-	cube = Rubik()
-	solver = Solver(cube)
-	queue = deque()
-	outfile = solver.loadFile(0)
-	# for phase in range(1, 4):
-	# 	solver.BFS(0, queue, phase)
-	# 	print(f"Phase {phase} done!")
-	queue.append(cube)
-	solver.BFS(0, queue, 0, outfile)
+	for phase in range(4):
+		cube = Rubik()
+		solver = Solver(cube)
+		queue = deque()
+		outfile = solver.loadFile(phase)
+		queue.append(cube)
+		solver.BFS(0, queue, phase, outfile)
+		print(f"Phase {phase + 1} done!")
+		solver.nextPhase(phase)
+	print("All phases done!")
