@@ -59,6 +59,7 @@ class Rubik:
 		self.cornerPos = [i for i in range(8)]
 		self.edgeOrt = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 		self.cornerOrt = [0, 0, 0, 0, 0, 0, 0, 0]
+		self.movesList = ""
 
 		# self.cube = [[3] * 3]
 		self.cube_up: list[list[str]] = [(['W' for _ in range(3)]) for _x in range(3)]
@@ -262,7 +263,6 @@ class Rubik:
 				self.edgeOrt.append(0)
 			else:
 				self.edgeOrt.append(1)
-		print('efezfze: ', self.edgeOrt)
 		return self.edgeOrt
 	
 	def setcornerOrt(self) -> list[int]:
@@ -446,10 +446,8 @@ class Rubik:
 		edgeOrt = self.getedgeOrt()
 		cornerOrt = self.getcornerOrt()
 		if edgeOrt != solvededgeOrt:
-			print('here 1')
 			return False
 		if cornerOrt != solvedcornerOrt:
-			print('here 2')
 			return False
 		return True
 
