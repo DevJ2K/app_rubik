@@ -41,18 +41,18 @@ export default {
         "low-contrast-text": "#00749E", // 11. Low-contrast text
         "high-contrast-text": "#1D3E56", // 12. High-contrast text
 
-        "d-app-bg": "#0B032D",
-        "d-subtle-bg": "#1E0F45",
-        "d-ui-bg": "#2B155D",
-        "d-hover-ui-bg": "#371B6D",
-        "d-active-ui-bg": "#441F7D",
-        "d-subtle-border": "#532E91",
-        "d-ui-border": "#6A3DB1",
-        "d-hover-ui-border": "#8546D4",
-        "d-accent-color": "#EC64F4", // "#FF5F7E",
-        "d-hover-accent-color": "#DC40E5", // "#FF4D7A",
-        "d-low-contrast-text": "#FFD1DC",
-        "d-high-contrast-text": "#FFE4F1"
+        "d-app-bg": "#24272C",
+        "d-subtle-bg": "#24272C",
+        "d-ui-bg": "#24272C",
+        "d-hover-ui-bg": "#24272C",
+        "d-active-ui-bg": "#24272C",
+        "d-subtle-border": "#24272C",
+        "d-ui-border": "#24272C",
+        "d-hover-ui-border": "#24272C",
+        "d-accent-color": "#24272C", // "#FF5F7E",
+        "d-hover-accent-color": "#24272C", // "#FF4D7A",
+        "d-low-contrast-text": "#828F96",
+        "d-high-contrast-text": "#E8FFFC"
       }
 
 
