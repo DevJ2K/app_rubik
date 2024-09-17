@@ -6,8 +6,8 @@ class Solver:
 	def __init__(self, cube: Rubik) -> None:
 		self.cube = cube
 		self.phaseGoal = self.setPhaseGoal()
-		self.phaseTable = [{}] * 4
-		# self.setPhaseTable()
+		self.phaseTable = [] * 4
+		self.setPhaseTable()
 		self.allowedMoves = [1] * 18
 		self.phase = 1
 	
@@ -35,10 +35,10 @@ class Solver:
 			print(f'Unexpected error: {e}')
 					
 	def setPhaseGoal(self):
-		phaseGoal = []
+		phaseGoal = [0] * 5
 		temp = Rubik()
 		for i in range(4):
-			phaseGoal.append(self.getPhaseId(temp, i))
+			phaseGoal[i] = self.getPhaseId(temp, i)
 		return phaseGoal
 
 	def getPhaseId(self, cube: Rubik, phase: int) -> int:
@@ -123,7 +123,7 @@ class Solver:
 	
 	def loadFile(self, phase: int):
 		try:
-			file = open('./database/phasebis' + str(phase + 1), 'a')
+			file = open('./database/phasebis' + str(phase + 1), 'w')
 			return file
 		except FileNotFoundError:
 			print(f'File {file} doesn\'t exist.')
@@ -182,13 +182,14 @@ class Solver:
 
 
 if __name__ == "__main__":
+	cube = Rubik()
+	solver = Solver(cube)
 	for phase in range(4):
 		cube = Rubik()
-		solver = Solver(cube)
 		queue = deque()
 		outfile = solver.loadFile(phase)
 		queue.append(cube)
 		solver.BFS(0, queue, phase, outfile)
-		print(f"Phase {phase + 1} done!")
 		solver.nextPhase(phase)
+		print(f"Phase {phase + 1} done!")
 	print("All phases done!")
