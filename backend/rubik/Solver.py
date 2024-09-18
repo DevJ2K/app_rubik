@@ -10,10 +10,11 @@ class Solver:
 		self.setPhaseTable()
 		self.allowedMoves = [1] * 18
 		self.phase = 1
-	
+
+
 	def setPhaseTable(self):
 		try:
-			for i in range(1, 4):
+			for i in range(1, 5):
 				tempDict = {}
 				with open('./database/phase' + str(i), 'r') as file:
 					for line in file:
@@ -33,13 +34,15 @@ class Solver:
 			print(f'Not enough permissions to open {file}')
 		except Exception as e:
 			print(f'Unexpected error: {e}')
-					
+
+
 	def setPhaseGoal(self):
 		phaseGoal = [0] * 5
 		temp = Rubik()
 		for i in range(4):
 			phaseGoal[i] = self.getPhaseId(temp, i)
 		return phaseGoal
+
 
 	def getPhaseId(self, cube: Rubik, phase: int) -> int:
 		match phase:
@@ -54,14 +57,16 @@ class Solver:
 			case _:
 				return -1
 
+
 	def idPhase1(self, cube: Rubik) -> int:
 		id = 0
 		for i in range(12):
 			id <<= 1
-			# print(cube.edgeOrt[i], end=' ')
+			print(cube.edgeOrt[i], end=' ')
 			id += cube.edgeOrt[i]
-		# print('phase 1 ID: ', id)
+		print()
 		return id
+
 
 	def idPhase2(self, cube: Rubik) -> int:
 		id = 0
@@ -73,6 +78,7 @@ class Solver:
 			if cube.edgePos[j] < 8:
 				id+=1
 		return id
+
 
 	def idPhase3(self, cube: Rubik) -> int:
 		faces = "FRUBLD"
@@ -100,7 +106,7 @@ class Solver:
 			for j in range(i + 1, 8):
 				id ^= cube.cornerPos[i] > cube.cornerPos[j]
 		return id
-	
+
 
 	def idPhase4(self, cube: Rubik) -> int:
 		faces = "FRUBLD"
@@ -120,7 +126,8 @@ class Solver:
 				if c == faces[(faces.find(edgeNames[i][j]) + 3) % 6]:
 					id += 1
 		return id
-	
+
+
 	def loadFile(self, phase: int):
 		try:
 			file = open('./database/phasebis' + str(phase + 1), 'w')
@@ -131,6 +138,7 @@ class Solver:
 			print(f'Not enough permissions to open {file}')
 		except Exception as e:
 			print(f'Unexpected error: {e}')
+
 
 	def nextPhase(self, phase):
 		match phase:
@@ -151,6 +159,7 @@ class Solver:
 				self.allowedMoves[17] = 0
 			case _:
 				return
+
 
 	def BFS(self, step: int, queue: deque, phase: int, outfile):
 		moves = ["F", "R", "U", "B", "L", "D"]

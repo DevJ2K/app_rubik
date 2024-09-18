@@ -2,8 +2,8 @@ from visualizers.rubik_visualizer import visualize_cube_3D
 from RubikMoves import RubikMoves
 from ErrorManager import *
 from parser import check_notation
-import copy
 import random
+import time
 
 
 from apply_rubik_moves import move_up, move_down, move_back, move_front, move_left, move_right
@@ -240,13 +240,15 @@ class Rubik:
 		return True
 
 	def shuffle(self):
-		self.applyMultipleMoves("U", 1)
-		self.applyMultipleMoves("D", 1)
-		self.applyMultipleMoves("L", 1)
 		self.applyMultipleMoves("R", 1)
-		self.applyMultipleMoves("R", 1)
-		self.applyMultipleMoves("B", 1)
+		self.applyMultipleMoves("F'", 1)
+		self.applyMultipleMoves("D", 2)
 		self.applyMultipleMoves("F", 1)
+		self.applyMultipleMoves("B'", 1)
+		self.applyMultipleMoves("R", 1)
+		self.applyMultipleMoves("F", 1)
+		self.applyMultipleMoves("L", 1)
+		self.applyMultipleMoves("F'", 1)
 
 	def generateRandomCube(self, numMoves: int) -> None:
 		"""
@@ -280,9 +282,10 @@ class Rubik:
 				move_sequences.append(move)
 			return move_sequences
 		moves = generateRandomMoves(numMoves)
-		print('Moves: ', moves)
 		for move in moves:
+			print(move, end=' ')
 			self.applyMultipleMoves(move, 1)
+		print()
 
 
 	def formatSolution(self, input: list) -> None:
@@ -303,11 +306,10 @@ class Rubik:
 		from Solver import Solver
 		solver = Solver(self)
 		print('Table loading done!')
-		print(solver.phaseGoal)
-		for phase in range(1, 4):
+		for phase in range(1, 5):
 			while solver.getPhaseId(self, phase) != solver.phaseGoal[phase]:
+				print(solver.getPhaseId(self, phase))
 				path = solver.phaseTable[phase - 1][solver.getPhaseId(self, phase)]
-				print(f'Phase: {phase}  Path: {path}')
 				if path == "":
 					print(f'No solution')
 					return 1
@@ -325,9 +327,13 @@ class Rubik:
 		return output
 
 if __name__ == "__main__":
+	startTime = time.time()
 	rubik = Rubik()
 	# rubik.generateRandomCube(10)
 	rubik.shuffle()
 	rubik.formatSolution(rubik.solver())
-	print(" ".join(rubik.formatedSolution))
+	solution = " ".join(rubik.formatedSolution)
+	print(f"\033[1m\033[36mSolution: \033[0m{solution}")
+	print(f"\033[1m\033[35mNombre de coups: \033[0m{len(rubik.formatedSolution)}")
+	print(f"\033[1m\033[32mTemps écoulé: \033[0m{time.time() - startTime:.3f} secondes")
 	print(rubik.get_cube())
