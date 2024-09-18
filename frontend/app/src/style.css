@@ -67,7 +67,7 @@
 	box-shadow:
 		inset -2px -2px 12px rgba(255, 255, 255, 0.05),
 		inset 8px 8px 16px rgba(0, 0, 0, 0.35);
-	@apply bg-app-bg dark:bg-d-app-bg p-3 rounded-md font-bold w-72;
+	@apply bg-app-bg dark:bg-d-app-bg p-3 rounded-md font-bold w-72 outline-none;
 
 }
 
@@ -83,5 +83,117 @@
 	filter: drop-shadow(6px 6px 5px rgba(0, 0, 0, 0.45)) drop-shadow(-3px -3px 4px rgba(255, 255, 255, 0.05));
 	@apply px-8 justify-center items-center flex font-black text-lg rounded-lg cursor-pointer;
 }
+
+.dark .subtitle-modal {
+	@apply text-d-low-contrast-text;
+	@apply text-sm;
+	@apply font-normal;
+}
+
+/* .dark .custom-range-input {
+
+} */
+
+/* Style personnalisé pour le range input */
+.dark .custom-range-input {
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+	@apply bg-transparent cursor-pointer;
+	@apply w-full;
+
+
+}
+/*
+.dark .custom-range-input::after {
+	display: block;
+	content: attr(value);
+	color: yellow;
+} */
+
+/***** Chrome, Safari, Opera, and Edge Chromium *****/
+.dark .custom-range-input::-webkit-slider-runnable-track {
+	appearance: none;
+	-webkit-appearance: none;
+	border-radius: 36px;
+	height: 16px;
+
+	/* background-color: red; */
+	@apply bg-d-ui-bg;
+	box-shadow:
+		inset -2px -2px 6px rgba(255, 255, 255, 0.05),
+		inset 8px 8px 16px rgba(0, 0, 0, 0.25);
+}
+
+/******** Firefox ********/
+.dark .custom-range-input::-moz-range-track {
+	background: #053a5f;
+}
+
+
+  /* .dark .custom-range-input:focus {
+	outline: none;
+  } */
+
+  /* Cursor */
+.dark .custom-range-input::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	position: relative;
+	top: -50%;
+	width: 32px;
+	height: 32px;
+	@apply bg-d-ui-bg;
+	border-radius: 50%;
+	box-shadow: -3px -3px 8px rgba(255, 255, 255, 0.10), 1px 1px 6px rgba(0, 0, 0, 0.7);
+}
+
+.dark .custom-range-input::-webkit-slider-thumb::after {
+	display: block;
+	content: attr(value);
+	color: yellow;
+}
+
+  /* Background slider */
+  /* .dark .custom-range-input::-webkit-slider-runnable-track {
+	-webkit-appearance: none;
+	width: 50%;
+	height: 20px;
+	border-radius: 10px;
+
+	background: linear-gradient(to right, #293043, #293043), #D7D7D7;
+	background-size: var(--background-size, 0%) 100%;
+	background-repeat: no-repeat;
+
+	box-shadow: inset -2px -2px 8px white, inset 2px 2px 8px rgba(0, 0, 0, 0.5);
+	background-color: var(--tw-bg-opacity, #1F2937);
+  } */
+
+
+  /* Cursor mozilla */
+  /* .dark .custom-range-input::-moz-range-thumb {
+	border: none;
+	position: relative;
+	top: -50%;
+	width: 40px;
+	height: 40px;
+	background-color: var(--tw-bg-opacity, #1F2937);
+	background-image: linear-gradient(-45deg, rgba(255, 255, 255, 0.8), transparent);
+	border-radius: 50%;
+	box-shadow: -1px -1px 2px white, 1px 1px 2px rgba(0, 0, 0, 0.3);
+  } */
+
+  /* Background mozilla */
+  /* .dark .custom-range-input::-moz-range-track {
+	height: 20px;
+	border-radius: 10px;
+	box-shadow: inset -2px -2px 8px white, inset 2px 2px 8px rgba(0, 0, 0, 0.5);
+	background-color: var(--tw-bg-opacity, #1F2937);
+  } */
+
+  /* .dark .custom-range-input::-moz-range-progress {
+	background-color: #4A90E2;
+	height: 20px;
+	border-radius: 5px;
+  } */
 
 @tailwind utilities;

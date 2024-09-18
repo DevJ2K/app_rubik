@@ -21,7 +21,7 @@
       <!-- </div> -->
 
       <!-- Movements -->
-      <div class="flex justify-center max-md:order-3">
+      <div class="flex justify-center max-md:order-3 md:w-1/6">
         <div class="grid w-fit grid-cols-6 gap-4 md:grid-cols-2">
           <div class="movements">U</div>
           <div class="movements">U'</div>
@@ -50,21 +50,67 @@
       <div class="grid w-full grid-cols-3 flex-row justify-between max-sm:gap-6 sm:flex">
         <div class="icon-button"><DeleteIcon/></div>
         <div class="icon-button"><AutorenewIcon/></div>
-        <div class="icon-button"><ShuffleIcon/></div>
-        <div class="text-button col-span-3 py-4">SOLVE</div>
+        <div class="icon-button" @click="toggleGeneratorModal"><ShuffleIcon/></div>
+        <div class="text-button col-span-3 max-sm:py-3">SOLVE</div>
       </div>
     </div>
   </main>
+
+  <GeneratorModal :modal-active="generatorModalActive" @close-modal="toggleGeneratorModal">
+
+    <h1 class="text-center font-extrabold text-high-contrast-text dark:text-d-high-contrast-text text-lg">Mixing Generator Settings</h1>
+
+    <div class="flex w-full flex-col items-start gap-4 py-5">
+      <label id="range_nb_moves_label" for="range_nb_moves" class="subtitle-modal">Number of Moves : 1</label>
+      <div class="relative w-full">
+        <input id="range_nb_moves" class="custom-range-input" type="range" min="1" max="10" value="1">
+      </div>
+    </div>
+
+    <div class="flex w-full flex-col items-start gap-4 py-5">
+      <label id="range_nb_mixes_label" for="range_nb_mixes" class="subtitle-modal">Number of Mixes : 1</label>
+      <div class="relative w-full">
+        <input id="range_nb_mixes" class="custom-range-input" type="range" min="1" max="10" value="1">
+      </div>
+    </div>
+
+    <div class="mt-6 flex w-full items-center justify-center mb-4">
+      <button class="text-button py-2 text-high-contrast-text dark:text-d-high-contrast-text">GENERATE MIX</button>
+    </div>
+
+  </GeneratorModal>
 </template>
 
 <script setup lang="ts">
-import AutorenewIcon from '@/assets/radixIcons/AutorenewIcon.vue';
-import ClipboardIcon from '@/assets/radixIcons/ClipboardIcon.vue';
-import DeleteIcon from '@/assets/radixIcons/DeleteIcon.vue';
-import PlayIcon from '@/assets/radixIcons/PlayIcon.vue';
-import ShuffleIcon from '@/assets/radixIcons/ShuffleIcon.vue';
+import AutorenewIcon from '@/assets/Svg/AutorenewIcon.vue';
+import ClipboardIcon from '@/assets/Svg/ClipboardIcon.vue';
+import DeleteIcon from '@/assets/Svg/DeleteIcon.vue';
+import PlayIcon from '@/assets/Svg/PlayIcon.vue';
+import ShuffleIcon from '@/assets/Svg/ShuffleIcon.vue';
+import GeneratorModal from '../components/modal/GeneratorModal.vue';
+import { onMounted, ref } from 'vue';
 
+const generatorModalActive = ref(true);
 
+const toggleGeneratorModal = () => {
+  generatorModalActive.value = !generatorModalActive.value;
+}
+
+function updateRangeText(labelHtml: HTMLElement | null, text: string) {
+  if (!labelHtml) { return; }
+  labelHtml.textContent = text;
+}
+
+onMounted(() => {
+  const inputRangeMoves = document.getElementById("range_nb_moves");
+  inputRangeMoves?.addEventListener("input", () => {
+    updateRangeText(document.getElementById("range_nb_moves_label"), "Number of Moves : " + inputRangeMoves.value)
+  });
+  const inputRangeMixes = document.getElementById("range_nb_mixes");
+  inputRangeMixes?.addEventListener("input", () => {
+    updateRangeText(document.getElementById("range_nb_mixes_label"), "Number of Mixes : " + inputRangeMixes.value)
+  });
+});
 
 // const makeRequests = async () => {
 //   console.log("Yo !");
