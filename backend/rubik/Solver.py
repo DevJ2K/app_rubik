@@ -62,9 +62,7 @@ class Solver:
 		id = 0
 		for i in range(12):
 			id <<= 1
-			print(cube.edgeOrt[i], end=' ')
 			id += cube.edgeOrt[i]
-		print()
 		return id
 
 

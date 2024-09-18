@@ -240,15 +240,15 @@ class Rubik:
 		return True
 
 	def shuffle(self):
-		self.applyMultipleMoves("R", 1)
-		self.applyMultipleMoves("F'", 1)
-		self.applyMultipleMoves("D", 2)
+		self.applyMultipleMoves("U'", 3)
 		self.applyMultipleMoves("F", 1)
-		self.applyMultipleMoves("B'", 1)
+		self.applyMultipleMoves("D", 1)
+		self.applyMultipleMoves("F", 1)
+		self.applyMultipleMoves("B", 1)
 		self.applyMultipleMoves("R", 1)
 		self.applyMultipleMoves("F", 1)
 		self.applyMultipleMoves("L", 1)
-		self.applyMultipleMoves("F'", 1)
+		self.applyMultipleMoves("F", 1)
 
 	def generateRandomCube(self, numMoves: int) -> None:
 		"""
@@ -283,13 +283,15 @@ class Rubik:
 			return move_sequences
 		moves = generateRandomMoves(numMoves)
 		for move in moves:
-			print(move, end=' ')
-			self.applyMultipleMoves(move, 1)
-		print()
+			if "'" in move:
+				self.applyMultipleMoves(move[:1], 3)
+			elif "2" in move:
+				self.applyMultipleMoves(move[:1], 2)
+			else:
+				self.applyMultipleMoves(move, 1)
 
 
 	def formatSolution(self, input: list) -> None:
-		print(input)
 		for string in input:
 			for i in range(0, len(string), 2):
 				if (string[i + 1]) == '3':
@@ -297,8 +299,7 @@ class Rubik:
 				elif (string[i + 1]) == '1':
 					self.formatedSolution.append(string[i:i+1])
 				else:
-					self.formatedSolution.append(string[i:i+1])
-					self.formatedSolution.append(string[i:i+1])
+					self.formatedSolution.append(string[i:i+2])
 
 
 	def solver(self):
@@ -308,7 +309,6 @@ class Rubik:
 		print('Table loading done!')
 		for phase in range(1, 5):
 			while solver.getPhaseId(self, phase) != solver.phaseGoal[phase]:
-				print(solver.getPhaseId(self, phase))
 				path = solver.phaseTable[phase - 1][solver.getPhaseId(self, phase)]
 				if path == "":
 					print(f'No solution')
@@ -329,11 +329,12 @@ class Rubik:
 if __name__ == "__main__":
 	startTime = time.time()
 	rubik = Rubik()
-	# rubik.generateRandomCube(10)
-	rubik.shuffle()
+	rubik.generateRandomCube(25)
+	# rubik.shuffle()
 	rubik.formatSolution(rubik.solver())
 	solution = " ".join(rubik.formatedSolution)
 	print(f"\033[1m\033[36mSolution: \033[0m{solution}")
 	print(f"\033[1m\033[35mNombre de coups: \033[0m{len(rubik.formatedSolution)}")
 	print(f"\033[1m\033[32mTemps écoulé: \033[0m{time.time() - startTime:.3f} secondes")
-	print(rubik.get_cube())
+	# print(rubik.get_cube())
+	print(f"\033[1m\033[33mCube résolu ? : \033[0m{rubik.isSolved()}")
