@@ -25,7 +25,7 @@ def draw_face_back(ax, cube_face: list[list[str]], colors: dict, spacing: float 
 				[x + 1, CONSTANTE, 3 - y - 1],
 				[x + spacing, CONSTANTE, 3 - y - 1],
 			]
-			face = Poly3DCollection([vertices], color=colors[cube_face[y][x]], alpha=1)
+			face = Poly3DCollection([vertices], color=colors[cube_face[y][len(cube_face[y]) - 1 - x]], alpha=1)
 			ax.add_collection3d(face)
 
 def draw_face_up(ax, cube_face: list[list[str]], colors: dict, spacing: float = 0.5):
@@ -51,7 +51,7 @@ def draw_face_down(ax, cube_face: list[list[str]], colors: dict, spacing: float 
 				[x + 1, 3 - y - 1, CONSTANTE],
 				[x + spacing, 3 - y - 1, CONSTANTE],
 			]
-			face = Poly3DCollection([vertices], color=colors[cube_face[y][x]], alpha=1)
+			face = Poly3DCollection([vertices], color=colors[cube_face[y][len(cube_face[y]) - 1 - x]], alpha=1)
 			ax.add_collection3d(face)
 
 
@@ -65,7 +65,7 @@ def draw_face_left(ax, cube_face: list[list[str]], colors: dict, spacing: float 
 				[CONSTANTE, x + 1, 3 - y - 1],
 				[CONSTANTE, x + spacing, 3 - y - 1],
 			]
-			face = Poly3DCollection([vertices], color=colors[cube_face[y][x]], alpha=1)
+			face = Poly3DCollection([vertices], color=colors[cube_face[y][len(cube_face[y]) - 1 - x]], alpha=1)
 			ax.add_collection3d(face)
 
 def draw_face_right(ax, cube_face: list[list[str]], colors: dict, spacing: float = 0.5):
