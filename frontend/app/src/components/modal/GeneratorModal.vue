@@ -2,7 +2,7 @@
 	<Teleport to="body">
 		<Transition name="modal-outer">
 			<div v-show="modalActive"
-				class="absolute left-0 top-0 flex h-screen w-full items-center justify-center bg-black/60 px-8">
+				class="fixed left-0 top-0 flex h-screen w-full items-center justify-center bg-black/60 px-8">
 				<Transition name="modal-inner">
 					<div v-if="modalActive" class=" w-screen max-w-screen-sm rounded-2xl bg-ui-bg p-4 dark:bg-d-ui-bg">
 						<div class="flex w-full justify-end">
