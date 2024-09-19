@@ -58,23 +58,23 @@
 
   <GeneratorModal :modal-active="generatorModalActive" @close-modal="toggleGeneratorModal">
 
-    <h1 class="text-center font-extrabold text-high-contrast-text dark:text-d-high-contrast-text text-lg">Mixing Generator Settings</h1>
+    <h1 class="text-center text-lg font-extrabold text-high-contrast-text dark:text-d-high-contrast-text">Mixing Generator Settings</h1>
 
     <div class="flex w-full flex-col items-start gap-4 py-5">
       <label id="range_nb_moves_label" for="range_nb_moves" class="subtitle-modal">Number of Moves : 1</label>
       <div class="relative w-full">
-        <input id="range_nb_moves" class="custom-range-input" type="range" min="1" max="10" value="1">
+        <input id="range_nb_moves" @input="updateRangeText('range_nb_moves_label', 'Number of Moves : ' + $event.target.value)" class="custom-range-input" type="range" min="1" max="10" value="1">
       </div>
     </div>
 
     <div class="flex w-full flex-col items-start gap-4 py-5">
       <label id="range_nb_mixes_label" for="range_nb_mixes" class="subtitle-modal">Number of Mixes : 1</label>
       <div class="relative w-full">
-        <input id="range_nb_mixes" class="custom-range-input" type="range" min="1" max="10" value="1">
+        <input id="range_nb_mixes" @input="updateRangeText('range_nb_mixes_label', 'Number of Mixes : ' + $event.target.value);" class="custom-range-input" type="range" min="1" max="10" value="1">
       </div>
     </div>
 
-    <div class="mt-6 flex w-full items-center justify-center mb-4">
+    <div class="mb-4 mt-6 flex w-full items-center justify-center">
       <button class="text-button py-2 text-high-contrast-text dark:text-d-high-contrast-text">GENERATE MIX</button>
     </div>
 
@@ -96,21 +96,13 @@ const toggleGeneratorModal = () => {
   generatorModalActive.value = !generatorModalActive.value;
 }
 
-function updateRangeText(labelHtml: HTMLElement | null, text: string) {
+function updateRangeText(labelId: string, text: string) {
+  const labelHtml = document.getElementById(labelId);
   if (!labelHtml) { return; }
   labelHtml.textContent = text;
 }
 
-onMounted(() => {
-  const inputRangeMoves = document.getElementById("range_nb_moves");
-  inputRangeMoves?.addEventListener("input", () => {
-    updateRangeText(document.getElementById("range_nb_moves_label"), "Number of Moves : " + inputRangeMoves.value)
-  });
-  const inputRangeMixes = document.getElementById("range_nb_mixes");
-  inputRangeMixes?.addEventListener("input", () => {
-    updateRangeText(document.getElementById("range_nb_mixes_label"), "Number of Mixes : " + inputRangeMixes.value)
-  });
-});
+onMounted(() => {});
 
 // const makeRequests = async () => {
 //   console.log("Yo !");

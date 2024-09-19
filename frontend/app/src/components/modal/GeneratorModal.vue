@@ -4,9 +4,9 @@
 			<div v-show="modalActive"
 				class="absolute left-0 top-0 flex h-screen w-full items-center justify-center bg-black/60 px-8">
 				<Transition name="modal-inner">
-					<div v-if="modalActive" class=" w-screen max-w-screen-sm rounded-2xl bg-ui-bg p-2 dark:bg-d-ui-bg">
+					<div v-if="modalActive" class=" w-screen max-w-screen-sm rounded-2xl bg-ui-bg p-4 dark:bg-d-ui-bg">
 						<div class="flex w-full justify-end">
-							<button @click="$emit('close-modal')"><CloseIcon size="size-5"/></button>
+							<button @click="$emit('close-modal')"><CloseIcon size="size-6"/></button>
 						</div>
 						<slot />
 					</div>
@@ -26,6 +26,7 @@ defineProps({
 		default: false
 	}
 });
+
 </script>
 
 <style scoped>
