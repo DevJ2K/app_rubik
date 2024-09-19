@@ -128,7 +128,7 @@ class Solver:
 
 	def loadFile(self, phase: int):
 		try:
-			file = open('./database/phasebis' + str(phase + 1), 'w')
+			file = open('./database/Phase ' + str(phase + 1), 'w')
 			return file
 		except FileNotFoundError:
 			print(f'File {file} doesn\'t exist.')
@@ -196,6 +196,7 @@ if __name__ == "__main__":
 		queue = deque()
 		outfile = solver.loadFile(phase)
 		queue.append(cube)
+		solver.phaseTable = [{}] * 4
 		solver.BFS(0, queue, phase, outfile)
 		solver.nextPhase(phase)
 		print(f"Phase {phase + 1} done!")
