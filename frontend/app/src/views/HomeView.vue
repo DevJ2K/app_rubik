@@ -1,12 +1,14 @@
 <template>
   <main
-    class=" container mt-14 flex min-h-screen w-full flex-col items-center gap-16 text-high-contrast-text dark:text-d-high-contrast-text md:gap-20">
-    <h1 class=" text-center text-2xl font-black sm:text-3xl md:text-5xl">Ultimate Rubik's Cube Solver</h1>
+    class=" container my-14 flex w-full flex-col items-center gap-8 text-high-contrast-text dark:text-d-high-contrast-text md:gap-16">
+    <div class="flex w-full flex-col gap-4">
+      <h1 class=" text-center text-2xl font-black sm:text-3xl md:text-4xl">Ultimate Rubik's Cube Solver</h1>
 
-    <div class="flex h-1 w-full items-center justify-center">
-      <Transition name="fade">
-        <InstructionsBlock v-show="hasSolution" />
-      </Transition>
+      <div class="flex min-h-24 w-full items-center justify-center">
+        <Transition name="fade">
+          <InstructionsBlock v-show="hasSolution" />
+        </Transition>
+      </div>
     </div>
 
     <div class="flex w-full flex-col items-center justify-around gap-8 md:flex-row md:gap-0">
@@ -26,8 +28,8 @@
 
       <!-- Canvas -->
       <!-- <div class="w-1/3 "> -->
-      <div class="relative">
-        <div class=" size-96 bg-black/20 max-md:order-1"></div>
+      <div class="relative flex size-full justify-center">
+        <div class=" size-full max-h-96 min-h-80 min-w-80 max-w-96 bg-black/20 max-md:order-1"></div>
 
         <Transition name="fade">
           <div v-show="isLoading"
@@ -69,7 +71,7 @@
 
 
     <!-- Bottom layout -->
-    <div class="relative min-h-32 w-96">
+    <div class="relative min-h-32 w-full min-w-80 max-w-96">
       <Transition name="fade">
         <div v-show="!isLoading && !hasSolution" class="absolute left-0 top-0 flex  w-full flex-col gap-8">
           <div class="hidden flex-row justify-center gap-6 sm:flex">
@@ -115,7 +117,7 @@
               <LastPageIcon size="size-6"/>
             </div>
           </div>
-<!-- 
+<!--
           <div class="flex w-full flex-col gap-6">
             <div class="flex w-full flex-col items-start gap-4">
               <label id="range_interval_speed_label" for="range_interval_speed" class="subtitle-modal">Interval Speed : 1s</label>

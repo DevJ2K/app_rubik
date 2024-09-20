@@ -1,5 +1,5 @@
 <template>
-	<div class="neumorphism-md relative flex w-3/4 min-w-96 cursor-pointer flex-col rounded-2xl bg-d-ui-bg p-4 text-lg">
+	<div class="neumorphism-md relative flex w-3/4 min-w-80 cursor-pointer flex-col rounded-2xl bg-d-ui-bg p-4 text-lg">
 
 		<div class="absolute right-0 top-0 mr-4 mt-4">
 			<InfoIcon size="size-5"/>
