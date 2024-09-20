@@ -6,7 +6,7 @@
 
       <div class="flex min-h-24 w-full items-center justify-center">
         <Transition name="fade">
-          <InstructionsBlock v-show="hasSolution" />
+          <InstructionsBlock v-show="hasSolution" @display-modal="toggleSolutionModal" />
         </Transition>
       </div>
     </div>
@@ -157,9 +157,9 @@
 
   </main>
 
-  <GeneratorModal :modal-active="generatorModalActive" @close-modal="toggleGeneratorModal">
+  <CustomModal :modal-active="generatorModalActive" @close-modal="toggleGeneratorModal">
 
-    <h1 class="text-center text-lg font-extrabold text-high-contrast-text dark:text-d-high-contrast-text">Mixing
+    <h1 class="text-center text-xl font-extrabold text-high-contrast-text dark:text-d-high-contrast-text">Mixing
       Generator Settings</h1>
 
     <div class="flex w-full flex-col items-start gap-4 py-5">
@@ -184,7 +184,25 @@
       <button class="text-button px-4 py-2 text-high-contrast-text dark:text-d-high-contrast-text">GENERATE MIX</button>
     </div>
 
-  </GeneratorModal>
+  </CustomModal>
+
+  <CustomModal :modal-active="solutionModalActive" @close-modal="toggleSolutionModal">
+    <h1 class="text-center text-xl font-extrabold text-high-contrast-text dark:text-d-high-contrast-text">Solutions</h1>
+    <div class="mt-4 flex flex-col gap-1">
+      <p class="subtitle-modal">Number of Moves</p>
+      <h1 class="font-extrabold text-high-contrast-text dark:text-d-high-contrast-text">20</h1>
+    </div>
+    <div class="mt-4 flex flex-col gap-2">
+      <p class="subtitle-modal">Move Sequence for Solving</p>
+      <div class="flex flex-wrap gap-x-8 gap-y-3 font-extrabold text-high-contrast-text dark:text-d-high-contrast-text">
+        <div v-for="i in result.all_moves.length" :key="i">
+          <h1 v-if="i != result.current_move">{{ result.all_moves[i - 1].move }}</h1>
+          <h1 v-else class="neumorphism-sm rounded-md px-2">{{ result.all_moves[i - 1].move }}</h1>
+        </div>
+      </div>
+    </div>
+  </CustomModal>
+
 </template>
 
 <script setup lang="ts">
@@ -193,7 +211,7 @@ import ClipboardIcon from '@/assets/Svg/ClipboardIcon.vue';
 import DeleteIcon from '@/assets/Svg/DeleteIcon.vue';
 import PlayIcon from '@/assets/Svg/PlayIcon.vue';
 import ShuffleIcon from '@/assets/Svg/ShuffleIcon.vue';
-import GeneratorModal from '../components/modal/GeneratorModal.vue';
+import CustomModal from '../components/modal/CustomModal.vue';
 import { ref } from 'vue';
 import InstructionsBlock from '@/components/InstructionsBlock.vue';
 import SpinnerSvg from '@/assets/Svg/SpinnerSvg.vue';
@@ -207,10 +225,73 @@ const result = ref<any>(null);
 const isLoading = ref(false);
 const hasSolution = ref<boolean>(true);
 
+
+result.value = {
+  current_move: 5,
+  all_moves: [
+    {
+      "move": 'R',
+    },
+    {
+      "move": 'L',
+    },
+    {
+      "move": 'F',
+    },
+    {
+      "move": 'B',
+    },
+    {
+      "move": 'U\'',
+    },
+    {
+      "move": 'R',
+    },
+    {
+      "move": 'L',
+    },
+    {
+      "move": 'F',
+    },
+    {
+      "move": 'B',
+    },
+    {
+      "move": 'U\'',
+    },
+    {
+      "move": 'R',
+    },
+    {
+      "move": 'L',
+    },
+    {
+      "move": 'F',
+    },
+    {
+      "move": 'B',
+    },
+    {
+      "move": 'U\'',
+    },
+    {
+      "move": 'R',
+    },
+    {
+      "move": 'L',
+    },
+  ]
+}
+
 const generatorModalActive = ref(false);
+const solutionModalActive = ref(true);
 
 const toggleGeneratorModal = () => {
   generatorModalActive.value = !generatorModalActive.value;
+}
+
+const toggleSolutionModal = () => {
+  solutionModalActive.value = !solutionModalActive.value;
 }
 
 function updateRangeText(labelId: string, text: string) {

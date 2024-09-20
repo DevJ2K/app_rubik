@@ -52,7 +52,13 @@
 	@apply border-ui-border hover:border-hover-ui-border  focus:border-accent-color dark:border-d-ui-border dark:hover:border-d-hover-ui-border dark:focus:border-d-accent-color;
 }
 
+.dark .neumorphism-sm {
+	@apply bg-d-ui-bg;
+	filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, 0.45)) drop-shadow(-2px -2px 1px rgba(255, 255, 255, 0.10));
+}
+
 .dark .neumorphism-md {
+	@apply bg-d-ui-bg;
 	filter: drop-shadow(6px 6px 5px rgba(0, 0, 0, 0.45)) drop-shadow(-3px -3px 4px rgba(255, 255, 255, 0.05));
 }
 
