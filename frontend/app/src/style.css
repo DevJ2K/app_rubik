@@ -63,35 +63,76 @@
 }
 
 .dark .color-choose {
-	@apply size-8 rounded-md cursor-pointer;
-	filter: drop-shadow(4px 4px 3px rgba(0, 0, 0, 0.65)) drop-shadow(-2px -2px 4px rgba(255, 255, 255, 0.15));
+	@apply size-8 rounded-md cursor-pointer transition-all;
+	filter: drop-shadow(4px 4px 3px rgba(0, 0, 0, 0.45)) drop-shadow(-2px -2px 4px rgba(255, 255, 255, 0.15));
+}
+
+.dark .color-choose:hover {
+	filter: drop-shadow(4px 4px 3px rgba(0, 0, 0, 0.95)) drop-shadow(-2px -2px 4px rgba(255, 255, 255, 0.35));
 }
 
 .dark .movements {
+	@apply transition-all;
 	@apply bg-d-ui-bg;
 	filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, 0.45)) drop-shadow(-1px -1px 2px rgba(255, 255, 255, 0.05));
 	@apply size-8 rounded-md flex justify-center items-center font-black cursor-pointer;
+}
+
+.dark .movements:hover {
+	filter: drop-shadow(2px 2px 1px rgba(0, 0, 0, 0.45)) drop-shadow(-1px -1px 1px rgba(255, 255, 255, 0.05));
+	box-shadow:
+		inset -2px -2px 12px rgba(255, 255, 255, 0.05),
+		inset 4px 4px 16px rgba(0, 0, 0, 0.35);
 }
 
 .dark .sequence-input {
 	box-shadow:
 		inset -2px -2px 12px rgba(255, 255, 255, 0.05),
 		inset 8px 8px 16px rgba(0, 0, 0, 0.35);
-	@apply bg-app-bg dark:bg-d-app-bg p-3 rounded-md font-bold w-72 outline-none;
+	@apply bg-app-bg dark:bg-d-app-bg p-3 rounded-md font-bold w-72 outline-none transition-all;
 
 }
 
+.dark .sequence-input:hover {
+	box-shadow:
+	inset -4px -4px 12px rgba(255, 255, 255, 0.05),
+	inset 12px 12px 16px rgba(0, 0, 0, 0.35);
+}
+
+.dark .sequence-input:focus {
+	box-shadow:
+	inset -4px -4px 12px rgba(255, 255, 255, 0.05),
+	inset 12px 12px 16px rgba(0, 0, 0, 0.35);
+	@apply outline outline-1 outline-offset-1 outline-high-contrast-text dark:outline-d-high-contrast-text/35;
+}
+
 .dark .icon-button {
+	@apply transition-all;
 	@apply bg-d-ui-bg;
 	filter: drop-shadow(6px 6px 6px rgba(0, 0, 0, 0.45)) drop-shadow(-3px -3px 4px rgba(255, 255, 255, 0.05));
 	@apply size-12 min-w-12 p-2 justify-center items-center flex font-black text-lg rounded-lg cursor-pointer;
 }
 
+.dark .icon-button:hover {
+	filter: drop-shadow(4px 4px 3px rgba(0, 0, 0, 0.45)) drop-shadow(-2px -2px 2px rgba(255, 255, 255, 0.05));
+	box-shadow:
+		inset -2px -2px 12px rgba(255, 255, 255, 0.05),
+		inset 4px 4px 16px rgba(0, 0, 0, 0.35);
+}
+
 
 .dark .text-button {
+	@apply transition-all;
 	@apply bg-d-ui-bg;
 	filter: drop-shadow(6px 6px 5px rgba(0, 0, 0, 0.45)) drop-shadow(-3px -3px 4px rgba(255, 255, 255, 0.05));
 	@apply justify-center items-center flex font-black text-lg rounded-lg cursor-pointer;
+}
+
+.dark .text-button:hover {
+	filter: drop-shadow(4px 4px 3px rgba(0, 0, 0, 0.45)) drop-shadow(-2px -2px 2px rgba(255, 255, 255, 0.05));
+	box-shadow:
+		inset -2px -2px 12px rgba(255, 255, 255, 0.05),
+		inset 4px 4px 16px rgba(0, 0, 0, 0.35);
 }
 
 .dark .subtitle-modal {
