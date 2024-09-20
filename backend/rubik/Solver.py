@@ -16,7 +16,7 @@ class Solver:
 		try:
 			for i in range(1, 5):
 				tempDict = {}
-				with open('./database/phase' + str(i), 'r') as file:
+				with open('./database/Phase ' + str(i), 'r') as file:
 					for line in file:
 						line = line.strip()
 						if not line:
