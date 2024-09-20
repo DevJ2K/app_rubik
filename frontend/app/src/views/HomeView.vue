@@ -1,90 +1,185 @@
 <template>
-  <main class=" container mt-14 flex min-h-screen w-full flex-col items-center gap-16 text-high-contrast-text dark:text-d-high-contrast-text md:gap-24">
+  <main
+    class=" container mt-14 flex min-h-screen w-full flex-col items-center gap-16 text-high-contrast-text dark:text-d-high-contrast-text md:gap-20">
     <h1 class=" text-center text-2xl font-black sm:text-3xl md:text-5xl">Ultimate Rubik's Cube Solver</h1>
 
-    <Transition name="fade">
-      <div class="flex w-full items-center justify-center" v-show="isLoading">
-        <InstructionsBlock/>
-      </div>
-    </Transition>
+    <div class="flex h-1 w-full items-center justify-center">
+      <Transition name="fade">
+        <InstructionsBlock v-show="hasSolution" />
+      </Transition>
+    </div>
 
     <div class="flex w-full flex-col items-center justify-around gap-8 md:flex-row md:gap-0">
 
       <!-- Colors Palette -->
-       <Transition name="fade">
-         <div v-show="!isLoading" class="flex flex-row items-center justify-center gap-4 max-md:order-2 md:w-1/6 md:flex-col">
-           <div class=" color-choose bg-white"></div>
-           <div class=" color-choose bg-red-500"></div>
-           <div class=" color-choose bg-orange-400"></div>
-           <div class=" color-choose bg-yellow-300"></div>
-           <div class=" color-choose bg-green-400"></div>
-           <div class=" color-choose bg-blue-500"></div>
-         </div>
-       </Transition>
+      <Transition name="fade">
+        <div v-show="!isLoading && !hasSolution"
+          class="flex flex-row items-center justify-center gap-4 max-md:order-2 md:w-1/6 md:flex-col">
+          <div class=" color-choose bg-white"></div>
+          <div class=" color-choose bg-red-500"></div>
+          <div class=" color-choose bg-orange-400"></div>
+          <div class=" color-choose bg-yellow-300"></div>
+          <div class=" color-choose bg-green-400"></div>
+          <div class=" color-choose bg-blue-500"></div>
+        </div>
+      </Transition>
 
       <!-- Canvas -->
       <!-- <div class="w-1/3 "> -->
+      <div class="relative">
         <div class=" size-96 bg-black/20 max-md:order-1"></div>
+
+        <Transition name="fade">
+          <div v-show="isLoading"
+            class="absolute bottom-0 left-0 flex w-full translate-y-[125%] flex-col items-center justify-center gap-4 md:hidden">
+            <div class="size-fit animate-spin">
+              <SpinnerSvg custom="text-text-high-contrast dark:text-d-text-high-contrast size-16" />
+            </div>
+            <h1 class=" font-bold">Your cube is being solved... Just a moment!</h1>
+          </div>
+        </Transition>
+
+
+      </div>
       <!-- </div> -->
 
       <!-- Movements -->
-       <Transition name="fade">
+      <Transition name="fade">
 
-         <div v-show="!isLoading" class="flex justify-center max-md:order-3 md:w-1/6">
-           <div class="grid w-fit grid-cols-6 gap-4 md:grid-cols-2">
-             <div class="movements">U</div>
-             <div class="movements">U'</div>
-             <div class="movements">D</div>
-             <div class="movements">D'</div>
-             <div class="movements">F</div>
-             <div class="movements">F'</div>
-             <div class="movements">B</div>
-             <div class="movements">B'</div>
-             <div class="movements">L</div>
-             <div class="movements">L'</div>
-             <div class="movements">R</div>
-             <div class="movements">R'</div>
-           </div>
-         </div>
-       </Transition>
+        <div v-show="!isLoading && !hasSolution" class="flex justify-center max-md:order-3 md:w-1/6">
+          <div class="grid w-fit grid-cols-6 gap-4 md:grid-cols-2">
+            <div class="movements">U</div>
+            <div class="movements">U'</div>
+            <div class="movements">D</div>
+            <div class="movements">D'</div>
+            <div class="movements">F</div>
+            <div class="movements">F'</div>
+            <div class="movements">B</div>
+            <div class="movements">B'</div>
+            <div class="movements">L</div>
+            <div class="movements">L'</div>
+            <div class="movements">R</div>
+            <div class="movements">R'</div>
+          </div>
+        </div>
+      </Transition>
+
+
     </div>
 
 
-    <div class="flex flex-col gap-8">
-      <div class="hidden flex-row justify-center gap-6 sm:flex">
-        <input type="text" placeholder="Enter a sequence" class="sequence-input">
-        <div class="icon-button"><ClipboardIcon/></div>
-        <div class="icon-button"><PlayIcon/></div>
-      </div>
-      <div class="grid w-full grid-cols-3 flex-row justify-between max-sm:gap-6 sm:flex">
-        <div class="icon-button"><DeleteIcon/></div>
-        <div class="icon-button"><AutorenewIcon/></div>
-        <div class="icon-button" @click="toggleGeneratorModal"><ShuffleIcon/></div>
-        <div class="text-button col-span-3 max-sm:py-3" @click="solveRubik">SOLVE</div>
-      </div>
+    <!-- Bottom layout -->
+    <div class="relative min-h-32 w-96">
+      <Transition name="fade">
+        <div v-show="!isLoading && !hasSolution" class="absolute left-0 top-0 flex  w-full flex-col gap-8">
+          <div class="hidden flex-row justify-center gap-6 sm:flex">
+            <input type="text" placeholder="Enter a sequence" class="sequence-input">
+            <div class="icon-button">
+              <ClipboardIcon />
+            </div>
+            <div class="icon-button">
+              <PlayIcon />
+            </div>
+          </div>
+          <div class="grid w-full grid-cols-3 flex-row place-items-center sm:flex sm:justify-between">
+            <div class="icon-button">
+              <DeleteIcon />
+            </div>
+            <div class="icon-button">
+              <AutorenewIcon />
+            </div>
+            <div class="icon-button" @click="toggleGeneratorModal">
+              <ShuffleIcon />
+            </div>
+            <div class="text-button col-span-3 h-12 px-8 max-sm:mt-8 max-sm:px-12" @click="solveRubik">SOLVE</div>
+          </div>
+        </div>
+      </Transition>
+
+      <Transition name="fade">
+        <div v-show="hasSolution" class="absolute left-0 top-0 flex  w-full flex-col items-center justify-center gap-8">
+          <div class=" flex w-full flex-row justify-between">
+            <div class="icon-button">
+              <FirstPageIcon size="size-6"/>
+            </div>
+            <div class="icon-button">
+              <FastRewindIcon size="size-6"/>
+            </div>
+            <div class="icon-button">
+              <PlayIcon size="size-4"/>
+            </div>
+            <div class="icon-button">
+              <FastFowardIcon size="size-6"/>
+            </div>
+            <div class="icon-button">
+              <LastPageIcon size="size-6"/>
+            </div>
+          </div>
+<!-- 
+          <div class="flex w-full flex-col gap-6">
+            <div class="flex w-full flex-col items-start gap-4">
+              <label id="range_interval_speed_label" for="range_interval_speed" class="subtitle-modal">Interval Speed : 1s</label>
+              <div class="relative w-full">
+                <input id="range_interval_speed"
+                  @input="updateRangeText('range_interval_speed_label', 'Interval Speed : ' + $event.target.value + 's');"
+                  class="custom-range-input" type="range" min="0.5" max="5" value="1" step="0.5">
+              </div>
+            </div>
+            <div class="flex w-full flex-col items-start gap-4">
+              <label id="range_rotation_speed_label" for="range_rotation_speed" class="subtitle-modal">Rotation Speed : 1s</label>
+              <div class="relative w-full">
+                <input id="range_rotation_speed"
+                  @input="updateRangeText('range_rotation_speed_label', 'Rotation Speed : ' + $event.target.value + 's');"
+                  class="custom-range-input" type="range" min="0.5" max="5" value="1" step="0.5">
+              </div>
+            </div>
+
+          </div> -->
+
+
+
+          <div class="text-button col-span-3 h-12 w-fit px-8 max-sm:mt-8 max-sm:px-12" @click="getBack">BACK</div>
+        </div>
+      </Transition>
+
+      <Transition name="fade">
+        <div v-show="isLoading" class="absolute left-0 top-0 hidden w-full flex-col items-center justify-center gap-4 md:flex">
+          <div class="size-fit animate-spin">
+            <SpinnerSvg custom="text-text-high-contrast dark:text-d-text-high-contrast size-16" />
+          </div>
+          <h1 class=" font-bold">Your cube is being solved... Just a moment!</h1>
+        </div>
+      </Transition>
     </div>
+
+
   </main>
 
   <GeneratorModal :modal-active="generatorModalActive" @close-modal="toggleGeneratorModal">
 
-    <h1 class="text-center text-lg font-extrabold text-high-contrast-text dark:text-d-high-contrast-text">Mixing Generator Settings</h1>
+    <h1 class="text-center text-lg font-extrabold text-high-contrast-text dark:text-d-high-contrast-text">Mixing
+      Generator Settings</h1>
 
     <div class="flex w-full flex-col items-start gap-4 py-5">
       <label id="range_nb_moves_label" for="range_nb_moves" class="subtitle-modal">Number of Moves : 1</label>
       <div class="relative w-full">
-        <input id="range_nb_moves" @input="updateRangeText('range_nb_moves_label', 'Number of Moves : ' + $event.target.value)" class="custom-range-input" type="range" min="1" max="10" value="1">
+        <input id="range_nb_moves"
+          @input="updateRangeText('range_nb_moves_label', 'Number of Moves : ' + $event.target.value)"
+          class="custom-range-input" type="range" min="1" max="10" value="1">
       </div>
     </div>
 
     <div class="flex w-full flex-col items-start gap-4 py-5">
       <label id="range_nb_mixes_label" for="range_nb_mixes" class="subtitle-modal">Number of Mixes : 1</label>
       <div class="relative w-full">
-        <input id="range_nb_mixes" @input="updateRangeText('range_nb_mixes_label', 'Number of Mixes : ' + $event.target.value);" class="custom-range-input" type="range" min="1" max="10" value="1">
+        <input id="range_nb_mixes"
+          @input="updateRangeText('range_nb_mixes_label', 'Number of Mixes : ' + $event.target.value);"
+          class="custom-range-input" type="range" min="1" max="10" value="1">
       </div>
     </div>
 
     <div class="mb-4 mt-6 flex w-full items-center justify-center">
-      <button class="text-button py-2 text-high-contrast-text dark:text-d-high-contrast-text">GENERATE MIX</button>
+      <button class="text-button px-4 py-2 text-high-contrast-text dark:text-d-high-contrast-text">GENERATE MIX</button>
     </div>
 
   </GeneratorModal>
@@ -99,10 +194,16 @@ import ShuffleIcon from '@/assets/Svg/ShuffleIcon.vue';
 import GeneratorModal from '../components/modal/GeneratorModal.vue';
 import { ref } from 'vue';
 import InstructionsBlock from '@/components/InstructionsBlock.vue';
+import SpinnerSvg from '@/assets/Svg/SpinnerSvg.vue';
+import LastPageIcon from '@/assets/Svg/LastPageIcon.vue';
+import FastRewindIcon from '@/assets/Svg/FastRewindIcon.vue';
+import FastFowardIcon from '@/assets/Svg/FastFowardIcon.vue';
+import FirstPageIcon from '@/assets/Svg/FirstPageIcon.vue';
 
 const error = ref<string | null>(null);
 const result = ref<any>(null);
 const isLoading = ref(false);
+const hasSolution = ref<boolean>(true);
 
 const generatorModalActive = ref(false);
 
@@ -116,6 +217,10 @@ function updateRangeText(labelId: string, text: string) {
   labelHtml.textContent = text;
 }
 
+const getBack = () => {
+  hasSolution.value = false
+}
+
 const solveRubik = async () => {
   isLoading.value = true;
   error.value = null;
@@ -123,6 +228,7 @@ const solveRubik = async () => {
   // Desactiver la peinture du rubik cube...
   await new Promise((resolve) => setTimeout(resolve, 1000));
   try {
+    hasSolution.value = true;
     console.log("Make requests...")
   } catch (e: any) {
     error.value = e.message || 'An unknown error occurred';
@@ -141,8 +247,7 @@ const solveRubik = async () => {
 }
 
 .fade-enter-from,
-.fade-leave-to
-  {
+.fade-leave-to {
   opacity: 0;
 }
 
