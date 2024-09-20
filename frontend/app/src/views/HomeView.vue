@@ -29,7 +29,8 @@
       <!-- Canvas -->
       <!-- <div class="w-1/3 "> -->
       <div class="relative flex size-full justify-center">
-        <div class=" size-full max-h-96 min-h-80 min-w-80 max-w-96 bg-black/20 max-md:order-1"></div>
+        <!-- Canvas -->
+        <div id="rubik_canvas" class=" size-full max-h-96 min-h-80 min-w-80 max-w-96 bg-black/20 max-md:order-1"></div>
 
         <Transition name="fade">
           <div v-show="isLoading"
@@ -212,7 +213,7 @@ import DeleteIcon from '@/assets/Svg/DeleteIcon.vue';
 import PlayIcon from '@/assets/Svg/PlayIcon.vue';
 import ShuffleIcon from '@/assets/Svg/ShuffleIcon.vue';
 import CustomModal from '../components/modal/CustomModal.vue';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import InstructionsBlock from '@/components/InstructionsBlock.vue';
 import SpinnerSvg from '@/assets/Svg/SpinnerSvg.vue';
 import LastPageIcon from '@/assets/Svg/LastPageIcon.vue';
@@ -220,10 +221,32 @@ import FastRewindIcon from '@/assets/Svg/FastRewindIcon.vue';
 import FastFowardIcon from '@/assets/Svg/FastFowardIcon.vue';
 import FirstPageIcon from '@/assets/Svg/FirstPageIcon.vue';
 
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { Rubik3D } from '@/js/Rubik3D';
+
+
+// THREE JS
+let canva: HTMLElement | null;
+let scene: THREE.Scene;
+let camera: THREE.PerspectiveCamera;
+let pointer: THREE.Vector2;
+let raycaster: THREE.Raycaster;
+let renderer: THREE.WebGLRenderer;
+let controls: OrbitControls;
+
+let rubik3D: Rubik3D;
+
+let INTERSECTED: THREE.Mesh | null;
+let INTERSECTED_FACE_INDEX: number | undefined | null;
+
+let mousedown_coordinates: Object = Object.create(null);
+
+// API STATUS
 const error = ref<string | null>(null);
 const result = ref<any>(null);
 const isLoading = ref(false);
-const hasSolution = ref<boolean>(true);
+const hasSolution = ref<boolean>(false);
 
 
 result.value = {
@@ -284,7 +307,7 @@ result.value = {
 }
 
 const generatorModalActive = ref(false);
-const solutionModalActive = ref(true);
+const solutionModalActive = ref(false);
 
 const toggleGeneratorModal = () => {
   generatorModalActive.value = !generatorModalActive.value;
@@ -319,6 +342,53 @@ const solveRubik = async () => {
     isLoading.value = false;
   }
 }
+
+const animate = () => {
+  controls.update();
+  // checkPointerIntersects();
+  if (rubik3D.animation_is_playing && rubik3D.current_tween) {
+    rubik3D.current_tween.update();
+  }
+  renderer.render(scene, camera);
+  requestAnimationFrame(animate);
+};
+
+const initThree = () => {
+  canva = document.getElementById('rubik_canvas');
+  if (canva == null || canva == undefined) {
+    return ;
+  }
+
+  scene = new THREE.Scene();
+  camera = new THREE.PerspectiveCamera(75, canva.offsetWidth / canva.offsetHeight, 0.1, 1000);
+  pointer = new THREE.Vector2();
+  pointer.x = -1;
+  pointer.y = 1;
+  raycaster = new THREE.Raycaster();
+
+  camera.position.x = 3;
+  camera.position.y = 3;
+  camera.position.z = 3;
+
+
+  renderer = new THREE.WebGLRenderer({antialias: true, alpha: true});
+  controls = new OrbitControls( camera, renderer.domElement );
+
+    // Config render
+    renderer.setSize(canva.offsetWidth, canva.offsetHeight);
+  renderer.setClearColor(0x0F0F0F, 1);
+  canva.appendChild(renderer.domElement);
+
+  rubik3D = new Rubik3D(scene);
+
+  requestAnimationFrame(animate);
+
+}
+
+onMounted(() => {
+  initThree();
+});
+
 
 </script>
 
