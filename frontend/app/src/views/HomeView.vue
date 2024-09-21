@@ -17,12 +17,12 @@
       <Transition name="fade">
         <div v-show="!isLoading && !hasSolution"
           class="flex flex-row items-center justify-center gap-4 max-md:order-2 md:w-1/6 md:flex-col">
-          <button class=" color-choose bg-white"></button>
-          <button class=" color-choose bg-red-500"></button>
-          <button class=" color-choose bg-orange-400"></button>
-          <button class=" color-choose bg-yellow-300"></button>
-          <button class=" color-choose bg-green-400"></button>
-          <button class=" color-choose bg-blue-500"></button>
+          <button class=" color-choose bg-[#FFFFFF]" @click="paintCubeWith(0xFFFFFF)"></button>
+          <button class=" color-choose bg-[#FF0000]" @click="paintCubeWith(0xFF0000)"></button>
+          <button class=" color-choose bg-[#FF9700]" @click="paintCubeWith(0xff9700)"></button>
+          <button class=" color-choose bg-[#FFFF00]" @click="paintCubeWith(0xFFFF00)"></button>
+          <button class=" color-choose bg-[#00FF00]" @click="paintCubeWith(0x00FF00)"></button>
+          <button class=" color-choose bg-[#2558ff]" @click="paintCubeWith(0x0000FF)"></button>
         </div>
       </Transition>
 
@@ -213,7 +213,7 @@ import DeleteIcon from '@/assets/Svg/DeleteIcon.vue';
 import PlayIcon from '@/assets/Svg/PlayIcon.vue';
 import ShuffleIcon from '@/assets/Svg/ShuffleIcon.vue';
 import CustomModal from '../components/modal/CustomModal.vue';
-import { onMounted, ref } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 import InstructionsBlock from '@/components/InstructionsBlock.vue';
 import SpinnerSvg from '@/assets/Svg/SpinnerSvg.vue';
 import LastPageIcon from '@/assets/Svg/LastPageIcon.vue';
@@ -247,7 +247,7 @@ const error = ref<string | null>(null);
 const result = ref<any>(null);
 const isLoading = ref(false);
 const hasSolution = ref<boolean>(false);
-
+const selectedPaintColors = ref<number | null>(null);
 
 result.value = {
   current_move: 5,
@@ -323,6 +323,8 @@ function updateRangeText(labelId: string, text: string) {
   labelHtml.textContent = text;
 }
 
+
+
 const getBack = () => {
   hasSolution.value = false
 }
@@ -343,15 +345,29 @@ const solveRubik = async () => {
   }
 }
 
-const animate = () => {
-  controls.update();
-  // checkPointerIntersects();
-  if (rubik3D.animation_is_playing && rubik3D.current_tween) {
-    rubik3D.current_tween.update();
-  }
-  renderer.render(scene, camera);
-  requestAnimationFrame(animate);
-};
+
+
+
+
+// ****************
+// RUBIK COMMANDS *
+// ****************
+
+function paintCubeWith(color: number) {
+  selectedPaintColors.value = color;
+}
+
+function disabledPaint() {
+  selectedPaintColors.value = null;
+}
+
+
+
+
+
+// *************************
+// EVENT LISTENER FUNCTION *
+// *************************
 
 function onWindowResize() {
   if (!canva) {
@@ -362,6 +378,120 @@ function onWindowResize() {
   // console.log(canva);
   renderer.setSize( canva.offsetWidth, canva.offsetHeight );
 }
+
+function onCanvaMousedown( event: MouseEvent ) {
+  mousedown_coordinates.x = event.clientX;
+  mousedown_coordinates.y = event.clientY;
+}
+
+
+function onPointerMove( event: MouseEvent ) {
+  if (!canva) {
+    return ;
+  }
+  const rect = canva.getBoundingClientRect();
+
+  pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+  pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+}
+
+
+function onCanvaMouseup( event: MouseEvent ) {
+  if (typeof selectedPaintColors.value !== "number") {
+    return ;
+  }
+
+  if (mousedown_coordinates.x - 10 > event.clientX || mousedown_coordinates.x + 10 < event.clientX) {
+    return ;
+  }
+  if (mousedown_coordinates.y - 10 > event.clientY || mousedown_coordinates.y + 10 < event.clientY) {
+    return ;
+  }
+
+  raycaster.setFromCamera(pointer, camera);
+  const intersects = raycaster.intersectObjects(scene.children, false);
+
+  if (intersects.length > 0) {
+    INTERSECTED = intersects[0].object;
+    INTERSECTED_FACE_INDEX = intersects[0].face?.materialIndex
+
+    // @ts-ignore
+    if (INTERSECTED.material && INTERSECTED_FACE_INDEX != null && INTERSECTED.material[INTERSECTED_FACE_INDEX]) {
+        // @ts-ignore
+        INTERSECTED.material[INTERSECTED_FACE_INDEX].color.setHex(selectedPaintColors.value);
+        // @ts-ignore
+        INTERSECTED.currentHex = INTERSECTED.material[INTERSECTED_FACE_INDEX].color.getHex();
+        rubik3D.update_face_colors();
+      }
+  }
+}
+
+// *****************
+// UTILS FOR RUBIK *
+// *****************
+
+function checkPointerIntersects() {
+  raycaster.setFromCamera(pointer, camera);
+  const intersects = raycaster.intersectObjects(scene.children, false);
+
+  if (intersects.length > 0) {
+    const intersectedObject: THREE.Mesh = intersects[0].object;
+    const faceIndex = intersects[0].face?.materialIndex;
+
+    // If the prev Intersected object is not the same
+    if (INTERSECTED != intersectedObject || INTERSECTED_FACE_INDEX != faceIndex) {
+      // @ts-ignore: Canva cannot be null
+      canva.style.cursor = "pointer";
+
+    // @ts-ignore: Edit the prev Intersected object color if is existing
+      if (INTERSECTED && INTERSECTED.material && INTERSECTED_FACE_INDEX != null && INTERSECTED.material[INTERSECTED_FACE_INDEX]) {
+        // @ts-ignore
+        INTERSECTED.material[INTERSECTED_FACE_INDEX].color.setHex(INTERSECTED.currentHex);
+
+      }
+      // Update the Intersected object
+      INTERSECTED = intersectedObject;
+      INTERSECTED_FACE_INDEX = faceIndex;
+
+      //  @ts-ignore
+      if (INTERSECTED.material && INTERSECTED_FACE_INDEX != null && INTERSECTED.material[INTERSECTED_FACE_INDEX]) {
+        // @ts-ignore
+        INTERSECTED.currentHex = INTERSECTED.material[INTERSECTED_FACE_INDEX].color.getHex();
+
+
+        // @ts-ignore
+        INTERSECTED.material[INTERSECTED_FACE_INDEX].color.offsetHSL(0, 0, 0.25);
+        // INTERSECTED.material[INTERSECTED_FACE_INDEX].color.setHex(0xd4d4d4);
+      }
+    }
+
+  } else {
+    // @ts-ignore: Canva cannot be null
+    canva.style.cursor = "default";
+    // @ts-ignore
+    if (INTERSECTED && INTERSECTED.material && INTERSECTED.material[INTERSECTED_FACE_INDEX]) {
+      // @ts-ignore
+      INTERSECTED.material[INTERSECTED_FACE_INDEX].color.setHex(INTERSECTED.currentHex);
+      // @ts-ignore
+      INTERSECTED.material[INTERSECTED_FACE_INDEX].color.offsetHSL(0, 0, 0);
+    }
+
+    INTERSECTED = null;
+    INTERSECTED_FACE_INDEX = null;
+  }
+}
+
+const animate = () => {
+  controls.update();
+  if (typeof selectedPaintColors.value === "number") {
+    checkPointerIntersects();
+  }
+  if (rubik3D.animation_is_playing && rubik3D.current_tween) {
+    rubik3D.current_tween.update();
+  }
+  renderer.render(scene, camera);
+  requestAnimationFrame(animate);
+};
 
 const initThree = () => {
   canva = document.getElementById('rubik_canvas');
@@ -386,7 +516,7 @@ const initThree = () => {
   controls.enableZoom = false;
 
     // Config render
-    renderer.setSize(canva.offsetWidth, canva.offsetHeight);
+  renderer.setSize(canva.offsetWidth, canva.offsetHeight);
   renderer.setClearColor(0x0F0F0F, 0);
   canva.appendChild(renderer.domElement);
 
@@ -394,12 +524,21 @@ const initThree = () => {
 
   requestAnimationFrame(animate);
   window.addEventListener( 'resize', onWindowResize );
+  document.addEventListener( 'mousemove', onPointerMove );
+  canva.addEventListener('mousedown', onCanvaMousedown );
+  canva.addEventListener('mouseup', onCanvaMouseup );
 }
 
 onMounted(() => {
   initThree();
 });
 
+onUnmounted(() => {
+  window.removeEventListener( 'resize', onWindowResize );
+  document.removeEventListener( 'mousemove', onPointerMove );
+  canva?.removeEventListener('mousedown', onCanvaMousedown );
+  canva?.removeEventListener('mouseup', onCanvaMouseup );
+});
 
 </script>
 
