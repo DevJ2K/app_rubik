@@ -1,9 +1,16 @@
 # TODO RUBIK FRONT
 
-- [ ] Clean Code
-- [ ] Color initialization
-- [ ] UI Design with Figma in neumorphism
+- [x] Clean Code
+- [x] Color initialization
+- [x] UI Design with Figma in neumorphism
 - [ ] Simulate request data structures
+
+
+- [ ] Button disabled effect + selected effect
+- [ ] Disabled selection on button
+- [ ]
+- [ ]
+- [ ]
 
 <!-- # frontend
 

@@ -17,20 +17,20 @@
       <Transition name="fade">
         <div v-show="!isLoading && !hasSolution"
           class="flex flex-row items-center justify-center gap-4 max-md:order-2 md:w-1/6 md:flex-col">
-          <div class=" color-choose bg-white"></div>
-          <div class=" color-choose bg-red-500"></div>
-          <div class=" color-choose bg-orange-400"></div>
-          <div class=" color-choose bg-yellow-300"></div>
-          <div class=" color-choose bg-green-400"></div>
-          <div class=" color-choose bg-blue-500"></div>
+          <button class=" color-choose bg-white"></button>
+          <button class=" color-choose bg-red-500"></button>
+          <button class=" color-choose bg-orange-400"></button>
+          <button class=" color-choose bg-yellow-300"></button>
+          <button class=" color-choose bg-green-400"></button>
+          <button class=" color-choose bg-blue-500"></button>
         </div>
       </Transition>
 
       <!-- Canvas -->
       <!-- <div class="w-1/3 "> -->
-      <div class="relative flex size-full justify-center">
+      <div class="relative flex size-full items-center justify-center">
         <!-- Canvas -->
-        <div id="rubik_canvas" class=" size-full max-h-96 min-h-80 min-w-80 max-w-96 bg-black/20 max-md:order-1"></div>
+        <div id="rubik_canvas" class=" size-full max-h-96 min-h-80 min-w-80 max-w-96 max-md:order-1"></div>
 
         <Transition name="fade">
           <div v-show="isLoading"
@@ -94,7 +94,7 @@
             <div class="icon-button" @click="toggleGeneratorModal">
               <ShuffleIcon />
             </div>
-            <div class="text-button col-span-3 h-12 px-8 max-sm:mt-8 max-sm:px-12" @click="solveRubik">SOLVE</div>
+            <button class="text-button col-span-3 h-12 px-8 max-sm:mt-8 max-sm:px-12" @click="solveRubik">SOLVE</button>
           </div>
         </div>
       </Transition>
@@ -353,6 +353,16 @@ const animate = () => {
   requestAnimationFrame(animate);
 };
 
+function onWindowResize() {
+  if (!canva) {
+    return ;
+  }
+  camera.aspect = canva.offsetWidth / canva.offsetHeight;
+  camera.updateProjectionMatrix();
+  // console.log(canva);
+  renderer.setSize( canva.offsetWidth, canva.offsetHeight );
+}
+
 const initThree = () => {
   canva = document.getElementById('rubik_canvas');
   if (canva == null || canva == undefined) {
@@ -366,23 +376,24 @@ const initThree = () => {
   pointer.y = 1;
   raycaster = new THREE.Raycaster();
 
-  camera.position.x = 3;
-  camera.position.y = 3;
-  camera.position.z = 3;
+  camera.position.x = 2.5;
+  camera.position.y = 2.5;
+  camera.position.z = 2.5;
 
 
   renderer = new THREE.WebGLRenderer({antialias: true, alpha: true});
   controls = new OrbitControls( camera, renderer.domElement );
+  controls.enableZoom = false;
 
     // Config render
     renderer.setSize(canva.offsetWidth, canva.offsetHeight);
-  renderer.setClearColor(0x0F0F0F, 1);
+  renderer.setClearColor(0x0F0F0F, 0);
   canva.appendChild(renderer.domElement);
 
   rubik3D = new Rubik3D(scene);
 
   requestAnimationFrame(animate);
-
+  window.addEventListener( 'resize', onWindowResize );
 }
 
 onMounted(() => {
