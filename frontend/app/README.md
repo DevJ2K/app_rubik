@@ -8,7 +8,7 @@
 
 - [ ] Button disabled effect + selected effect
 - [ ] Disabled selection on button
-- [ ]
+- [ ] Animation for cube depending if its sequence, a move or real solution
 - [ ]
 - [ ]
 

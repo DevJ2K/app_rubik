@@ -76,24 +76,24 @@
       <Transition name="fade">
         <div v-show="!isLoading && !hasSolution" class="absolute left-0 top-0 flex  w-full flex-col gap-8">
           <div class="hidden flex-row justify-center gap-6 sm:flex">
-            <input type="text" placeholder="Enter a sequence" class="sequence-input">
-            <div class="icon-button">
+            <input id="sequence-input" type="text" placeholder="Enter a sequence" class="sequence-input">
+            <button class="icon-button" @click="pasteSequences">
               <ClipboardIcon />
-            </div>
-            <div class="icon-button">
+            </button>
+            <button class="icon-button">
               <PlayIcon />
-            </div>
+            </button>
           </div>
           <div class="grid w-full grid-cols-3 flex-row place-items-center sm:flex sm:justify-between">
-            <div class="icon-button">
+            <button class="icon-button" @click="clearCube">
               <DeleteIcon />
-            </div>
-            <div class="icon-button">
+            </button>
+            <button class="icon-button" @click="resetCube">
               <AutorenewIcon />
-            </div>
-            <div class="icon-button" @click="toggleGeneratorModal">
+            </button>
+            <button class="icon-button" @click="toggleGeneratorModal">
               <ShuffleIcon />
-            </div>
+            </button>
             <button class="text-button col-span-3 h-12 px-8 max-sm:mt-8 max-sm:px-12" @click="solveRubik">SOLVE</button>
           </div>
         </div>
@@ -349,20 +349,53 @@ const solveRubik = async () => {
 
 
 
+
+
 // ****************
 // RUBIK COMMANDS *
 // ****************
 
-function paintCubeWith(color: number) {
+// Palettes
+const paintCubeWith = (color: number) => {
   selectedPaintColors.value = color;
 }
 
-function disabledPaint() {
+const disabledPaint = () => {
   selectedPaintColors.value = null;
 }
 
+// Rotation
 
+// Bottom Button
+const clearCube = () => {
+  rubik3D.paint_cube([
+			[['-1', '-1', '-1'], ['-1', '-1', '-1'], ['-1', '-1', '-1']],
+			[['-1', '-1', '-1'], ['-1', '-1', '-1'], ['-1', '-1', '-1']],
+			[['-1', '-1', '-1'], ['-1', '-1', '-1'], ['-1', '-1', '-1']],
+			[['-1', '-1', '-1'], ['-1', '-1', '-1'], ['-1', '-1', '-1']],
+			[['-1', '-1', '-1'], ['-1', '-1', '-1'], ['-1', '-1', '-1']],
+			[['-1', '-1', '-1'], ['-1', '-1', '-1'], ['-1', '-1', '-1']]
+		]);
+}
 
+const resetCube = () => {
+  rubik3D.paint_cube([
+			[['1', '1', '1'], ['1', '1', '1'], ['1', '1', '1']], // UP
+			[['2', '2', '2'], ['2', '2', '2'], ['2', '2', '2']], // DOWN
+			[['3', '3', '3'], ['3', '3', '3'], ['3', '3', '3']], // FRONT
+			[['4', '4', '4'], ['4', '4', '4'], ['4', '4', '4']], // BACK
+			[['5', '5', '5'], ['5', '5', '5'], ['5', '5', '5']], // LEFT
+			[['6', '6', '6'], ['6', '6', '6'], ['6', '6', '6']] // RIGHT
+  ])
+}
+
+const pasteSequences = async () => {
+  const text = await navigator.clipboard.readText();
+  const sequence_input = document.getElementById("sequence-input");
+  if (sequence_input) {
+    sequence_input.value = text;
+  }
+}
 
 
 // *************************
