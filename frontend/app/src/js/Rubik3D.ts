@@ -81,7 +81,7 @@ class Rubik3D {
 			[['-1', '-1', '-1'], ['-1', '-1', '-1'], ['-1', '-1', '-1']],
 		]
 		this.second_between_animation = 0;
-		this.animation_speed = 0.2;
+		this.animation_speed = 0.5;
 
 		this.all_cubes = createRubik({center: {x: this.x, y: this.y, z: this.z}});
 		this.paint_cube(this.face_colors);
@@ -139,12 +139,13 @@ class Rubik3D {
 
 	async play_animation(): Promise<void> {
 		// console.log(this.all_cubes);
-		this.animation_is_playing = true;
+		// this.animation_is_playing = true;
 		for (let i = this.current_frame; i < this.frames.length; i++) {
 			const element = this.frames[i];
-			await this.apply_moves(element.move);
+			await this.apply_move(element.move);
 			this.current_frame = i;
 		}
+		// this.animation_is_playing = false;
 		this.current_tween = undefined;
 		// this.sort_cubes_by_position();
 		// this.paint_cube([
@@ -444,13 +445,13 @@ class Rubik3D {
 	cube_to_move: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial[], THREE.Object3DEventMap>[],
 	new_rotation: { x: number; y: number; z: number }): Promise<void>
 	{
+		this.animation_is_playing = true;
 		const group = new THREE.Group();
 		for (let i = 0; i < cube_to_move.length; i++) {
 			const cube = cube_to_move[i];
 			group.add(cube)
 		}
 		this.scene.add(group)
-
 		const targetRotation = {
 			x: THREE.MathUtils.degToRad(group.rotation.x + new_rotation.x),
 			y: THREE.MathUtils.degToRad(group.rotation.y + new_rotation.y),
@@ -472,13 +473,14 @@ class Rubik3D {
 				await new Promise<void>((resolve) => {
 				setTimeout(resolve, 1000 * this.second_between_animation);
 				})
+				this.animation_is_playing = false;
 				resolve();
 			})
 			.start();
 		});
 	}
 
-	private async apply_moves(move: string): Promise<void> {
+	async apply_move(move: string): Promise<void> {
 		const cube_to_move: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial[], THREE.Object3DEventMap>[] = [];
 
 		let x: number = 0;

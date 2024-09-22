@@ -17,12 +17,12 @@
       <Transition name="fade">
         <div v-show="!isLoading && !hasSolution"
           class="flex flex-row items-center justify-center gap-4 max-md:order-2 md:w-1/6 md:flex-col">
-          <button class=" color-choose bg-[#FFFFFF]" @click="paintCubeWith(0xFFFFFF)"></button>
-          <button class=" color-choose bg-[#FF0000]" @click="paintCubeWith(0xFF0000)"></button>
-          <button class=" color-choose bg-[#FF9700]" @click="paintCubeWith(0xff9700)"></button>
-          <button class=" color-choose bg-[#FFFF00]" @click="paintCubeWith(0xFFFF00)"></button>
-          <button class=" color-choose bg-[#00FF00]" @click="paintCubeWith(0x00FF00)"></button>
-          <button class=" color-choose bg-[#2558ff]" @click="paintCubeWith(0x0000FF)"></button>
+          <button class=" color-choose bg-[#FFFFFF]" @click="paintRubikWith(0xFFFFFF)"></button>
+          <button class=" color-choose bg-[#FF0000]" @click="paintRubikWith(0xFF0000)"></button>
+          <button class=" color-choose bg-[#FF9700]" @click="paintRubikWith(0xff9700)"></button>
+          <button class=" color-choose bg-[#FFFF00]" @click="paintRubikWith(0xFFFF00)"></button>
+          <button class=" color-choose bg-[#00FF00]" @click="paintRubikWith(0x00FF00)"></button>
+          <button class=" color-choose bg-[#2558ff]" @click="paintRubikWith(0x0000FF)"></button>
         </div>
       </Transition>
 
@@ -51,18 +51,18 @@
 
         <div v-show="!isLoading && !hasSolution" class="flex justify-center max-md:order-3 md:w-1/6">
           <div class="grid w-fit grid-cols-6 gap-4 md:grid-cols-2">
-            <div class="movements">U</div>
-            <div class="movements">U'</div>
-            <div class="movements">D</div>
-            <div class="movements">D'</div>
-            <div class="movements">F</div>
-            <div class="movements">F'</div>
-            <div class="movements">B</div>
-            <div class="movements">B'</div>
-            <div class="movements">L</div>
-            <div class="movements">L'</div>
-            <div class="movements">R</div>
-            <div class="movements">R'</div>
+            <button class="movements" @click="applyMoveOnRubik('U')">U</button>
+            <button class="movements" @click="applyMoveOnRubik('U\'')">U'</button>
+            <button class="movements" @click="applyMoveOnRubik('D')">D</button>
+            <button class="movements" @click="applyMoveOnRubik('D\'')">D'</button>
+            <button class="movements" @click="applyMoveOnRubik('F')">F</button>
+            <button class="movements" @click="applyMoveOnRubik('F\'')">F'</button>
+            <button class="movements" @click="applyMoveOnRubik('B')">B</button>
+            <button class="movements" @click="applyMoveOnRubik('B\'')">B'</button>
+            <button class="movements" @click="applyMoveOnRubik('L')">L</button>
+            <button class="movements" @click="applyMoveOnRubik('L\'')">L'</button>
+            <button class="movements" @click="applyMoveOnRubik('R')">R</button>
+            <button class="movements" @click="applyMoveOnRubik('R\'')">R'</button>
           </div>
         </div>
       </Transition>
@@ -85,10 +85,10 @@
             </button>
           </div>
           <div class="grid w-full grid-cols-3 flex-row place-items-center sm:flex sm:justify-between">
-            <button class="icon-button" @click="clearCube">
+            <button class="icon-button" @click="clearRubik">
               <DeleteIcon />
             </button>
-            <button class="icon-button" @click="resetCube">
+            <button class="icon-button" @click="resetRubik">
               <AutorenewIcon />
             </button>
             <button class="icon-button" @click="toggleGeneratorModal">
@@ -224,6 +224,7 @@ import FirstPageIcon from '@/assets/Svg/FirstPageIcon.vue';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { Rubik3D } from '@/js/Rubik3D';
+import { Deque } from '@/js/Deque';
 
 
 // THREE JS
@@ -248,6 +249,7 @@ const result = ref<any>(null);
 const isLoading = ref(false);
 const hasSolution = ref<boolean>(false);
 const selectedPaintColors = ref<number | null>(null);
+const listMovesToApply = new Deque();
 
 result.value = {
   current_move: 5,
@@ -356,7 +358,7 @@ const solveRubik = async () => {
 // ****************
 
 // Palettes
-const paintCubeWith = (color: number) => {
+const paintRubikWith = (color: number) => {
   selectedPaintColors.value = color;
 }
 
@@ -365,9 +367,26 @@ const disabledPaint = () => {
 }
 
 // Rotation
+const applyMoveOnRubik = (move: string) => {
+  listMovesToApply.addFront(move);
+  // console.log("APPLY MOVE : " + move)
+  // await rubik3D.apply_move(move);
+}
+
+
+const handleMoveList = async () => {
+  if (rubik3D.animation_is_playing == true) {
+    return ;
+  }
+  const value = listMovesToApply.removeBack();
+  if (value) {
+    rubik3D.apply_move(value);
+  }
+}
+
 
 // Bottom Button
-const clearCube = () => {
+const clearRubik = () => {
   rubik3D.paint_cube([
 			[['-1', '-1', '-1'], ['-1', '-1', '-1'], ['-1', '-1', '-1']],
 			[['-1', '-1', '-1'], ['-1', '-1', '-1'], ['-1', '-1', '-1']],
@@ -378,7 +397,7 @@ const clearCube = () => {
 		]);
 }
 
-const resetCube = () => {
+const resetRubik = () => {
   rubik3D.paint_cube([
 			[['1', '1', '1'], ['1', '1', '1'], ['1', '1', '1']], // UP
 			[['2', '2', '2'], ['2', '2', '2'], ['2', '2', '2']], // DOWN
@@ -519,6 +538,7 @@ const animate = () => {
   if (typeof selectedPaintColors.value === "number") {
     checkPointerIntersects();
   }
+  handleMoveList();
   if (rubik3D.animation_is_playing && rubik3D.current_tween) {
     rubik3D.current_tween.update();
   }
