@@ -119,8 +119,39 @@ class Rubik:
 			self.cube_right
 		]
 
-	def check_valid_cube(self) -> bool:
-		pass
+	def isSolvable(self) -> bool:
+		from RubikChecker import RubikChecker
+		return RubikChecker(self).isSolvable()
+
+	def getEdges(self) -> list[tuple[str, str]]:
+		cube_up,cube_down,cube_front,cube_back,cube_left,cube_right = self.get_cube()
+		return [
+			(cube_up[2][1], cube_front[0][1]),
+			(cube_up[1][2], cube_right[0][1]),
+			(cube_up[0][1], cube_back[0][1]),
+			(cube_up[1][0], cube_left[0][1]),
+			(cube_down[2][1], cube_front[2][1]),
+			(cube_down[1][0], cube_right[2][1]),
+			(cube_down[0][1], cube_back[2][1]),
+			(cube_down[1][2], cube_left[2][1]),
+			(cube_front[1][2], cube_right[1][0]),
+			(cube_back[1][0], cube_right[1][2]),
+			(cube_back[1][2], cube_left[1][0]),
+			(cube_front[1][0], cube_left[1][2]),
+		]
+
+	def getCorners(self) -> list[tuple[str, str, str]]:
+		cube_up,cube_down,cube_front,cube_back,cube_left,cube_right = self.get_cube()
+		return [
+			(cube_up[2][2], cube_right[0][0], cube_front[0][2]),
+			(cube_up[0][2], cube_right[0][2], cube_back[0][0]),
+			(cube_down[2][2], cube_left[2][2], cube_front[2][0]),
+			(cube_down[2][0], cube_right[2][0], cube_front[2][2]),
+			(cube_up[0][0], cube_left[0][0], cube_back[0][2]),
+			(cube_up[2][0], cube_left[0][2], cube_front[0][0]),
+			(cube_down[0][0], cube_right[2][2], cube_back[2][0]),
+			(cube_down[0][2], cube_left[2][0], cube_back[2][2])
+		]
 
 	def apply_move(self, move: str) -> None:
 		"""
@@ -348,7 +379,7 @@ class Rubik:
 		output = []
 		from Solver import Solver
 		solver = Solver(self)
-		print('Table loading done!')
+		# print('Table loading done!')
 		for phase in range(1, 5):
 			while solver.getPhaseId(self, phase) != solver.phaseGoal[phase]:
 				path = solver.phaseTable[phase - 1][solver.getPhaseId(self, phase)]
