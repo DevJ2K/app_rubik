@@ -16,7 +16,7 @@ class Solver:
 		try:
 			for i in range(1, 5):
 				tempDict = {}
-				with open('./database/phase' + str(i), 'r') as file:
+				with open('./database/Phase ' + str(i), 'r') as file:
 					for line in file:
 						line = line.strip()
 						if not line:
@@ -161,7 +161,7 @@ class Solver:
 
 	def BFS(self, step: int, queue: deque, phase: int, outfile):
 		moves = ["F", "R", "U", "B", "L", "D"]
-		
+
 		if step == 0:
 			id = self.getPhaseId(queue[0], phase + 1)
 			outfile.write(str(id) + " " + "I" + '\n')
