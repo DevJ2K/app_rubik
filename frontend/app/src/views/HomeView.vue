@@ -9,7 +9,7 @@
           <InstructionsBlock v-show="hasSolution && !isLoading" @display-modal="toggleSolutionModal" />
         </Transition>
         <Transition name="fade">
-          <ErrorBlock v-show="!hasSolution && !isLoading && error" :description="error"/>
+          <ErrorBlock v-show="!hasSolution && !isLoading && (errorDescription)" :title="errorTitle" :description="errorDescription"/>
         </Transition>
       </div>
     </div>
@@ -88,16 +88,16 @@
             </button>
           </div>
           <div class="grid w-full grid-cols-3 flex-row place-items-center sm:flex sm:justify-between">
-            <button class="icon-button" @click="clearRubik">
+            <button class="icon-button" @click="clearRubik" :disabled="rubikIsAnimating">
               <DeleteIcon />
             </button>
-            <button class="icon-button" @click="resetRubik">
+            <button class="icon-button" @click="resetRubik" :disabled="rubikIsAnimating">
               <AutorenewIcon />
             </button>
             <button class="icon-button" @click="toggleGeneratorModal">
               <ShuffleIcon />
             </button>
-            <button class="text-button col-span-3 h-12 px-8 max-sm:mt-8 max-sm:px-12" @click="solveRubik">SOLVE</button>
+            <button class="text-button col-span-3 h-12 px-8 max-sm:mt-8 max-sm:px-12" @click="solveRubik" :disabled="rubikIsAnimating">SOLVE</button>
           </div>
         </div>
       </Transition>
@@ -250,10 +250,12 @@ let mousedown_coordinates: Object = Object.create(null);
 
 // API STATUS
 const baseUrl = "http://127.0.0.1:4000/";
-const error = ref<string | null>(null);
+const errorDescription = ref<string | null>(null);
+const errorTitle = ref<string | null>(null);
 const result = ref<any>(null);
 const isLoading = ref(false);
 const hasSolution = ref<boolean>(false);
+
 const selectedPaintColors = ref<number | null>(null);
 const listMovesToApply = new Deque();
 
@@ -314,6 +316,8 @@ result.value = {
   ]
 }
 
+const rubikIsAnimating = ref(false);
+
 const generatorModalActive = ref(false);
 const solutionModalActive = ref(false);
 
@@ -339,7 +343,7 @@ const getBack = () => {
 
 const solveRubik = async () => {
   isLoading.value = true;
-  error.value = null;
+  errorDescription.value = null;
   result.value = null;
   // Desactiver la peinture du rubik cube...
   await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -347,7 +351,7 @@ const solveRubik = async () => {
     hasSolution.value = true;
     console.log("Make requests...")
   } catch (e: any) {
-    error.value = e.message || 'An unknown error occurred';
+    errorDescription.value = e.message || 'An unknown error occurred';
   } finally {
     isLoading.value = false;
   }
@@ -422,6 +426,8 @@ const pasteSequences = async () => {
 
 
 const applySequences = () => {
+  errorDescription.value = null;
+  errorTitle.value = null;
   const sequence_input = document.getElementById("sequence-input")
   // sequence_input.value = "R2 D' B' (RU4R'U')4"
   const sequence_value: string = sequence_input?.value;
@@ -431,22 +437,23 @@ const applySequences = () => {
   // sequence_input.value = null;
   // console.log(sequence_value);
 
-  const sequences_list_str = sequence_value.split(/\s+/);
-  console.log(sequences_list_str);
+  const sequences_list_str = sequence_value.trimStart().trimEnd().split(/\s+/);
+  // console.log(sequences_list_str);
   for (const sequence_str of sequences_list_str) {
     // console.log(sequence_str)
     if (checkNotation(sequence_str) == false) {
-      error.value = `${sequence_str} is not a valid notation.`
+      errorTitle.value = 'Sequence Error'
+      errorDescription.value = `'${sequence_str}' is not a valid notation.`
       return ;
     }
   }
   const sequences_list_not_join = sequences_list_str.map(notation => new RubikMoves(notation).sequences);
-  console.log(sequences_list_not_join);
+  // console.log(sequences_list_not_join);
   let sequences_list: Array<string> = [];
   for (const expandSequences of sequences_list_not_join) {
       sequences_list = sequences_list.concat(expandSequences);
   }
-  console.log(sequences_list);
+  // console.log(sequences_list);
   for (const move of sequences_list) {
     // console.log(move);
     listMovesToApply.addFront(move);
@@ -520,7 +527,7 @@ function onPointerMove( event: MouseEvent ) {
 
 
 function onCanvaMouseup( event: MouseEvent ) {
-  if (typeof selectedPaintColors.value !== "number") {
+  if (typeof selectedPaintColors.value !== "number" || rubik3D.is_animating || listMovesToApply.getLength() != 0) {
     return ;
   }
 
@@ -554,6 +561,10 @@ function onCanvaMouseup( event: MouseEvent ) {
 // *****************
 
 function checkPointerIntersects() {
+  if (rubik3D.is_animating || listMovesToApply.getLength() != 0) {
+    canva.style.cursor = "not-allowed";
+    return ;
+  }
   raycaster.setFromCamera(pointer, camera);
   const intersects = raycaster.intersectObjects(scene.children, false);
 
@@ -610,6 +621,7 @@ const animate = () => {
     checkPointerIntersects();
   }
   handleMoveList();
+  rubikIsAnimating.value = rubik3D.is_animating || listMovesToApply.getLength() != 0;
   if (rubik3D.is_animating && rubik3D.current_tween) {
     rubik3D.current_tween.update();
   }
