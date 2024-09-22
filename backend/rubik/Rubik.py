@@ -119,8 +119,9 @@ class Rubik:
 			self.cube_right
 		]
 
-	def check_valid_cube(self) -> bool:
-		pass
+	def isSolvable(self) -> bool:
+		from RubikChecker import RubikChecker
+		return RubikChecker(self).isSolvable()
 
 	def getEdges(self) -> list[tuple[str, str]]:
 		cube_up,cube_down,cube_front,cube_back,cube_left,cube_right = self.get_cube()
@@ -378,7 +379,7 @@ class Rubik:
 		output = []
 		from Solver import Solver
 		solver = Solver(self)
-		print('Table loading done!')
+		# print('Table loading done!')
 		for phase in range(1, 5):
 			while solver.getPhaseId(self, phase) != solver.phaseGoal[phase]:
 				path = solver.phaseTable[phase - 1][solver.getPhaseId(self, phase)]

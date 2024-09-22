@@ -124,8 +124,8 @@ class RubikChecker:
 		return True
 
 
-if __name__ == "__main__":
-	cube = Rubik()
-	cube.generateRandomCube(5)
-	checker = RubikChecker(cube)
-	print(f"Cube solvable ? : {checker.isSolvable()}")
+# if __name__ == "__main__":
+# 	cube = Rubik()
+# 	cube.generateRandomCube(5)
+# 	checker = RubikChecker(cube)
+# 	print(f"Cube solvable ? : {checker.isSolvable()}")
