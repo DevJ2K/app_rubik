@@ -182,7 +182,7 @@
     </div>
 
     <div class="mb-4 mt-6 flex w-full items-center justify-center">
-      <button class="text-button px-4 py-2 text-high-contrast-text dark:text-d-high-contrast-text">GENERATE MIX</button>
+      <button class="text-button px-4 py-2 text-high-contrast-text dark:text-d-high-contrast-text" @click="generateMix">GENERATE MIX</button>
     </div>
 
   </CustomModal>
@@ -416,8 +416,40 @@ const pasteSequences = async () => {
   }
 }
 
+const getRandom = (arr: Array<any>, n: number) => {
+    var result = new Array(n),
+        len = arr.length,
+        taken = new Array(len);
+    if (n > len)
+        throw new RangeError("getRandom: more elements taken than available");
+    while (n--) {
+        var x = Math.floor(Math.random() * len);
+        result[n] = arr[x in taken ? taken[x] : x];
+        taken[x] = --len in taken ? taken[len] : len;
+    }
+    return result;
+}
+
 const generateMix = () => {
   const movements_list = ['U', 'U\'', 'D', 'D\'', 'F', 'F\'', 'B', 'B\'', 'L', 'L\'', 'R', 'R\'']
+
+  const nb_moves = document.getElementById("range_nb_moves")?.value;
+  const nb_mixes = document.getElementById("range_nb_mixes")?.value;
+
+  if (!nb_moves || !nb_mixes) {
+    return ;
+  }
+  console.log(nb_moves);
+  console.log(nb_mixes);
+  for (let i = 0; i < nb_mixes; i++) {
+    const random_moves = getRandom(movements_list, nb_moves);
+    for (let index = 0; index < random_moves.length; index++) {
+      listMovesToApply.addFront(random_moves[index]);
+    }
+    // console.log(random_moves);
+  }
+
+  toggleGeneratorModal();
 }
 
 
