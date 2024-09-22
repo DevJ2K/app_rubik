@@ -354,7 +354,6 @@ class Rubik:
 				move_sequences.append(move)
 			return move_sequences
 		moves = generateRandomMoves(numMoves)
-		print(moves)
 		for move in moves:
 			if "'" in move:
 				self.applyMultipleMoves(move[:1], 3)

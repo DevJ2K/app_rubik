@@ -75,39 +75,44 @@ class RubikChecker:
 		cornersSolved = solvedCube.getCorners()
 		edgesSolved = solvedCube.getEdges()
 
-		solvedCornerOri = {}
+		cornerIndex = {}
 		for i, piece in enumerate(cornersSolved):
-			solvedCornerOri[i] = piece
+			normalized = self.normalizePiece(piece)
+			cornerIndex.setdefault(normalized, []).append(i)
+		edgeIndex = {}
+		for i, piece in enumerate(edgesSolved):
+			normalized = self.normalizePiece(piece)
+			edgeIndex.setdefault(normalized, []).append(i)
 
-		cornerOriSum = 0
-		for current, solved in zip(self.corners, cornersSolved):
-			normalized = self.normalizePiece(current)
-			solvedIndex = self.findPieceIndex(current, {self.normalizePiece(p): i for i, p in enumerate(cornersSolved)})
-			if solvedIndex is None:
+		cornerPermutation = []
+		usedCorners = set()
+		for piece in self.corners:
+			normalized = self.normalizePiece(piece)
+			possibleIndices = cornerIndex.get(normalized, None)
+			mappedIndex = None
+			for i in possibleIndices:
+				if i not in usedCorners:
+					mappedIndex = i
+					usedCorners.add(i)
+					break
+			if mappedIndex is None:
 				return False
-			solved = cornersSolved[solvedIndex]
-			try:
-				ori = current.index(solved[0])
-			except ValueError:
-				ori = 0
-			print(ori)
-			cornerOriSum += ori
-		print(cornerOriSum)
-		if cornerOriSum % 3 != 0:
-			print('here')
-			return False
+			cornerPermutation.append(mappedIndex)
 		
-		edgeFlip = 0
-		for current, solved in zip(self.edges, edgesSolved):
-			if current != solved:
-				if current[::-1] == solved:
-					edgeFlip += 1
-				else:
-					print('here 2')
-					return False
-		if edgeFlip % 2 != 0:
-			print('here 3')
-			return False
+		edgePermutation = []
+		usedEdges = set()
+		for piece in self.edges:
+			normalized = self.normalizePiece(piece)
+			possibleIndices = edgeIndex.get(normalized, None)
+			mappedIndex = None
+			for i in possibleIndices:
+				if i not in usedEdges:
+					mappedIndex = i
+					usedEdges.add(i)
+					break
+			if mappedIndex is None:
+				return False
+			edgePermutation.append(mappedIndex)
 		return True
 
 
@@ -122,14 +127,5 @@ class RubikChecker:
 if __name__ == "__main__":
 	cube = Rubik()
 	cube.generateRandomCube(5)
-	print(cube.get_cube())
-	print(cube.getEdges())
-	print(cube.getCorners())
-	# cube.visualize_cube()
-	# cube.cube_up = [
-	# 		['W', 'W', 'W'],
-	# 		['W', 'W', 'W'],
-	# 		['W', 'W', 'W'],
-	# 	]
 	checker = RubikChecker(cube)
 	print(f"Cube solvable ? : {checker.isSolvable()}")
