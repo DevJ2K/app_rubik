@@ -6,7 +6,10 @@
 
       <div class="flex min-h-24 w-full items-center justify-center">
         <Transition name="fade">
-          <InstructionsBlock v-show="hasSolution" @display-modal="toggleSolutionModal" />
+          <InstructionsBlock v-show="hasSolution && !isLoading" @display-modal="toggleSolutionModal" />
+        </Transition>
+        <Transition name="fade">
+          <ErrorBlock v-show="!hasSolution && !isLoading && error" :description="error"/>
         </Transition>
       </div>
     </div>
@@ -80,7 +83,7 @@
             <button class="icon-button" @click="pasteSequences">
               <ClipboardIcon />
             </button>
-            <button class="icon-button">
+            <button class="icon-button" @click="applySequences">
               <PlayIcon />
             </button>
           </div>
@@ -225,6 +228,8 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { Rubik3D } from '@/js/Rubik3D';
 import { Deque } from '@/js/Deque';
+import ErrorBlock from '@/components/ErrorBlock.vue';
+import { checkNotation, RubikMoves } from '@/js/RubikMoves';
 
 
 // THREE JS
@@ -244,6 +249,7 @@ let INTERSECTED_FACE_INDEX: number | undefined | null;
 let mousedown_coordinates: Object = Object.create(null);
 
 // API STATUS
+const baseUrl = "http://127.0.0.1:4000/";
 const error = ref<string | null>(null);
 const result = ref<any>(null);
 const isLoading = ref(false);
@@ -369,13 +375,11 @@ const disabledPaint = () => {
 // Rotation
 const applyMoveOnRubik = (move: string) => {
   listMovesToApply.addFront(move);
-  // console.log("APPLY MOVE : " + move)
-  // await rubik3D.apply_move(move);
 }
 
 
 const handleMoveList = async () => {
-  if (rubik3D.animation_is_playing == true) {
+  if (rubik3D.is_animating == true) {
     return ;
   }
   const value = listMovesToApply.removeBack();
@@ -416,6 +420,40 @@ const pasteSequences = async () => {
   }
 }
 
+
+const applySequences = () => {
+  const sequence_input = document.getElementById("sequence-input")
+  // sequence_input.value = "R2 D' B' (RU4R'U')4"
+  const sequence_value: string = sequence_input?.value;
+  if (!sequence_input || !sequence_value || sequence_value.length == 0) {
+    return ;
+  }
+  // sequence_input.value = null;
+  // console.log(sequence_value);
+
+  const sequences_list_str = sequence_value.split(/\s+/);
+  console.log(sequences_list_str);
+  for (const sequence_str of sequences_list_str) {
+    // console.log(sequence_str)
+    if (checkNotation(sequence_str) == false) {
+      error.value = `${sequence_str} is not a valid notation.`
+      return ;
+    }
+  }
+  const sequences_list_not_join = sequences_list_str.map(notation => new RubikMoves(notation).sequences);
+  console.log(sequences_list_not_join);
+  let sequences_list: Array<string> = [];
+  for (const expandSequences of sequences_list_not_join) {
+      sequences_list = sequences_list.concat(expandSequences);
+  }
+  console.log(sequences_list);
+  for (const move of sequences_list) {
+    // console.log(move);
+    listMovesToApply.addFront(move);
+  }
+}
+
+
 const getRandom = (arr: Array<any>, n: number) => {
     var result = new Array(n),
         len = arr.length,
@@ -439,14 +477,11 @@ const generateMix = () => {
   if (!nb_moves || !nb_mixes) {
     return ;
   }
-  console.log(nb_moves);
-  console.log(nb_mixes);
   for (let i = 0; i < nb_mixes; i++) {
     const random_moves = getRandom(movements_list, nb_moves);
     for (let index = 0; index < random_moves.length; index++) {
       listMovesToApply.addFront(random_moves[index]);
     }
-    // console.log(random_moves);
   }
 
   toggleGeneratorModal();
@@ -575,7 +610,7 @@ const animate = () => {
     checkPointerIntersects();
   }
   handleMoveList();
-  if (rubik3D.animation_is_playing && rubik3D.current_tween) {
+  if (rubik3D.is_animating && rubik3D.current_tween) {
     rubik3D.current_tween.update();
   }
   renderer.render(scene, camera);
