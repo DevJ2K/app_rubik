@@ -120,7 +120,7 @@ function checkPointerIntersects() {
 const animate = () => {
   controls.update();
   checkPointerIntersects();
-  if (rubik3D.animation_is_playing && rubik3D.current_tween) {
+  if (rubik3D.is_animating && rubik3D.current_tween) {
     rubik3D.current_tween.update();
   }
   renderer.render(scene, camera);
