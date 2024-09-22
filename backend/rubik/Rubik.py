@@ -281,9 +281,14 @@ class Rubik:
 		sequences_list = []
 		for expend_sequences in sequences_list_not_join:
 			sequences_list += expend_sequences
-		print(sequences_list)
+		# print(sequences_list)
 		for move in sequences_list:
-			self.apply_move(move)
+			if "'" in move:
+				self.applyMultipleMoves(move[:1], 3)
+			elif "2" in move:
+				self.applyMultipleMoves(move[:1], 2)
+			else:
+				self.applyMultipleMoves(move, 1)
 		pass
 
 	def visualize_cube(self, window_title: str = "Rubik Visualizer", spacing: float = 0.04) -> None:
@@ -375,7 +380,7 @@ class Rubik:
 					self.formatedSolution.append(string[i:i+2])
 
 
-	def solver(self):
+	def solve(self):
 		output = []
 		from Solver import Solver
 		solver = Solver(self)
@@ -404,7 +409,7 @@ if __name__ == "__main__":
 	rubik = Rubik()
 	rubik.generateRandomCube(25)
 	# rubik.shuffle()
-	rubik.formatSolution(rubik.solver())
+	rubik.formatSolution(rubik.solve())
 	solution = " ".join(rubik.formatedSolution)
 	print(f"\033[1m\033[36mSolution: \033[0m{solution}")
 	print(f"\033[1m\033[35mNombre de coups: \033[0m{len(rubik.formatedSolution)}")
