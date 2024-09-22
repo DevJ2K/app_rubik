@@ -71,6 +71,11 @@
 	filter: drop-shadow(4px 4px 3px rgba(0, 0, 0, 0.95)) drop-shadow(-2px -2px 4px rgba(255, 255, 255, 0.35));
 }
 
+.dark .color-choose:disabled {
+	@apply cursor-not-allowed;
+	filter: drop-shadow(4px 4px 3px rgba(0, 0, 0, 0.45)) drop-shadow(-2px -2px 4px rgba(255, 255, 255, 0.15));
+}
+
 .dark .movements {
 	@apply transition-all;
 	@apply bg-d-ui-bg;
@@ -120,6 +125,12 @@
 		inset 4px 4px 16px rgba(0, 0, 0, 0.35);
 }
 
+.dark .icon-button:disabled {
+	@apply cursor-not-allowed;
+	filter: drop-shadow(6px 6px 6px rgba(0, 0, 0, 0.45)) drop-shadow(-3px -3px 4px rgba(255, 255, 255, 0.05));
+	box-shadow: none;
+}
+
 
 .dark .text-button {
 	@apply transition-all;
@@ -133,6 +144,12 @@
 	box-shadow:
 		inset -2px -2px 12px rgba(255, 255, 255, 0.05),
 		inset 4px 4px 16px rgba(0, 0, 0, 0.35);
+}
+
+.dark .text-button:disabled {
+	@apply cursor-not-allowed;
+	filter: drop-shadow(6px 6px 5px rgba(0, 0, 0, 0.45)) drop-shadow(-3px -3px 4px rgba(255, 255, 255, 0.05));
+	box-shadow: none;
 }
 
 .dark .subtitle-modal {
