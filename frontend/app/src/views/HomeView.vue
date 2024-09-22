@@ -416,6 +416,10 @@ const pasteSequences = async () => {
   }
 }
 
+const generateMix = () => {
+  const movements_list = ['U', 'U\'', 'D', 'D\'', 'F', 'F\'', 'B', 'B\'', 'L', 'L\'', 'R', 'R\'']
+}
+
 
 // *************************
 // EVENT LISTENER FUNCTION *
