@@ -4,6 +4,17 @@ class Deque {
     constructor() {
         this.front = this.back = undefined;
     }
+
+    getLength() {
+        let len = 0;
+        let current = this.back;
+        while (current) {
+            current = current.next;
+            len++;
+        }
+        return (len);
+    }
+
     addFront(value: any) {
         if (!this.front) this.front = this.back = { value };
         else this.front = this.front.next = { value, prev: this.front };
