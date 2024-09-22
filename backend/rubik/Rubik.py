@@ -129,13 +129,13 @@ class Rubik:
 			(cube_up[1][2], cube_right[0][1]),
 			(cube_up[0][1], cube_back[0][1]),
 			(cube_up[1][0], cube_left[0][1]),
-			(cube_down[0][1], cube_front[2][1]),
-			(cube_down[1][2], cube_right[2][1]),
-			(cube_down[2][1], cube_back[2][1]),
-			(cube_down[1][0], cube_left[2][1]),
+			(cube_down[2][1], cube_front[2][1]),
+			(cube_down[1][0], cube_right[2][1]),
+			(cube_down[0][1], cube_back[2][1]),
+			(cube_down[1][2], cube_left[2][1]),
 			(cube_front[1][2], cube_right[1][0]),
-			(cube_back[1][2], cube_right[1][2]),
-			(cube_back[1][0], cube_left[1][0]),
+			(cube_back[1][0], cube_right[1][2]),
+			(cube_back[1][2], cube_left[1][0]),
 			(cube_front[1][0], cube_left[1][2]),
 		]
 
@@ -143,13 +143,13 @@ class Rubik:
 		cube_up,cube_down,cube_front,cube_back,cube_left,cube_right = self.get_cube()
 		return [
 			(cube_up[2][2], cube_right[0][0], cube_front[0][2]),
-			(cube_up[0][2], cube_right[0][2], cube_back[0][2]),
-			(cube_down[0][0], cube_left[2][2], cube_front[2][0]),
-			(cube_down[0][2], cube_right[2][2], cube_front[2][2]),
-			(cube_up[0][0], cube_left[0][2], cube_back[0][0]),
-			(cube_up[2][0], cube_left[0][0], cube_front[0][0]),
-			(cube_down[2][2], cube_right[2][0], cube_back[2][2]),
-			(cube_down[2][0], cube_left[2][0], cube_back[2][0])
+			(cube_up[0][2], cube_right[0][2], cube_back[0][0]),
+			(cube_down[2][2], cube_left[2][2], cube_front[2][0]),
+			(cube_down[2][0], cube_right[2][0], cube_front[2][2]),
+			(cube_up[0][0], cube_left[0][0], cube_back[0][2]),
+			(cube_up[2][0], cube_left[0][2], cube_front[0][0]),
+			(cube_down[0][0], cube_right[2][2], cube_back[2][0]),
+			(cube_down[0][2], cube_left[2][0], cube_back[2][2])
 		]
 
 	def apply_move(self, move: str) -> None:
@@ -354,6 +354,7 @@ class Rubik:
 				move_sequences.append(move)
 			return move_sequences
 		moves = generateRandomMoves(numMoves)
+		print(moves)
 		for move in moves:
 			if "'" in move:
 				self.applyMultipleMoves(move[:1], 3)
@@ -410,7 +411,7 @@ if __name__ == "__main__":
 	print(f"\033[1m\033[32mTemps écoulé: \033[0m{time.time() - startTime:.3f} secondes")
 	print(f"\033[1m\033[33mCube résolu ? : \033[0m{rubik.isSolved()}")
 	# print(rubik.get_cube())
-	rubik.visualize_cube()
+	# rubik.visualize_cube()
 
 	# ✅ UP
 	# rubik.apply_sequences("U U U U")

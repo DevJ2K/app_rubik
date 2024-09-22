@@ -16,39 +16,41 @@ class RubikChecker:
 		return all([self.stickers[i] == 9 for i in self.stickers])
 
 
+	def normalizePiece(self, piece):
+		return tuple(sorted(piece))
+
+
+	def findPieceIndex(self, currentPiece, solvedMap):
+		normalized = self.normalizePiece(currentPiece)
+		return solvedMap.get(normalized, None)
+
 	def checkPermutation(self):
 		solvedCube = Rubik()
 		cornersSolved = solvedCube.getCorners()
 		edgesSolved = solvedCube.getEdges()
-		cornerIndex = {v: k for k, v in enumerate(cornersSolved)}
-		edgeIndex = {v: k for k, v in enumerate(edgesSolved)}
 
-		def findPieceIndex(currentPiece, solvedMap, isCorner=True):
-			ori = [currentPiece]
-			if isCorner:
-				ori += [
-					(currentPiece[1], currentPiece[2], currentPiece[0]),
-					(currentPiece[2], currentPiece[0], currentPiece[1])
-				]
-			else:
-				ori += [
-					(currentPiece[1], currentPiece[0])
-				]
-			for i in ori:
-				if i in solvedMap:
-					return solvedMap[i]
-			return None
+		if not cornersSolved or not edgesSolved or not self.corners or not self.edges:
+			return False
+
+		cornerIndex = {}
+		for i, piece in enumerate(cornersSolved):
+			normalized = self.normalizePiece(piece)
+			cornerIndex[normalized] = i
+		edgeIndex = {}
+		for i, piece in enumerate(edgesSolved):
+			normalized = self.normalizePiece(piece)
+			edgeIndex[normalized] = i
 
 		cornerPermutation = []
 		for piece in self.corners:
-			mapIndex = findPieceIndex(piece, cornerIndex, isCorner=True)
+			# print(piece, cornerIndex)
+			mapIndex = self.findPieceIndex(piece, cornerIndex)
 			if mapIndex is None:
-				print('here')
 				return False
 			cornerPermutation.append(mapIndex)
 		edgePermutation = []
 		for piece in self.edges:
-			mapIndex = findPieceIndex(piece, edgeIndex, isCorner=False)
+			mapIndex = self.findPieceIndex(piece, edgeIndex)
 			if mapIndex is None:
 				return False
 			edgePermutation.append(mapIndex)
@@ -73,24 +75,41 @@ class RubikChecker:
 		cornersSolved = solvedCube.getCorners()
 		edgesSolved = solvedCube.getEdges()
 
-		def cornerOrientation(current, solved):
-			for i in range(3):
-				if current[i] == solved[i]:
-					return i % 3
-			return 0
+		solvedCornerOri = {}
+		for i, piece in enumerate(cornersSolved):
+			solvedCornerOri[i] = piece
 
-		cornerSum = 0
+		cornerOriSum = 0
 		for current, solved in zip(self.corners, cornersSolved):
-			cornerSum += cornerOrientation(current, solved)
-		if cornerSum % 3 != 0:
+			normalized = self.normalizePiece(current)
+			solvedIndex = self.findPieceIndex(current, {self.normalizePiece(p): i for i, p in enumerate(cornersSolved)})
+			if solvedIndex is None:
+				return False
+			solved = cornersSolved[solvedIndex]
+			try:
+				ori = current.index(solved[0])
+			except ValueError:
+				ori = 0
+			print(ori)
+			cornerOriSum += ori
+		print(cornerOriSum)
+		if cornerOriSum % 3 != 0:
+			print('here')
 			return False
+		
 		edgeFlip = 0
 		for current, solved in zip(self.edges, edgesSolved):
 			if current != solved:
-				edgeFlip += 1
+				if current[::-1] == solved:
+					edgeFlip += 1
+				else:
+					print('here 2')
+					return False
 		if edgeFlip % 2 != 0:
+			print('here 3')
 			return False
 		return True
+
 
 	def isSolvable(self):
 		if not self.checkStickers() or \
@@ -102,7 +121,11 @@ class RubikChecker:
 
 if __name__ == "__main__":
 	cube = Rubik()
-	cube.generateRandomCube(10)
+	cube.generateRandomCube(5)
+	print(cube.get_cube())
+	print(cube.getEdges())
+	print(cube.getCorners())
+	# cube.visualize_cube()
 	# cube.cube_up = [
 	# 		['W', 'W', 'W'],
 	# 		['W', 'W', 'W'],
