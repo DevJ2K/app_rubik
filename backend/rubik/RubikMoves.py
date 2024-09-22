@@ -46,7 +46,8 @@ class RubikMoves:
 			# print(moves_match)
 			for move in moves_match:
 				self.sequences += self.__get_move(move)
-		self.sequences *= self.repeats
+		if re.search(r"\)\d+$", self.notation):
+			self.sequences *= self.repeats
 		return self.sequences
 
 	def __str__(self) -> str:
