@@ -14,6 +14,7 @@ from rubik.Rubik import Rubik
 
 class RubikModel(BaseModel):
     content: List[List[List[str]]]
+    sequences: List[str]
 
 app = FastAPI()
 
@@ -58,8 +59,11 @@ async def solve(body: RubikModel):
     try:
         # INIT CUBE
         # rubik = Rubik(body.content)
+        print(body.sequences)
         rubik = Rubik()
-        rubik.generateRandomCube(25)
+        for move in body.sequences:
+            rubik.apply_sequences(move)
+        # rubik.generateRandomCube(25)
         default_cube = copy.deepcopy(rubik.get_cube())
 
         # SOLVE
@@ -68,7 +72,7 @@ async def solve(body: RubikModel):
 
         # GET REQUEST STEP
         result = get_step(default_cube, rubik.formatedSolution)
-
+        print(result)
         return {
             'solved': is_solved,
             'nb_moves': len(rubik.formatedSolution),
