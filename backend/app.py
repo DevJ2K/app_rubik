@@ -1,21 +1,18 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, status, HTTPException
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
+from typing import List
 import sys
 import os
 
 # Import my package
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'rubik')))
 
+from rubik.RubikChecker import RubikChecker
+from rubik.Rubik import Rubik
 
-class Item(BaseModel):
-    name: str
-    description: str | None = None
-    price: float
-    tax: float | None = None
-
-class Test(BaseModel):
-     name: str
+class RubikModel(BaseModel):
+    content: List[List[List[str]]]
 
 app = FastAPI()
 
@@ -29,22 +26,30 @@ app.add_middleware(
 
 @app.get("/")
 async def root():
-	return {
-		"response": 200,
-		"message": "API is working !"
-	}
+    return {
+        "response": 200,
+        "message": "API is working !"
+    }
 
-@app.post("/items/")
-async def create_item(item: Item):
-    return item
+@app.post("/check_cube", status_code=status.HTTP_200_OK)
+async def check_cube(body: RubikModel):
+    if (body.content is None):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="The provided rubik is invalid. Please check the format and try again.")
 
-@app.post("/test")
-async def test_post(test: Test):
-     print(test)
-     return {
-          "response": 200,
-          "message": test.name
-	 }
+    try:
+        rubik = Rubik(body.content)
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="The server is unable to initialize the rubik. Please check the format and try again.")
+
+    try:
+        if rubik.isSolvable() == False:
+            raise Exception
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="The provided rubik is impossible to solve. Please check all faces and try again.")
+    return {
+        "response": 200,
+        "solvable": True
+    }
 
 # curl -s -H 'Content-Type: application/json' -d '{ "name":"foo"}' -X POST http://127.0.0.1:8000/test/ | jq
 
