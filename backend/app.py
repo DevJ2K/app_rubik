@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from typing import List
 import sys
 import os
+import copy
 
 # Import my package
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'rubik')))
@@ -30,6 +31,52 @@ async def root():
         "response": 200,
         "message": "API is working !"
     }
+
+def get_step(default_cube: list[list[list[str]]], format_step: list[str]) -> list[dict]:
+    result = []
+
+    tmp_rubik = copy.deepcopy(Rubik(default_cube))
+    result.append({
+        'faces': default_cube,
+        'type': 'start',
+        'frame': 0
+    })
+
+    for i in range(len(format_step)):
+        tmp_rubik.apply_sequences(format_step[i])
+        result.append({
+            'faces': tmp_rubik.get_cube(),
+            'type': 'movement',
+            'move': format_step[i],
+            'frame': i + 1
+        })
+    return result
+
+
+@app.post("/solve", status_code=status.HTTP_200_OK)
+async def solve(body: RubikModel):
+    try:
+        # INIT CUBE
+        # rubik = Rubik(body.content)
+        rubik = Rubik()
+        rubik.generateRandomCube(25)
+        default_cube = copy.deepcopy(rubik.get_cube())
+
+        # SOLVE
+        rubik.formatSolution(rubik.solve())
+        is_solved = copy.deepcopy(rubik.isSolved())
+
+        # GET REQUEST STEP
+        result = get_step(default_cube, rubik.formatedSolution)
+
+        return {
+            'solved': is_solved,
+            'nb_moves': len(rubik.formatedSolution),
+            'result': result
+        }
+    except:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="The server is unable to solve the rubik. Please check the format and try again.")
+
 
 @app.post("/check_cube", status_code=status.HTTP_200_OK)
 async def check_cube(body: RubikModel):
