@@ -424,7 +424,41 @@ class Rubik:
 
 if __name__ == "__main__":
 	startTime = time.time()
-	rubik = Rubik()
+	rubik = Rubik([
+        [
+            ["4", "6", "2"],
+            ["2", "1", "6"],
+            ["4", "1", "3"]
+        ],
+        [
+            ["3", "5", "6"],
+            ["5", "2", "4"],
+            ["6", "2", "5"]
+        ],
+        [
+            ["2", "3", "6"],
+            ["6", "3", "5"],
+            ["2", "3", "2"]
+        ],
+        [
+            ["4", "1", "5"],
+            ["1", "4", "6"],
+            ["1", "3", "1"]
+        ],
+        [
+            ["1", "5", "6"],
+            ["4", "5", "3"],
+            ["4", "2", "3"]
+        ],
+        [
+            ["1", "2", "5"],
+            ["1", "6", "4"],
+            ["3", "4", "5"]
+        ]
+    ])
+	# rubik = Rubik()
+	print(rubik.isSolvable())
+	print(rubik.get_cube())
 	rubik.generateRandomCube(25)
 	# rubik.shuffle()
 	rubik.formatSolution(rubik.solve())
