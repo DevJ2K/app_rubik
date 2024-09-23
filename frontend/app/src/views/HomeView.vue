@@ -342,15 +342,26 @@ const getBack = () => {
 }
 
 const solveRubik = async () => {
-  isLoading.value = true;
   errorDescription.value = null;
   result.value = null;
-  // Desactiver la peinture du rubik cube...
+
+  // Check if cube is valid
+  try {
+
+  } catch (e: any) {
+
+  }
+
+  isLoading.value = true;
+  selectedPaintColors.value = null;
+
   await new Promise((resolve) => setTimeout(resolve, 1000));
   try {
+    throw new Error;
     hasSolution.value = true;
     console.log("Make requests...")
   } catch (e: any) {
+    errorTitle.value = 'Request Error';
     errorDescription.value = e.message || 'An unknown error occurred';
   } finally {
     isLoading.value = false;

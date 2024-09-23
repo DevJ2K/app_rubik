@@ -137,6 +137,11 @@ class Rubik3D {
 		}
 	}
 
+	setup_frames(result: Object): void {
+		this.current_frame = 0;
+		this.frames = result.frames;
+	}
+
 	async play_animation(): Promise<void> {
 		// console.log(this.all_cubes);
 		// this.is_animating = true;
