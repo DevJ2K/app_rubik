@@ -157,18 +157,20 @@ class Rubik:
 				index, orientation = findEdgeStandard(edge, solved.getEdges())
 				self.edgePos[index] = pos
 				self.edgeOrt[index] = orientation
+				print(f"Arête {edge} correspond à l'arête standard {index} avec orientation {orientation}")
 			except ValueError:
 				print("Edge Error")
 				exit(1)
 
 		for pos, corner in enumerate(self.getCorners()):
-			# try:
-			index, orientation = findCornersStandard(corner, solved.getCorners())
-			self.cornerPos[index] = pos
-			self.cornerOrt[index] = orientation
-			# except ValueError:
-			# 	print("Corner Error")
-			# 	exit(1)
+			try:
+				index, orientation = findCornersStandard(corner, solved.getCorners())
+				self.cornerPos[index] = pos
+				self.cornerOrt[index] = orientation
+				print(f"Coin {corner} correspond au coin standard {index} avec orientation {orientation}")
+			except ValueError:
+				print("Corner Error")
+				exit(1)
 
 	def get_cube(self) -> list[list[list[str]]]:
 		return [
@@ -424,6 +426,7 @@ class Rubik:
 				move_sequences.append(move)
 			return move_sequences
 		moves = generateRandomMoves(numMoves)
+		print(moves)
 		for move in moves:
 			if "'" in move:
 				self.applyMultipleMoves(move[:1], 3)
@@ -472,45 +475,45 @@ class Rubik:
 
 if __name__ == "__main__":
 	startTime = time.time()
-	# rubik = Rubik([
-    #     [
-    #         ["4", "6", "2"],
-    #         ["2", "1", "6"],
-    #         ["4", "1", "3"]
-    #     ],
-    #     [
-    #         ["3", "5", "6"],
-    #         ["5", "2", "4"],
-    #         ["6", "2", "5"]
-    #     ],
-    #     [
-    #         ["2", "3", "6"],
-    #         ["6", "3", "5"],
-    #         ["2", "3", "2"]
-    #     ],
-    #     [
-    #         ["4", "1", "5"],
-    #         ["1", "4", "6"],
-    #         ["1", "3", "1"]
-    #     ],
-    #     [
-    #         ["1", "5", "6"],
-    #         ["4", "5", "3"],
-    #         ["4", "2", "3"]
-    #     ],
-    #     [
-    #         ["1", "2", "5"],
-    #         ["1", "6", "4"],
-    #         ["3", "4", "5"]
-    #     ]
-    # ])
-	rubik = Rubik()
+	rubik = Rubik([
+        [
+            ["4", "6", "2"],
+            ["2", "1", "6"],
+            ["4", "1", "3"]
+        ],
+        [
+            ["3", "5", "6"],
+            ["5", "2", "4"],
+            ["6", "2", "5"]
+        ],
+        [
+            ["2", "3", "6"],
+            ["6", "3", "5"],
+            ["2", "3", "2"]
+        ],
+        [
+            ["4", "1", "5"],
+            ["1", "4", "6"],
+            ["1", "3", "1"]
+        ],
+        [
+            ["1", "5", "6"],
+            ["4", "5", "3"],
+            ["4", "2", "3"]
+        ],
+        [
+            ["1", "2", "5"],
+            ["1", "6", "4"],
+            ["3", "4", "5"]
+        ]
+    ])
+	# rubik = Rubik()
 	rubik.initCube()
-	print(rubik.edgeOrt, rubik.cornerOrt, rubik.edgePos, rubik.cornerPos)
 	# rubik = Rubik()
 	print(rubik.isSolvable())
 	print(rubik.get_cube())
-	rubik.generateRandomCube(25)
+	# rubik.generateRandomCube(10)
+	print(rubik.edgeOrt, rubik.cornerOrt, rubik.edgePos, rubik.cornerPos)
 	# rubik.shuffle()
 	rubik.formatSolution(rubik.solve())
 	solution = " ".join(rubik.formatedSolution)
@@ -519,7 +522,7 @@ if __name__ == "__main__":
 	print(f"\033[1m\033[32mTemps écoulé: \033[0m{time.time() - startTime:.3f} secondes")
 	print(f"\033[1m\033[33mCube résolu ? : \033[0m{rubik.isSolved()}")
 	# print(rubik.get_cube())
-	rubik.visualize_cube()
+	# rubik.visualize_cube()
 
 	# ✅ UP
 	# rubik.apply_sequences("U U U U")
