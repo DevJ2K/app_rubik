@@ -62,12 +62,30 @@ class Rubik:
 		self.formatedSolution = []
 
 		# self.cube = [[3] * 3]
-		self.cube_up: list[list[str]] = [(['W' for _ in range(3)]) for _x in range(3)]
-		self.cube_down: list[list[str]] = [(['Y' for _ in range(3)]) for _x in range(3)]
-		self.cube_front: list[list[str]] = [(['G' for _ in range(3)]) for _x in range(3)]
-		self.cube_back: list[list[str]] = [(['B' for _ in range(3)]) for _x in range(3)]
-		self.cube_left: list[list[str]] = [(['O' for _ in range(3)]) for _x in range(3)]
-		self.cube_right: list[list[str]] = [(['R' for _ in range(3)]) for _x in range(3)]
+
+		if (cube):
+			for face in cube:
+				for i, line in enumerate(face):
+					for j, column in enumerate(line):
+						if column == '1': face[i][j] = 'W'
+						elif column == '2': face[i][j] = 'Y'
+						elif column == '3': face[i][j] = 'B'
+						elif column == '4': face[i][j] = 'G'
+						elif column == '5': face[i][j] = 'R'
+						elif column == '6': face[i][j] = 'O'
+			self.cube_up = cube[0]
+			self.cube_down = cube[1]
+			self.cube_front = cube[2]
+			self.cube_back = cube[3]
+			self.cube_left = cube[4]
+			self.cube_right = cube[5]
+		else:
+			self.cube_up: list[list[str]] = [(['W' for _ in range(3)]) for _x in range(3)]
+			self.cube_down: list[list[str]] = [(['Y' for _ in range(3)]) for _x in range(3)]
+			self.cube_front: list[list[str]] = [(['G' for _ in range(3)]) for _x in range(3)]
+			self.cube_back: list[list[str]] = [(['B' for _ in range(3)]) for _x in range(3)]
+			self.cube_left: list[list[str]] = [(['O' for _ in range(3)]) for _x in range(3)]
+			self.cube_right: list[list[str]] = [(['R' for _ in range(3)]) for _x in range(3)]
 
 # 		self.cube_up: list[list[str]] = [
 # 			['6', '6', '2'],
