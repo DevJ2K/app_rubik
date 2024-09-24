@@ -82,10 +82,10 @@ class Rubik:
 		else:
 			self.cube_up: list[list[str]] = [(['W' for _ in range(3)]) for _x in range(3)]
 			self.cube_down: list[list[str]] = [(['Y' for _ in range(3)]) for _x in range(3)]
-			self.cube_front: list[list[str]] = [(['G' for _ in range(3)]) for _x in range(3)]
-			self.cube_back: list[list[str]] = [(['B' for _ in range(3)]) for _x in range(3)]
-			self.cube_left: list[list[str]] = [(['O' for _ in range(3)]) for _x in range(3)]
-			self.cube_right: list[list[str]] = [(['R' for _ in range(3)]) for _x in range(3)]
+			self.cube_front: list[list[str]] = [(['B' for _ in range(3)]) for _x in range(3)]
+			self.cube_back: list[list[str]] = [(['G' for _ in range(3)]) for _x in range(3)]
+			self.cube_left: list[list[str]] = [(['R' for _ in range(3)]) for _x in range(3)]
+			self.cube_right: list[list[str]] = [(['O' for _ in range(3)]) for _x in range(3)]
 
 # 		self.cube_up: list[list[str]] = [
 # 			['6', '6', '2'],
@@ -475,40 +475,40 @@ class Rubik:
 
 if __name__ == "__main__":
 	startTime = time.time()
-	rubik = Rubik([
-        [
-            ["4", "6", "2"],
-            ["2", "1", "6"],
-            ["4", "1", "3"]
-        ],
-        [
-            ["3", "5", "6"],
-            ["5", "2", "4"],
-            ["6", "2", "5"]
-        ],
-        [
-            ["2", "3", "6"],
-            ["6", "3", "5"],
-            ["2", "3", "2"]
-        ],
-        [
-            ["4", "1", "5"],
-            ["1", "4", "6"],
-            ["1", "3", "1"]
-        ],
-        [
-            ["1", "5", "6"],
-            ["4", "5", "3"],
-            ["4", "2", "3"]
-        ],
-        [
-            ["1", "2", "5"],
-            ["1", "6", "4"],
-            ["3", "4", "5"]
-        ]
-    ])
-	# rubik = Rubik()
-	rubik.initCube()
+	# rubik = Rubik([
+    #     [
+    #         ["4", "6", "2"],
+    #         ["2", "1", "6"],
+    #         ["4", "1", "3"]
+    #     ],
+    #     [
+    #         ["3", "5", "6"],
+    #         ["5", "2", "4"],
+    #         ["6", "2", "5"]
+    #     ],
+    #     [
+    #         ["2", "3", "6"],
+    #         ["6", "3", "5"],
+    #         ["2", "3", "2"]
+    #     ],
+    #     [
+    #         ["4", "1", "5"],
+    #         ["1", "4", "6"],
+    #         ["1", "3", "1"]
+    #     ],
+    #     [
+    #         ["1", "5", "6"],
+    #         ["4", "5", "3"],
+    #         ["4", "2", "3"]
+    #     ],
+    #     [
+    #         ["1", "2", "5"],
+    #         ["1", "6", "4"],
+    #         ["3", "4", "5"]
+    #     ]
+    # ])
+	rubik = Rubik()
+	# rubik.initCube()
 	# rubik = Rubik()
 	print(rubik.isSolvable())
 	print(rubik.get_cube())
