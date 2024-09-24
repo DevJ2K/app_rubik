@@ -87,6 +87,14 @@ class Rubik:
 			self.cube_left: list[list[str]] = [(['R' for _ in range(3)]) for _x in range(3)]
 			self.cube_right: list[list[str]] = [(['O' for _ in range(3)]) for _x in range(3)]
 
+
+	def restore(self):
+		self.cube_up: list[list[str]] = [(['W' for _ in range(3)]) for _x in range(3)]
+		self.cube_down: list[list[str]] = [(['Y' for _ in range(3)]) for _x in range(3)]
+		self.cube_front: list[list[str]] = [(['B' for _ in range(3)]) for _x in range(3)]
+		self.cube_back: list[list[str]] = [(['G' for _ in range(3)]) for _x in range(3)]
+		self.cube_left: list[list[str]] = [(['R' for _ in range(3)]) for _x in range(3)]
+		self.cube_right: list[list[str]] = [(['O' for _ in range(3)]) for _x in range(3)]
 # 		self.cube_up: list[list[str]] = [
 # 			['6', '6', '2'],
 # 			['6', '1', '3'],
@@ -179,7 +187,8 @@ class Rubik:
 		self.cornerPos = update_corners_pos(rubikSolved, self)
 		self.edgePos = update_edges_pos(rubikSolved, self)
 		self.edgeOrt = update_edges_orientation(rubikSolved, self)
-		print(update_corners_orientation(rubikSolved, self))
+		self.cornerOrt = update_corners_orientation(rubikSolved, self)
+		# print(update_corners_orientation(rubikSolved, self))
 		# rubikSolved.getCorners()
 
 		pass
