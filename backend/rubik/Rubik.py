@@ -4,7 +4,7 @@ from ErrorManager import *
 from parser import check_notation
 import random
 import time
-
+import copy
 
 from apply_rubik_moves import move_up, move_down, move_back, move_front, move_left, move_right
 
@@ -126,52 +126,63 @@ class Rubik:
 
 		# self.cube_down: list[list[str]] = [(['2' for _ in range(3)]) for _x in range(3)]
 
-	def initCube(self):
-		def findEdgeStandard(edge, solvedEdges):
-			for index, stdEdge in enumerate(solvedEdges):
-				if edge == stdEdge:
-					return index, 0
-				elif edge == stdEdge[::-1]:
-					return index, 1
-			raise ValueError("")
+	# def initCube(self):
+	# 	def findEdgeStandard(edge, solvedEdges):
+	# 		for index, stdEdge in enumerate(solvedEdges):
+	# 			if edge == stdEdge:
+	# 				return index, 0
+	# 			elif edge == stdEdge[::-1]:
+	# 				return index, 1
+	# 		raise ValueError("")
 
 
-		def findCornersStandard(corner, solvedCorners):
-			cornerSet = set(corner)
-			for index, stdCorner in enumerate(solvedCorners):
-				stdCornerSet = set(stdCorner)
-				if cornerSet == stdCornerSet:
-					refColor = stdCorner[0]
-					try:
-						ori = corner.index(refColor)
-						return index, ori
-					except ValueError:
-						pass
-			print('here')
-			# raise ValueError("")
+	# 	def findCornersStandard(corner, solvedCorners):
+	# 		cornerSet = set(corner)
+	# 		for index, stdCorner in enumerate(solvedCorners):
+	# 			stdCornerSet = set(stdCorner)
+	# 			if cornerSet == stdCornerSet:
+	# 				refColor = stdCorner[0]
+	# 				try:
+	# 					ori = corner.index(refColor)
+	# 					return index, ori
+	# 				except ValueError:
+	# 					pass
+	# 		print('here')
+	# 		# raise ValueError("")
 
 
-		solved = Rubik()
-		for pos, edge in enumerate(self.getEdges()):
-			try:
-				index, orientation = findEdgeStandard(edge, solved.getEdges())
-				self.edgePos[index] = pos
-				self.edgeOrt[index] = orientation
-				print(f"Arête {edge} correspond à l'arête standard {index} avec orientation {orientation}")
-			except ValueError:
-				print("Edge Error")
-				exit(1)
+	# 	solved = Rubik()
+	# 	for pos, edge in enumerate(self.getEdges()):
+	# 		try:
+	# 			index, orientation = findEdgeStandard(edge, solved.getEdges())
+	# 			self.edgePos[index] = pos
+	# 			self.edgeOrt[index] = orientation
+	# 			print(f"Arête {edge} correspond à l'arête standard {index} avec orientation {orientation}")
+	# 		except ValueError:
+	# 			print("Edge Error")
+	# 			exit(1)
 
-		for pos, corner in enumerate(self.getCorners()):
-			try:
-				index, orientation = findCornersStandard(corner, solved.getCorners())
-				self.cornerPos[index] = pos
-				self.cornerOrt[index] = orientation
-				print(f"Coin {corner} correspond au coin standard {index} avec orientation {orientation}")
-			except ValueError:
-				print("Corner Error")
-				exit(1)
+	# 	for pos, corner in enumerate(self.getCorners()):
+	# 		try:
+	# 			index, orientation = findCornersStandard(corner, solved.getCorners())
+	# 			self.cornerPos[index] = pos
+	# 			self.cornerOrt[index] = orientation
+	# 			print(f"Coin {corner} correspond au coin standard {index} avec orientation {orientation}")
+	# 		except ValueError:
+	# 			print("Corner Error")
+	# 			exit(1)
 
+	def initCube(self) -> None:
+		from RubikCustomUtils import update_corners_pos, update_edges_pos, update_edges_orientation, update_corners_orientation
+
+		rubikSolved = copy.deepcopy(Rubik())
+		self.cornerPos = update_corners_pos(rubikSolved, self)
+		self.edgePos = update_edges_pos(rubikSolved, self)
+		self.edgeOrt = update_edges_orientation(rubikSolved, self)
+		print(update_corners_orientation(rubikSolved, self))
+		# rubikSolved.getCorners()
+
+		pass
 	def get_cube(self) -> list[list[list[str]]]:
 		return [
 			self.cube_up,
@@ -185,8 +196,7 @@ class Rubik:
 	def isSolvable(self) -> bool:
 		from RubikChecker import RubikChecker
 		return RubikChecker(self).isSolvable()
-		# 0: urf, 1: ubr, 2: dlf, 3: dfr, 4: ulb, 5: ufl, 6: drb, 7: dbl
-		# 0: uf, 1: ur, 2: ub, 3: ul, 4: df, 5: dr, 6: db, 7: dl, 8: fr, 9: br, 10: bl, 11: fl
+
 	def getEdges(self) -> list[tuple[str, str]]:
 		cube_up,cube_down,cube_front,cube_back,cube_left,cube_right = self.get_cube()
 		return [
