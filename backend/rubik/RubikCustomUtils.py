@@ -1,4 +1,5 @@
 from Rubik import Rubik
+from RubikCorner import RubikCorner
 
 def same_cube(cube1: tuple, cube2: tuple):
 	return sorted(cube1) == sorted(cube2)
@@ -189,9 +190,13 @@ def update_corners_orientation(rubikSolved: Rubik, rubik: Rubik):
 			if (new_corners_ort[j] == -1 and same_cube(rubikSolvedCorners[i], rubikCorners[j])):
 				# BIEN POSITIONNE
 				if (i == j and rubikSolvedCorners[i] == rubikCorners[j]):
+					print("HERE")
 					new_corners_ort[j] = 0
 				else:
-					distance_to_default = find_distances_corner(rubikSolvedCorners[i], tab_pos_corners[i], j)
+					rubikCorner = RubikCorner(rubik, i, j, rubikCorners[j])
+
+					new_corners_ort[j] = rubikCorner.target_rotation
+					# distance_to_default = find_distances_corner(rubikSolvedCorners[i], tab_pos_corners[i], j)
 
 				# if (i == j):
 				# 	if (rubikSolvedCorners[i] == rubikCorners[j]):
