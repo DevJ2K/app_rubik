@@ -57,6 +57,14 @@ class Rubik3D {
 		['4', 0x00FF00],  // face 4
 		['5', 0xFF0000],    // face 5
 		['6', 0xff9700], // face 6
+
+
+		['W', 0xFFFFFF],  // face 1
+		['Y', 0xFFFF00], // face 2
+		['G', 0x0000FF],   // face 3
+		['B', 0x00FF00],  // face 4
+		['O', 0xFF0000],    // face 5
+		['R', 0xff9700], // face 6
 	]);
 	constructor(scene: THREE.Scene, default_face_colors?: Array<Array<Array<string>>>, center_x?: number, center_y?: number, center_z?: number) {
 		this.x = center_x ?? 0;
@@ -88,6 +96,7 @@ class Rubik3D {
 		this.display();
 
 		this.current_frame = 0;
+		console.log(this.current_frame);
 
 		this.frames = [
 			{
@@ -138,18 +147,81 @@ class Rubik3D {
 	}
 
 	setup_frames(result: Object): void {
-		this.current_frame = 0;
+		// this.current_frame = 1;
 		this.frames = result.frames;
 	}
 
-	async play_animation(): Promise<void> {
-		// console.log(this.all_cubes);
-		// this.is_animating = true;
-		for (let i = this.current_frame; i < this.frames.length; i++) {
-			const element = this.frames[i];
+	async firstState(): Promise<void> {
+		const element = this.frames[0];
+		this.paint_cube(element.faces);
+		this.current_frame = 0;
+	}
+
+	async lastState(): Promise<void> {
+		const element = this.frames[this.frames.length - 1];
+		this.paint_cube(element.faces);
+		this.current_frame = this.frames.length;
+	}
+
+
+	async play_previous_animation(): Promise<void> {
+		this.current_frame = this.current_frame - 1;
+		if (this.current_frame < 1) {
+			// this.current_frame = 1;
+			return
+		}
+		if (this.current_frame > this.frames.length - 1)
+			this.current_frame -= 1;
+		const element = this.frames[this.current_frame];
+		if (element.move.indexOf("2") != -1) {
+			await this.apply_move(element.move.slice(0, 1));
+			await this.apply_move(element.move.slice(0, 1));
+		}
+		else if (element.move.indexOf("'") != -1) {
+			await this.apply_move(element.move.slice(0, 1));
+		}
+		else
+			await this.apply_move(element.move.concat("'"));
+	}
+
+
+	async play_next_animation(): Promise<void> {
+		// console.log(this.current_frame, this.frames.length - 1);
+		if (this.current_frame > this.frames.length - 1) {
+			// this.current_frame -= 1;
+			return
+		}
+		if (!this.current_frame)
+			this.current_frame = 1;
+		const element = this.frames[this.current_frame];
+		if (element.move.indexOf("2") != -1) {
+			await this.apply_move(element.move.slice(0, 1));
+			await this.apply_move(element.move.slice(0, 1));
+		}
+		else
 			await this.apply_move(element.move);
+		this.current_frame += 1;
+	}
+
+
+	async play_animation(): Promise<void> {
+		// console.log(this.current_frame, this.frames.length);
+		// this.is_animating = true;
+		if (this.current_frame > this.frames.length - 1)
+			return
+		if (!this.current_frame)
+			this.current_frame = 1;
+		for (var i = this.current_frame; i < this.frames.length; i++) {
+			const element = this.frames[i];
+			if (element.move.indexOf("2") != -1) {
+				await this.apply_move(element.move.slice(0, 1));
+				await this.apply_move(element.move.slice(0, 1));
+			}
+			else
+				await this.apply_move(element.move);
 			this.current_frame = i;
 		}
+		this.current_frame = i + 1;
 		// this.is_animating = false;
 		this.current_tween = undefined;
 		// this.sort_cubes_by_position();
@@ -395,8 +467,8 @@ class Rubik3D {
 		// this.all_cubes = createRubik({center: {x: this.z, y: this.y, z: this.z}});
 		// this.display();
 		// console.log()
+		// console.log(new_face_colors);
 		this.sort_cubes_by_position();
-
 		// All face concatenates
 		const face_up: Array<string> = new_face_colors[0][0].concat(new_face_colors[0][1],new_face_colors[0][2]);
 		const face_down: Array<string> = new_face_colors[1][0].concat(new_face_colors[1][1],new_face_colors[1][2]);
@@ -440,6 +512,7 @@ class Rubik3D {
 		}
 
 		this.update_face_colors();
+		// console.log(new_face_colors);
 		// To highlight selected_cubes_...
 		// let highlight_selected_test_only = selected_cubes_front;
 		// for (let i = 0; i < highlight_selected_test_only.length; i++) {
@@ -492,7 +565,8 @@ class Rubik3D {
 		let x: number = 0;
 		let y: number = 0;
 		let z: number = 0;
-
+		
+		// console.log("Move: ", move);
 		for (let i = 0; i < this.all_cubes.length; i++) {
 			const cube = this.all_cubes[i];
 

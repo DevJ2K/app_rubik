@@ -105,21 +105,21 @@
       <Transition name="fade">
         <div v-show="hasSolution" class="absolute left-0 top-0 flex  w-full flex-col items-center justify-center gap-8">
           <div class=" flex w-full flex-row justify-between">
-            <div class="icon-button">
+            <button @click="rubik3D.firstState" class="icon-button">
               <FirstPageIcon size="size-6"/>
-            </div>
-            <div class="icon-button">
+            </button>
+            <button @click="rubik3D.play_previous_animation" class="icon-button">
               <FastRewindIcon size="size-6"/>
-            </div>
-            <div class="icon-button">
+            </button>
+            <button @click="rubik3D.play_animation" class="icon-button">
               <PlayIcon size="size-4"/>
-            </div>
-            <div class="icon-button">
+            </button>
+            <button @click="rubik3D.play_next_animation" class="icon-button">
               <FastFowardIcon size="size-6"/>
-            </div>
-            <div class="icon-button">
+            </button>
+            <button @click="rubik3D.lastState" class="icon-button">
               <LastPageIcon size="size-6"/>
-            </div>
+            </button>
           </div>
 <!--
           <div class="flex w-full flex-col gap-6">
@@ -339,6 +339,7 @@ function updateRangeText(labelId: string, text: string) {
 
 
 const getBack = () => {
+  listMovesToSend = []
   hasSolution.value = false
 }
 
@@ -401,6 +402,8 @@ const solveRubik = async () => {
         throw new Error;
       }
     }
+    rubik3D.current_frame = 0;
+    rubik3D.frames = data.result;
     hasSolution.value = true;
     return (data.solvable);
   } catch (e: any) {
