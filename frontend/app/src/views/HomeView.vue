@@ -6,7 +6,8 @@
 
       <div class="flex min-h-24 w-full items-center justify-center">
         <Transition name="fade">
-          <InstructionsBlock v-show="hasSolution && !isLoading" @display-modal="toggleSolutionModal" />
+          <!-- :current_moves="rubik3D.current_frame > rubik3D.frames.length - 1 ? rubik3D.frames.length : rubik3D.current_frame" :nb_moves="rubik3D.frames.length - 1" -->
+          <InstructionsBlock v-show="hasSolution && !isLoading" description="Stoppppp" @display-modal="toggleSolutionModal" />
         </Transition>
         <Transition name="fade">
           <ErrorBlock v-show="!hasSolution && !isLoading && (errorDescription)" :title="errorTitle" :description="errorDescription"/>
