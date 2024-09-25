@@ -6,8 +6,10 @@
 
       <div class="flex min-h-24 w-full items-center justify-center">
         <Transition name="fade">
-          <!-- :current_moves="rubik3D.current_frame > rubik3D.frames.length - 1 ? rubik3D.frames.length : rubik3D.current_frame" :nb_moves="rubik3D.frames.length - 1" -->
-          <InstructionsBlock v-show="hasSolution && !isLoading" description="Stoppppp" @display-modal="toggleSolutionModal" />
+          <!--:current_moves="rubik3D.current_frame > rubik3D.frames.length - 1 ? rubik3D.frames.length : rubik3D.current_frame" :nb_moves="rubik3D.frames.length - 1"  -->
+          <InstructionsBlock v-show="hasSolution && !isLoading" :current_moves="rubikCurrentFrame > 4 ? rubikCurrentFrame - 1 : rubikCurrentFrame" :nb_moves="rubikResult.result ? rubikResult.result.length - 1: 0" description="Stoppppp" @display-modal="toggleSolutionModal" />
+          <!-- <InstructionsBlock v-show="hasSolution && !isLoading" description="Stoppppp" @display-modal="toggleSolutionModal" /> -->
+
         </Transition>
         <Transition name="fade">
           <ErrorBlock v-show="!hasSolution && !isLoading && (errorDescription)" :title="errorTitle" :description="errorDescription"/>
@@ -257,6 +259,10 @@ const result = ref<any>(null);
 const isLoading = ref(false);
 const hasSolution = ref<boolean>(false);
 
+const rubikResult = ref<any>(Object());
+const rubikCurrentFrame = ref<any>(1);
+
+
 const selectedPaintColors = ref<number | null>(null);
 const listMovesToApply = new Deque();
 let listMovesToSend: Array<string> = [];
@@ -403,7 +409,8 @@ const solveRubik = async () => {
         throw new Error;
       }
     }
-    rubik3D.current_frame = 0;
+    rubikResult.value.result = data.result;
+    rubik3D.current_frame = 1;
     rubik3D.frames = data.result;
     hasSolution.value = true;
     return (data.solvable);
@@ -680,6 +687,7 @@ function checkPointerIntersects() {
 }
 
 const animate = () => {
+  rubikCurrentFrame.value = rubik3D.current_frame;
   controls.update();
   if (typeof selectedPaintColors.value === "number") {
     checkPointerIntersects();

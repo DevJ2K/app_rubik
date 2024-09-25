@@ -154,7 +154,7 @@ class Rubik3D {
 	async firstState(): Promise<void> {
 		const element = this.frames[0];
 		this.paint_cube(element.faces);
-		this.current_frame = 0;
+		this.current_frame = 1;
 	}
 
 	async lastState(): Promise<void> {
@@ -167,7 +167,7 @@ class Rubik3D {
 	async play_previous_animation(): Promise<void> {
 		this.current_frame = this.current_frame - 1;
 		if (this.current_frame < 1) {
-			// this.current_frame = 1;
+			this.current_frame = 1;
 			return
 		}
 		if (this.current_frame > this.frames.length - 1)
@@ -220,6 +220,7 @@ class Rubik3D {
 			else
 				await this.apply_move(element.move);
 			this.current_frame = i;
+			console.log(this.current_frame);
 		}
 		this.current_frame = i + 1;
 		// this.is_animating = false;
