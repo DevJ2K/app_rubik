@@ -252,7 +252,7 @@ let INTERSECTED_FACE_INDEX: number | undefined | null;
 let mousedown_coordinates: Object = Object.create(null);
 
 // API STATUS
-const apiBaseUrl = "http://127.0.0.1:8000";
+const apiBaseUrl = "http://127.0.0.1:4000";
 const errorDescription = ref<string | null>(null);
 const errorTitle = ref<string | null>(null);
 const result = ref<any>(null);
