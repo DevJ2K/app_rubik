@@ -180,14 +180,14 @@ class Rubik:
 	# 			print("Corner Error")
 	# 			exit(1)
 
-	def initCube(self) -> None:
-		from RubikCustomUtils import update_corners_pos, update_edges_pos, update_edges_orientation, update_corners_orientation
+	# def initCube(self) -> None:
+	# 	from RubikCustomUtils import update_corners_pos, update_edges_pos, update_edges_orientation, update_corners_orientation
 
-		rubikSolved = copy.deepcopy(Rubik())
-		self.cornerPos = update_corners_pos(rubikSolved, self)
-		self.edgePos = update_edges_pos(rubikSolved, self)
-		self.edgeOrt = update_edges_orientation(rubikSolved, self)
-		self.cornerOrt = update_corners_orientation(rubikSolved, self)
+	# 	rubikSolved = copy.deepcopy(Rubik())
+	# 	self.cornerPos = update_corners_pos(rubikSolved, self)
+	# 	self.edgePos = update_edges_pos(rubikSolved, self)
+	# 	self.edgeOrt = update_edges_orientation(rubikSolved, self)
+	# 	self.cornerOrt = update_corners_orientation(rubikSolved, self)
 		# print(update_corners_orientation(rubikSolved, self))
 		# rubikSolved.getCorners()
 
@@ -529,10 +529,10 @@ if __name__ == "__main__":
 	rubik = Rubik()
 	# rubik.initCube()
 	# rubik = Rubik()
-	print(rubik.isSolvable())
-	print(rubik.get_cube())
-	# rubik.generateRandomCube(10)
-	print(rubik.edgeOrt, rubik.cornerOrt, rubik.edgePos, rubik.cornerPos)
+	# print(rubik.isSolvable())
+	# print(rubik.get_cube())
+	rubik.generateRandomCube(10)
+	# print(rubik.edgeOrt, rubik.cornerOrt, rubik.edgePos, rubik.cornerPos)
 	# rubik.shuffle()
 	rubik.formatSolution(rubik.solve())
 	solution = " ".join(rubik.formatedSolution)
