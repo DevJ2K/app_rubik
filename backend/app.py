@@ -16,6 +16,28 @@ class RubikModel(BaseModel):
     content: List[List[List[str]]]
     sequences: List[str]
 
+
+cube_moves = {
+    "U": "Rotate the top face 90 degrees clockwise.",
+    "U'": "Rotate the top face 90 degrees counterclockwise.",
+    "D": "Rotate the bottom face 90 degrees clockwise.",
+    "D'": "Rotate the bottom face 90 degrees counterclockwise.",
+    "F": "Rotate the front face 90 degrees clockwise.",
+    "F'": "Rotate the front face 90 degrees counterclockwise.",
+    "B": "Rotate the back face 90 degrees clockwise.",
+    "B'": "Rotate the back face 90 degrees counterclockwise.",
+    "L": "Rotate the left face 90 degrees clockwise.",
+    "L'": "Rotate the left face 90 degrees counterclockwise.",
+    "R": "Rotate the right face 90 degrees clockwise.",
+    "R'": "Rotate the right face 90 degrees counterclockwise.",
+    "U2": "Rotate the top face 180 degrees.",
+    "D2": "Rotate the bottom face 180 degrees.",
+    "F2": "Rotate the front face 180 degrees.",
+    "B2": "Rotate the back face 180 degrees.",
+    "L2": "Rotate the left face 180 degrees.",
+    "R2": "Rotate the right face 180 degrees."
+}
+
 app = FastAPI()
 
 app.add_middleware(
@@ -33,6 +55,7 @@ async def root():
         "message": "API is working !"
     }
 
+
 def get_step(default_cube: list[list[list[str]]], format_step: list[str]) -> list[dict]:
     result = []
 
@@ -49,6 +72,7 @@ def get_step(default_cube: list[list[list[str]]], format_step: list[str]) -> lis
             'faces': tmp_rubik.get_cube(),
             'type': 'movement',
             'move': format_step[i],
+            'description': cube_moves[format_step[i]],
             'frame': i + 1
         })
     return result
@@ -74,6 +98,7 @@ async def solve(body: RubikModel):
         result = get_step(default_cube, rubik.formatedSolution)
         print(result)
         return {
+            'default_cube': default_cube,
             'solved': is_solved,
             'nb_moves': len(rubik.formatedSolution),
             'result': result
