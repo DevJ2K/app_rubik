@@ -9,8 +9,10 @@
 - [ ] Button disabled effect + selected effect
 - [ ] Disabled selection on button
 - [ ] Animation for cube depending if its sequence, a move or real solution
+- [ ] Adjust cube speed
 - [ ] Play switch to pause icon
-- [ ]
+- [ ] Remember first cube status to rebase when click on BACK and moves applies
+- [ ] Dictionnary for the sentences for each movements
 
 <!-- # frontend
 

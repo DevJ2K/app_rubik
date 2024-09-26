@@ -48,6 +48,8 @@ class Rubik3D {
 	current_frame: number;
 	current_tween: TWEEN.Tween | undefined;
 	frames: Array<Object>
+	is_playing: boolean;
+	animation_type: any;
 
 	readonly COLORS_MAP: Map<string, number> = new Map<string, number>([
 		['-1', 0x979797],  // face undefined
@@ -57,6 +59,14 @@ class Rubik3D {
 		['4', 0x00FF00],  // face 4
 		['5', 0xFF0000],    // face 5
 		['6', 0xff9700], // face 6
+
+
+		['W', 0xFFFFFF],  // face 1
+		['Y', 0xFFFF00], // face 2
+		['G', 0x0000FF],   // face 3
+		['B', 0x00FF00],  // face 4
+		['O', 0xFF0000],    // face 5
+		['R', 0xff9700], // face 6
 	]);
 	constructor(scene: THREE.Scene, default_face_colors?: Array<Array<Array<string>>>, center_x?: number, center_y?: number, center_z?: number) {
 		this.x = center_x ?? 0;
@@ -80,14 +90,16 @@ class Rubik3D {
 		// 	[['-1', '-1', '-1'], ['-1', '-1', '-1'], ['-1', '-1', '-1']],
 		// 	[['-1', '-1', '-1'], ['-1', '-1', '-1'], ['-1', '-1', '-1']],
 		// ]
-		this.second_between_animation = 0;
+		this.second_between_animation = 1;
 		this.animation_speed = 0.5;
+		this.animation_type = TWEEN.Easing.Cubic.InOut;
 
 		this.all_cubes = createRubik({center: {x: this.x, y: this.y, z: this.z}});
 		this.paint_cube(this.face_colors);
 		this.display();
 
 		this.current_frame = 0;
+		// console.log(this.current_frame);
 
 		this.frames = [
 			{
@@ -114,6 +126,7 @@ class Rubik3D {
 		]
 
 		this.is_animating = false;
+		this.is_playing = false;
 	}
 
 	set change_rotation_speed(speed: number) {
@@ -137,21 +150,124 @@ class Rubik3D {
 		}
 	}
 
-	setup_frames(result: Object): void {
+	// FIRST FRAME BUTTON
+	async firstState(): Promise<void> {
+		const element = this.frames[0];
+		this.paint_cube(element.faces);
 		this.current_frame = 0;
-		this.frames = result.frames;
 	}
 
-	async play_animation(): Promise<void> {
-		// console.log(this.all_cubes);
-		// this.is_animating = true;
-		for (let i = this.current_frame; i < this.frames.length; i++) {
-			const element = this.frames[i];
-			await this.apply_move(element.move);
-			this.current_frame = i;
+	// LAST FRAME BUTTON
+	async lastState(): Promise<void> {
+		const element = this.frames[this.frames.length - 1];
+		this.paint_cube(element.faces);
+		this.current_frame = this.frames.length - 1;
+	}
+
+
+	async play_previous_animation(): Promise<void> {
+		// if (this.current_frame - 1 > this.frames.length - 1) {
+		// 	return ;
+		// }
+		if (this.current_frame == 0) {
+			return ;
 		}
+
+
+		// if (this.current_frame - 1 > this.frames.length - 1)
+		// 	this.current_frame -= 1;
+		const element = this.frames[this.current_frame];
+		this.current_frame -= 1;
+		// if (element.move.indexOf("2") != -1) {
+		// 	await this.apply_move(element.move.slice(0, 1));
+		// 	await this.apply_move(element.move.slice(0, 1));
+		// }
+		// else if (element.move.indexOf("'") != -1) {
+		// 	await this.apply_move(element.move.slice(0, 1));
+		// }
+		// else
+		// 	await this.apply_move(element.move.concat("'"));
+
+
+
+		if (element.move.indexOf("'") != -1) {
+			if (element.move.indexOf("2") != -1) {
+				await this.apply_move(element.move.slice(0, 1));
+				await this.apply_move(element.move.slice(0, 1));
+			}
+			else {
+				await this.apply_move(element.move.slice(0, 1));
+			}
+		}
+		else {
+			if (element.move.indexOf("2") != -1) {
+				await this.apply_move(element.move.slice(0, 1).concat("'"));
+				await this.apply_move(element.move.slice(0, 1).concat("'"));
+			}
+			else {
+				await this.apply_move(element.move.concat("'"));
+			}
+
+		}
+	}
+
+
+	async play_next_animation(): Promise<void> {
+		if (this.current_frame + 1 > this.frames.length - 1) {
+			return
+		}
+		this.current_frame += 1;
+		const element = this.frames[this.current_frame];
+		if (element.move.indexOf("2") != -1) {
+			await this.apply_move(element.move.slice(0, 1));
+			await this.apply_move(element.move.slice(0, 1));
+		}
+		else
+			await this.apply_move(element.move);
+	}
+
+	play_animation(): boolean {
+		if (this.is_playing) {
+			return this.is_playing;
+		}
+		this.is_playing = true;
+		this.run_animation();
+		return this.is_playing;
+	}
+	pause_animation(): boolean {
+		this.is_playing = false;
+		return this.is_playing;
+	}
+
+	// go_to_frame_x(frame: number): void {
+	// 	if (this.is_playing) {
+	// 		return ;
+	// 	}
+	// 	this.current_frame = frame;
+	// 	this.paint_cube(this.frames[frame].faces);
+	// 	console.log(frame);
+	// 	console.log(this.frames[frame].faces);
+	// }
+
+	async run_animation(): Promise<void> {
+		if (this.current_frame + 1 > this.frames.length - 1)
+			return
+		this.current_frame += 1;
+		for (let i = this.current_frame; i < this.frames.length && this.is_playing; i++) {
+			const element = this.frames[i];
+			this.current_frame = i;
+			if (element.move.indexOf("2") != -1) {
+				await this.apply_move(element.move.slice(0, 1));
+				await this.apply_move(element.move.slice(0, 1));
+			}
+			else
+				await this.apply_move(element.move);
+			// console.log(this.current_frame);
+		}
+		// this.current_frame = i + 1;
 		// this.is_animating = false;
 		this.current_tween = undefined;
+		this.is_playing = false;
 		// this.sort_cubes_by_position();
 		// this.paint_cube([
 		// 	[['1', '1', '1'], ['1', '1', '1'], ['1', '1', '1']], // UP
@@ -395,8 +511,8 @@ class Rubik3D {
 		// this.all_cubes = createRubik({center: {x: this.z, y: this.y, z: this.z}});
 		// this.display();
 		// console.log()
+		// console.log(new_face_colors);
 		this.sort_cubes_by_position();
-
 		// All face concatenates
 		const face_up: Array<string> = new_face_colors[0][0].concat(new_face_colors[0][1],new_face_colors[0][2]);
 		const face_down: Array<string> = new_face_colors[1][0].concat(new_face_colors[1][1],new_face_colors[1][2]);
@@ -440,6 +556,7 @@ class Rubik3D {
 		}
 
 		this.update_face_colors();
+		// console.log(new_face_colors);
 		// To highlight selected_cubes_...
 		// let highlight_selected_test_only = selected_cubes_front;
 		// for (let i = 0; i < highlight_selected_test_only.length; i++) {
@@ -467,7 +584,8 @@ class Rubik3D {
 		return new Promise((resolve) => {
 			this.current_tween = new TWEEN.Tween(group.rotation)
 			.to(targetRotation, 1000 * this.animation_speed)
-			.easing(TWEEN.Easing.Cubic.InOut)
+			// .easing(TWEEN.Easing.Cubic.InOut)
+			.easing(this.animation_type)
 			.onUpdate(() => {})
 			.onComplete(async () => {
 				for (let i = 0; i < cube_to_move.length; i++) {
@@ -493,47 +611,84 @@ class Rubik3D {
 		let y: number = 0;
 		let z: number = 0;
 
+		// console.log("Move: ", move);
 		for (let i = 0; i < this.all_cubes.length; i++) {
 			const cube = this.all_cubes[i];
 
 			if (move === "U" || move === "U'") {
-			y = move === "U" ? -90 : 90
-			if (cube.position.y > 0.1) {
-				cube_to_move.push(cube);
+				y = move === "U" ? -90 : 90
+				if (cube.position.y > 0.1) {
+					cube_to_move.push(cube);
+				}
 			}
-			}
+			// else if (move === "U2" || move === "U2'") {
+			// 	y = move === "U2" ? -180 : 180;
+			// 	if (cube.position.y > 0.1) {
+			// 		cube_to_move.push(cube);
+			// 	}
+			// }
 			else if (move === "D" || move === "D'") {
-			y = move === "D" ? 90 : -90
-			if (cube.position.y < -0.1) {
-				cube_to_move.push(cube);
+				y = move === "D" ? 90 : -90
+				if (cube.position.y < -0.1) {
+					cube_to_move.push(cube);
+				}
 			}
-			}
+			// else if (move === "D2" || move === "D2'") {
+			// 	y =  move === "D2" ? 180 : -180;
+			// 	if (cube.position.y < -0.1) {
+			// 		cube_to_move.push(cube);
+			// 	}
+			// }
 			else if (move === "F" || move === "F'") {
-			z = move === "F" ? -90 : 90
-			if (cube.position.z > 0.1) {
-				cube_to_move.push(cube);
+				z = move === "F" ? -90 : 90
+				if (cube.position.z > 0.1) {
+					cube_to_move.push(cube);
+				}
 			}
-			}
+			// else if (move === "F2" || move === "F2'") {
+			// 	z = move === "F2" ? -180 : 180;
+			// 	if (cube.position.z > 0.1) {
+			// 		cube_to_move.push(cube);
+			// 	}
+			// }
 			else if (move === "B" || move === "B'") {
-			z = move === "B" ? 90 : -90
-			if (cube.position.z < -0.1) {
-				cube_to_move.push(cube);
+				z = move === "B" ? 90 : -90
+				if (cube.position.z < -0.1) {
+					cube_to_move.push(cube);
+				}
 			}
-			}
+			// else if (move === "B2" || move === "B2'") {
+			// 	z = move === "B2" ? 180 : -180;
+			// 	if (cube.position.z < -0.1) {
+			// 		cube_to_move.push(cube);
+			// 	}
+			// }
 			else if (move === "L" || move === "L'") {
-			x = move === "L" ? 90 : -90
-			if (cube.position.x < -0.1) {
-				cube_to_move.push(cube);
+				x = move === "L" ? 90 : -90
+				if (cube.position.x < -0.1) {
+					cube_to_move.push(cube);
+				}
 			}
-			}
+			// else if (move === "L2" || move === "L2'") {
+			// 	x = move === "L2" ? 180 : -180;
+			// 	if (cube.position.x < -0.1) {
+			// 		cube_to_move.push(cube);
+			// 	}
+			// }
 			else if (move === "R" || move === "R'") {
-			x = move === "R" ? -90 : 90
-			if (cube.position.x > 0.1) {
-				cube_to_move.push(cube);
+				x = move === "R" ? -90 : 90
+				if (cube.position.x > 0.1) {
+					cube_to_move.push(cube);
+				}
 			}
-			}
+			// else if (move === "R2" || move === "R2'") {
+			// 	x = move === "R2" ? 180 : -180;
+			// 	if (cube.position.x > 0.1) {
+			// 		cube_to_move.push(cube);
+			// 	}
+			// }
 			else {
-			console.log("Invalid movement detected !");
+				console.log("Invalid movement detected !");
 			}
 		}
 		await this.animate_rubik(cube_to_move, {x: x, y: y, z: z});

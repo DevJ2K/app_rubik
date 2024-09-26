@@ -6,7 +6,10 @@
 
       <div class="flex min-h-24 w-full items-center justify-center">
         <Transition name="fade">
-          <InstructionsBlock v-show="hasSolution && !isLoading" @display-modal="toggleSolutionModal" />
+          <!--:current_moves="rubik3D.current_frame > rubik3D.frames.length - 1 ? rubik3D.frames.length : rubik3D.current_frame" :nb_moves="rubik3D.frames.length - 1"  -->
+          <InstructionsBlock v-show="hasSolution && !isLoading" :current_moves="rubikCurrentFrame" :nb_moves="rubikResult ? rubikResult.nb_moves : 0" :description="rubikResult && rubikResult.result && rubikResult.result[rubikCurrentFrame] ? rubikResult.result[rubikCurrentFrame].description : 'null'" @display-modal="toggleSolutionModal" />
+          <!-- <InstructionsBlock v-show="hasSolution && !isLoading" description="Stoppppp" @display-modal="toggleSolutionModal" /> -->
+
         </Transition>
         <Transition name="fade">
           <ErrorBlock v-show="!hasSolution && !isLoading && (errorDescription)" :title="errorTitle" :description="errorDescription"/>
@@ -105,46 +108,51 @@
       <Transition name="fade">
         <div v-show="hasSolution" class="absolute left-0 top-0 flex  w-full flex-col items-center justify-center gap-8">
           <div class=" flex w-full flex-row justify-between">
-            <div class="icon-button">
+            <button @click="rubik3D.firstState" class="icon-button" :disabled="rubikIsAnimating || rubikIsPlaying">
               <FirstPageIcon size="size-6"/>
-            </div>
-            <div class="icon-button">
+            </button>
+            <button @click="rubik3D.play_previous_animation" class="icon-button" :disabled="rubikIsAnimating || rubikIsPlaying">
               <FastRewindIcon size="size-6"/>
-            </div>
-            <div class="icon-button">
+            </button>
+
+            <button v-if="!rubikIsPlaying" @click="play_rubik_animation" class="icon-button">
               <PlayIcon size="size-4"/>
-            </div>
-            <div class="icon-button">
+            </button>
+            <button v-else @click="pause_rubik_animation" class="icon-button">
+              <PauseIcon size="size-6"/>
+            </button>
+
+            <button @click="rubik3D.play_next_animation" class="icon-button" :disabled="rubikIsAnimating || rubikIsPlaying">
               <FastFowardIcon size="size-6"/>
-            </div>
-            <div class="icon-button">
+            </button>
+            <button @click="rubik3D.lastState" class="icon-button" :disabled="rubikIsAnimating || rubikIsPlaying">
               <LastPageIcon size="size-6"/>
-            </div>
+            </button>
           </div>
-<!--
+
           <div class="flex w-full flex-col gap-6">
             <div class="flex w-full flex-col items-start gap-4">
-              <label id="range_interval_speed_label" for="range_interval_speed" class="subtitle-modal">Interval Speed : 1s</label>
+              <label id="range_interval_speed_label" for="range_interval_speed" class="subtitle-modal">Interval Speed : 0.5s</label>
               <div class="relative w-full">
                 <input id="range_interval_speed"
-                  @input="updateRangeText('range_interval_speed_label', 'Interval Speed : ' + $event.target.value + 's');"
-                  class="custom-range-input" type="range" min="0.5" max="5" value="1" step="0.5">
+                  @input="updateRangeText('range_interval_speed_label', 'Interval Speed : ' + $event.target.value + 's'); rubik3D.second_between_animation = $event.target.value;"
+                  class="custom-range-input" type="range" min="0" max="5" value="0.5" step="0.5">
               </div>
             </div>
             <div class="flex w-full flex-col items-start gap-4">
-              <label id="range_rotation_speed_label" for="range_rotation_speed" class="subtitle-modal">Rotation Speed : 1s</label>
+              <label id="range_rotation_speed_label" for="range_rotation_speed" class="subtitle-modal">Rotation Speed : 0.5s</label>
               <div class="relative w-full">
                 <input id="range_rotation_speed"
-                  @input="updateRangeText('range_rotation_speed_label', 'Rotation Speed : ' + $event.target.value + 's');"
-                  class="custom-range-input" type="range" min="0.5" max="5" value="1" step="0.5">
+                  @input="updateRangeText('range_rotation_speed_label', 'Rotation Speed : ' + $event.target.value + 's'); rubik3D.animation_speed = $event.target.value;"
+                  class="custom-range-input" type="range" min="0.5" max="5" value="0.5" step="0.5">
               </div>
             </div>
 
-          </div> -->
+          </div>
 
 
 
-          <div class="text-button col-span-3 h-12 w-fit px-8 max-sm:mt-8 max-sm:px-12" @click="getBack">BACK</div>
+          <button class="text-button col-span-3 h-12 w-fit px-8 max-sm:mt-8 max-sm:px-12" @click="getBack"  :disabled="rubikIsAnimating || rubikIsPlaying">BACK</button>
         </div>
       </Transition>
 
@@ -194,14 +202,14 @@
     <h1 class="text-center text-xl font-extrabold text-high-contrast-text dark:text-d-high-contrast-text">Solutions</h1>
     <div class="mt-4 flex flex-col gap-1">
       <p class="subtitle-modal">Number of Moves</p>
-      <h1 class="font-extrabold text-high-contrast-text dark:text-d-high-contrast-text">20</h1>
+      <h1 class="font-extrabold text-high-contrast-text dark:text-d-high-contrast-text">{{ rubikResult.nb_moves }}</h1>
     </div>
     <div class="mt-4 flex flex-col gap-2">
       <p class="subtitle-modal">Move Sequence for Solving</p>
-      <div class="flex flex-wrap gap-x-8 gap-y-3 font-extrabold text-high-contrast-text dark:text-d-high-contrast-text">
-        <div v-for="i in result.all_moves.length" :key="i">
-          <h1 v-if="i != result.current_move">{{ result.all_moves[i - 1].move }}</h1>
-          <h1 v-else class="neumorphism-sm rounded-md px-2">{{ result.all_moves[i - 1].move }}</h1>
+      <div  v-if="rubikResult.result" class="flex flex-wrap gap-x-8 gap-y-3 font-extrabold text-high-contrast-text dark:text-d-high-contrast-text">
+        <div v-for="i in rubikResult.result.length - 1" :key="i">
+          <h1 v-if="i != rubikCurrentFrame">{{ rubikResult.result[i].move }}</h1>
+          <h1 v-else class="neumorphism-sm rounded-md px-2">{{ rubikResult.result[i].move }}</h1>
         </div>
       </div>
     </div>
@@ -225,11 +233,13 @@ import FastFowardIcon from '@/assets/Svg/FastFowardIcon.vue';
 import FirstPageIcon from '@/assets/Svg/FirstPageIcon.vue';
 
 import * as THREE from 'three';
+import * as TWEEN from '@tweenjs/tween.js'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { Rubik3D } from '@/js/Rubik3D';
 import { Deque } from '@/js/Deque';
 import ErrorBlock from '@/components/ErrorBlock.vue';
 import { checkNotation, RubikMoves } from '@/js/RubikMoves';
+import PauseIcon from '@/assets/Svg/PauseIcon.vue';
 
 
 // THREE JS
@@ -249,73 +259,20 @@ let INTERSECTED_FACE_INDEX: number | undefined | null;
 let mousedown_coordinates: Object = Object.create(null);
 
 // API STATUS
-const apiBaseUrl = "http://127.0.0.1:8000";
+const apiBaseUrl = "http://127.0.0.1:4000";
 const errorDescription = ref<string | null>(null);
 const errorTitle = ref<string | null>(null);
-const result = ref<any>(null);
 const isLoading = ref(false);
 const hasSolution = ref<boolean>(false);
+
+const rubikResult = ref<any>(Object());
+const rubikCurrentFrame = ref<any>(1);
+const rubikIsPlaying = ref<boolean>(false);
 
 const selectedPaintColors = ref<number | null>(null);
 const listMovesToApply = new Deque();
 let listMovesToSend: Array<string> = [];
 
-result.value = {
-  current_move: 5,
-  all_moves: [
-    {
-      "move": 'R',
-    },
-    {
-      "move": 'L',
-    },
-    {
-      "move": 'F',
-    },
-    {
-      "move": 'B',
-    },
-    {
-      "move": 'U\'',
-    },
-    {
-      "move": 'R',
-    },
-    {
-      "move": 'L',
-    },
-    {
-      "move": 'F',
-    },
-    {
-      "move": 'B',
-    },
-    {
-      "move": 'U\'',
-    },
-    {
-      "move": 'R',
-    },
-    {
-      "move": 'L',
-    },
-    {
-      "move": 'F',
-    },
-    {
-      "move": 'B',
-    },
-    {
-      "move": 'U\'',
-    },
-    {
-      "move": 'R',
-    },
-    {
-      "move": 'L',
-    },
-  ]
-}
 
 const rubikIsAnimating = ref(false);
 
@@ -339,6 +296,12 @@ function updateRangeText(labelId: string, text: string) {
 
 
 const getBack = () => {
+  // Remettre le cube a l'etat initial
+  rubik3D.paint_cube(rubik3D.frames[0].faces);
+  // Button Play a false
+  rubikIsPlaying.value = false;
+  // Rubik solution a null
+  rubikResult.value = null;
   hasSolution.value = false
 }
 
@@ -374,8 +337,7 @@ const solveRubik = async () => {
   // console.log(rubik3D.face_colors.toString());
   errorTitle.value = null;
   errorDescription.value = null;
-  result.value = null;
-
+  rubikResult.value = null;
   if (await checkIsSolvable() == false) {
     return ;
   }
@@ -401,6 +363,10 @@ const solveRubik = async () => {
         throw new Error;
       }
     }
+    rubikResult.value = data;
+    // console.log(data);
+    rubik3D.current_frame = 0;
+    rubik3D.frames = data.result;
     hasSolution.value = true;
     return (data.solvable);
   } catch (e: any) {
@@ -433,7 +399,7 @@ const disabledPaint = () => {
 // Rotation
 const applyMoveOnRubik = (move: string) => {
   listMovesToSend.push(move);
-  console.log(listMovesToSend);
+  // console.log(listMovesToSend);
   listMovesToApply.addFront(move);
 }
 
@@ -442,10 +408,20 @@ const handleMoveList = async () => {
   if (rubik3D.is_animating == true) {
     return ;
   }
+  const previous_second_between_animation = rubik3D.second_between_animation;
+  const previous_animation_speed = rubik3D.animation_speed;
+
+
+  rubik3D.second_between_animation = 0;
+  rubik3D.animation_speed = 0.3;
+  rubik3D.animation_type = TWEEN.Easing.Cubic.InOut;
   const value = listMovesToApply.removeBack();
   if (value) {
-    rubik3D.apply_move(value);
+    await rubik3D.apply_move(value);
   }
+  rubik3D.second_between_animation = previous_second_between_animation;
+  rubik3D.animation_speed = previous_animation_speed;
+  rubik3D.animation_type = TWEEN.Easing.Cubic.InOut;
 }
 
 
@@ -519,6 +495,19 @@ const applySequences = () => {
   }
 }
 
+
+const play_rubik_animation = () => {
+  // console.log(rubik3D.current_frame);
+  // console.log(rubikResult.value);
+  if (rubik3D.current_frame == rubikResult.value.nb_moves) {
+    return ;
+  }
+  rubikIsPlaying.value = rubik3D.play_animation();
+}
+
+const pause_rubik_animation = () => {
+  rubikIsPlaying.value = rubik3D.pause_animation();
+}
 
 const getRandom = (arr: Array<any>, n: number) => {
     var result = new Array(n),
@@ -676,12 +665,19 @@ function checkPointerIntersects() {
 }
 
 const animate = () => {
+  rubikCurrentFrame.value = rubik3D.current_frame;
   controls.update();
   if (typeof selectedPaintColors.value === "number") {
     checkPointerIntersects();
   }
   handleMoveList();
   rubikIsAnimating.value = rubik3D.is_animating || listMovesToApply.getLength() != 0;
+  if (rubikResult.value) {
+
+    if (rubik3D.current_frame == rubikResult.value.nb_moves && rubikIsAnimating.value == false && rubikIsPlaying.value == true) {
+      rubikIsPlaying.value = false;
+    }
+  }
   if (rubik3D.is_animating && rubik3D.current_tween) {
     rubik3D.current_tween.update();
   }

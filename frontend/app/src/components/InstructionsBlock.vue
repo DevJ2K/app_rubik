@@ -33,7 +33,7 @@ defineProps({
 	},
 	description: {
 		type: String,
-		default: 'Rotate the top face 90 degrees clockwise.'
+		default: 'Press play button to run the animation.'
 	}
 });
 
