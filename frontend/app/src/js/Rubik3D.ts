@@ -146,33 +146,34 @@ class Rubik3D {
 		}
 	}
 
-	setup_frames(result: Object): void {
-		// this.current_frame = 1;
-		this.frames = result.frames;
-	}
-
+	// FIRST FRAME BUTTON
 	async firstState(): Promise<void> {
 		const element = this.frames[0];
 		this.paint_cube(element.faces);
-		this.current_frame = 1;
+		this.current_frame = 0;
 	}
 
+	// LAST FRAME BUTTON
 	async lastState(): Promise<void> {
 		const element = this.frames[this.frames.length - 1];
 		this.paint_cube(element.faces);
-		this.current_frame = this.frames.length;
+		this.current_frame = this.frames.length - 1;
 	}
 
 
 	async play_previous_animation(): Promise<void> {
-		this.current_frame = this.current_frame - 1;
-		if (this.current_frame < 1) {
-			this.current_frame = 1;
-			return
+		// if (this.current_frame - 1 > this.frames.length - 1) {
+		// 	return ;
+		// }
+		if (this.current_frame == 0) {
+			return ;
 		}
-		if (this.current_frame > this.frames.length - 1)
-			this.current_frame -= 1;
+
+
+		// if (this.current_frame - 1 > this.frames.length - 1)
+		// 	this.current_frame -= 1;
 		const element = this.frames[this.current_frame];
+		this.current_frame -= 1;
 		if (element.move.indexOf("2") != -1) {
 			await this.apply_move(element.move.slice(0, 1));
 			await this.apply_move(element.move.slice(0, 1));
@@ -182,17 +183,15 @@ class Rubik3D {
 		}
 		else
 			await this.apply_move(element.move.concat("'"));
+
 	}
 
 
 	async play_next_animation(): Promise<void> {
-		// console.log(this.current_frame, this.frames.length - 1);
-		if (this.current_frame > this.frames.length - 1) {
-			// this.current_frame -= 1;
+		if (this.current_frame + 1 > this.frames.length - 1) {
 			return
 		}
-		if (!this.current_frame)
-			this.current_frame = 1;
+		this.current_frame += 1;
 		const element = this.frames[this.current_frame];
 		if (element.move.indexOf("2") != -1) {
 			await this.apply_move(element.move.slice(0, 1));
@@ -200,18 +199,18 @@ class Rubik3D {
 		}
 		else
 			await this.apply_move(element.move);
-		this.current_frame += 1;
 	}
 
 
 	async play_animation(): Promise<void> {
 		// console.log(this.current_frame, this.frames.length);
 		// this.is_animating = true;
-		if (this.current_frame > this.frames.length - 1)
+		if (this.current_frame + 1 > this.frames.length - 1)
 			return
-		if (!this.current_frame)
-			this.current_frame = 1;
-		for (var i = this.current_frame; i < this.frames.length; i++) {
+		this.current_frame += 1;
+		// if (!this.current_frame)
+		// 	this.current_frame = 1;
+		for (let i = this.current_frame; i < this.frames.length; i++) {
 			const element = this.frames[i];
 			if (element.move.indexOf("2") != -1) {
 				await this.apply_move(element.move.slice(0, 1));
@@ -222,7 +221,7 @@ class Rubik3D {
 			this.current_frame = i;
 			console.log(this.current_frame);
 		}
-		this.current_frame = i + 1;
+		// this.current_frame = i + 1;
 		// this.is_animating = false;
 		this.current_tween = undefined;
 		// this.sort_cubes_by_position();
@@ -566,7 +565,7 @@ class Rubik3D {
 		let x: number = 0;
 		let y: number = 0;
 		let z: number = 0;
-		
+
 		// console.log("Move: ", move);
 		for (let i = 0; i < this.all_cubes.length; i++) {
 			const cube = this.all_cubes[i];

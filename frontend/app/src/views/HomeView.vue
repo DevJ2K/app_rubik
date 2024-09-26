@@ -7,7 +7,7 @@
       <div class="flex min-h-24 w-full items-center justify-center">
         <Transition name="fade">
           <!--:current_moves="rubik3D.current_frame > rubik3D.frames.length - 1 ? rubik3D.frames.length : rubik3D.current_frame" :nb_moves="rubik3D.frames.length - 1"  -->
-          <InstructionsBlock v-show="hasSolution && !isLoading" :current_moves="rubikCurrentFrame > 4 ? rubikCurrentFrame - 1 : rubikCurrentFrame" :nb_moves="rubikResult.result ? rubikResult.result.length - 1: 0" description="Stoppppp" @display-modal="toggleSolutionModal" />
+          <InstructionsBlock v-show="hasSolution && !isLoading" :current_moves="rubikCurrentFrame > 4 ? rubikCurrentFrame - 1 : rubikCurrentFrame" :nb_moves="rubikResult ? rubikResult.nb_moves : 0" :description="rubikResult && rubikResult.result ? rubikResult.result[rubikCurrentFrame].description : 'null'" @display-modal="toggleSolutionModal" />
           <!-- <InstructionsBlock v-show="hasSolution && !isLoading" description="Stoppppp" @display-modal="toggleSolutionModal" /> -->
 
         </Transition>
@@ -114,8 +114,11 @@
             <button @click="rubik3D.play_previous_animation" class="icon-button">
               <FastRewindIcon size="size-6"/>
             </button>
-            <button @click="rubik3D.play_animation" class="icon-button">
+            <button v-if="!toggleButtonPlay" @click="rubik3D.play_animation" class="icon-button">
               <PlayIcon size="size-4"/>
+            </button>
+            <button v-else @click="rubik3D.play_animation" class="icon-button">
+              <PauseIcon size="size-4"/>
             </button>
             <button @click="rubik3D.play_next_animation" class="icon-button">
               <FastFowardIcon size="size-6"/>
@@ -197,14 +200,14 @@
     <h1 class="text-center text-xl font-extrabold text-high-contrast-text dark:text-d-high-contrast-text">Solutions</h1>
     <div class="mt-4 flex flex-col gap-1">
       <p class="subtitle-modal">Number of Moves</p>
-      <h1 class="font-extrabold text-high-contrast-text dark:text-d-high-contrast-text">20</h1>
+      <h1 class="font-extrabold text-high-contrast-text dark:text-d-high-contrast-text">{{ rubikResult.nb_moves }}</h1>
     </div>
     <div class="mt-4 flex flex-col gap-2">
       <p class="subtitle-modal">Move Sequence for Solving</p>
-      <div class="flex flex-wrap gap-x-8 gap-y-3 font-extrabold text-high-contrast-text dark:text-d-high-contrast-text">
-        <div v-for="i in result.all_moves.length" :key="i">
-          <h1 v-if="i != result.current_move">{{ result.all_moves[i - 1].move }}</h1>
-          <h1 v-else class="neumorphism-sm rounded-md px-2">{{ result.all_moves[i - 1].move }}</h1>
+      <div  v-if="rubikResult.result" class="flex flex-wrap gap-x-8 gap-y-3 font-extrabold text-high-contrast-text dark:text-d-high-contrast-text">
+        <div v-for="i in rubikResult.result.length - 1" :key="i">
+          <h1 v-if="i != rubikCurrentFrame">{{ rubikResult.result[i].move }}</h1>
+          <h1 v-else class="neumorphism-sm rounded-md px-2">{{ rubikResult.result[i].move }}</h1>
         </div>
       </div>
     </div>
@@ -233,6 +236,7 @@ import { Rubik3D } from '@/js/Rubik3D';
 import { Deque } from '@/js/Deque';
 import ErrorBlock from '@/components/ErrorBlock.vue';
 import { checkNotation, RubikMoves } from '@/js/RubikMoves';
+import PauseIcon from '@/assets/Svg/PauseIcon.vue';
 
 
 // THREE JS
@@ -255,74 +259,17 @@ let mousedown_coordinates: Object = Object.create(null);
 const apiBaseUrl = "http://127.0.0.1:4000";
 const errorDescription = ref<string | null>(null);
 const errorTitle = ref<string | null>(null);
-const result = ref<any>(null);
 const isLoading = ref(false);
 const hasSolution = ref<boolean>(false);
 
 const rubikResult = ref<any>(Object());
 const rubikCurrentFrame = ref<any>(1);
-
+const toggleButtonPlay = ref<boolean>(false);
 
 const selectedPaintColors = ref<number | null>(null);
 const listMovesToApply = new Deque();
 let listMovesToSend: Array<string> = [];
 
-result.value = {
-  current_move: 5,
-  all_moves: [
-    {
-      "move": 'R',
-    },
-    {
-      "move": 'L',
-    },
-    {
-      "move": 'F',
-    },
-    {
-      "move": 'B',
-    },
-    {
-      "move": 'U\'',
-    },
-    {
-      "move": 'R',
-    },
-    {
-      "move": 'L',
-    },
-    {
-      "move": 'F',
-    },
-    {
-      "move": 'B',
-    },
-    {
-      "move": 'U\'',
-    },
-    {
-      "move": 'R',
-    },
-    {
-      "move": 'L',
-    },
-    {
-      "move": 'F',
-    },
-    {
-      "move": 'B',
-    },
-    {
-      "move": 'U\'',
-    },
-    {
-      "move": 'R',
-    },
-    {
-      "move": 'L',
-    },
-  ]
-}
 
 const rubikIsAnimating = ref(false);
 
@@ -346,7 +293,10 @@ function updateRangeText(labelId: string, text: string) {
 
 
 const getBack = () => {
-  listMovesToSend = []
+  // Remettre le cube a l'etat initial
+  // Conserver la liste de mouvements
+  // Button Play a false
+  // Rubik solution a null
   hasSolution.value = false
 }
 
@@ -382,8 +332,7 @@ const solveRubik = async () => {
   // console.log(rubik3D.face_colors.toString());
   errorTitle.value = null;
   errorDescription.value = null;
-  result.value = null;
-
+  rubikResult.value = null;
   if (await checkIsSolvable() == false) {
     return ;
   }
@@ -409,8 +358,9 @@ const solveRubik = async () => {
         throw new Error;
       }
     }
-    rubikResult.value.result = data.result;
-    rubik3D.current_frame = 1;
+    rubikResult.value = data;
+    console.log(data);
+    rubik3D.current_frame = 0;
     rubik3D.frames = data.result;
     hasSolution.value = true;
     return (data.solvable);
