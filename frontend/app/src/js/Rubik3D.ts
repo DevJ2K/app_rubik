@@ -174,16 +174,37 @@ class Rubik3D {
 		// 	this.current_frame -= 1;
 		const element = this.frames[this.current_frame];
 		this.current_frame -= 1;
-		if (element.move.indexOf("2") != -1) {
-			await this.apply_move(element.move.slice(0, 1));
-			await this.apply_move(element.move.slice(0, 1));
-		}
-		else if (element.move.indexOf("'") != -1) {
-			await this.apply_move(element.move.slice(0, 1));
-		}
-		else
-			await this.apply_move(element.move.concat("'"));
+		// if (element.move.indexOf("2") != -1) {
+		// 	await this.apply_move(element.move.slice(0, 1));
+		// 	await this.apply_move(element.move.slice(0, 1));
+		// }
+		// else if (element.move.indexOf("'") != -1) {
+		// 	await this.apply_move(element.move.slice(0, 1));
+		// }
+		// else
+		// 	await this.apply_move(element.move.concat("'"));
 
+
+
+		if (element.move.indexOf("'") != -1) {
+			if (element.move.indexOf("2") != -1) {
+				await this.apply_move(element.move.slice(0, 1));
+				await this.apply_move(element.move.slice(0, 1));
+			}
+			else {
+				await this.apply_move(element.move.slice(0, 1));
+			}
+		}
+		else {
+			if (element.move.indexOf("2") != -1) {
+				await this.apply_move(element.move.slice(0, 1).concat("'"));
+				await this.apply_move(element.move.slice(0, 1).concat("'"));
+			}
+			else {
+				await this.apply_move(element.move.concat("'"));
+			}
+
+		}
 	}
 
 
@@ -571,43 +592,79 @@ class Rubik3D {
 			const cube = this.all_cubes[i];
 
 			if (move === "U" || move === "U'") {
-			y = move === "U" ? -90 : 90
-			if (cube.position.y > 0.1) {
-				cube_to_move.push(cube);
+				y = move === "U" ? -90 : 90
+				if (cube.position.y > 0.1) {
+					cube_to_move.push(cube);
+				}
 			}
-			}
+			// else if (move === "U2" || move === "U2'") {
+			// 	y = move === "U2" ? -180 : 180;
+			// 	if (cube.position.y > 0.1) {
+			// 		cube_to_move.push(cube);
+			// 	}
+			// }
 			else if (move === "D" || move === "D'") {
-			y = move === "D" ? 90 : -90
-			if (cube.position.y < -0.1) {
-				cube_to_move.push(cube);
+				y = move === "D" ? 90 : -90
+				if (cube.position.y < -0.1) {
+					cube_to_move.push(cube);
+				}
 			}
-			}
+			// else if (move === "D2" || move === "D2'") {
+			// 	y =  move === "D2" ? 180 : -180;
+			// 	if (cube.position.y < -0.1) {
+			// 		cube_to_move.push(cube);
+			// 	}
+			// }
 			else if (move === "F" || move === "F'") {
-			z = move === "F" ? -90 : 90
-			if (cube.position.z > 0.1) {
-				cube_to_move.push(cube);
+				z = move === "F" ? -90 : 90
+				if (cube.position.z > 0.1) {
+					cube_to_move.push(cube);
+				}
 			}
-			}
+			// else if (move === "F2" || move === "F2'") {
+			// 	z = move === "F2" ? -180 : 180;
+			// 	if (cube.position.z > 0.1) {
+			// 		cube_to_move.push(cube);
+			// 	}
+			// }
 			else if (move === "B" || move === "B'") {
-			z = move === "B" ? 90 : -90
-			if (cube.position.z < -0.1) {
-				cube_to_move.push(cube);
+				z = move === "B" ? 90 : -90
+				if (cube.position.z < -0.1) {
+					cube_to_move.push(cube);
+				}
 			}
-			}
+			// else if (move === "B2" || move === "B2'") {
+			// 	z = move === "B2" ? 180 : -180;
+			// 	if (cube.position.z < -0.1) {
+			// 		cube_to_move.push(cube);
+			// 	}
+			// }
 			else if (move === "L" || move === "L'") {
-			x = move === "L" ? 90 : -90
-			if (cube.position.x < -0.1) {
-				cube_to_move.push(cube);
+				x = move === "L" ? 90 : -90
+				if (cube.position.x < -0.1) {
+					cube_to_move.push(cube);
+				}
 			}
-			}
+			// else if (move === "L2" || move === "L2'") {
+			// 	x = move === "L2" ? 180 : -180;
+			// 	if (cube.position.x < -0.1) {
+			// 		cube_to_move.push(cube);
+			// 	}
+			// }
 			else if (move === "R" || move === "R'") {
-			x = move === "R" ? -90 : 90
-			if (cube.position.x > 0.1) {
-				cube_to_move.push(cube);
+				x = move === "R" ? -90 : 90
+				if (cube.position.x > 0.1) {
+					cube_to_move.push(cube);
+				}
 			}
-			}
+			// else if (move === "R2" || move === "R2'") {
+			// 	x = move === "R2" ? 180 : -180;
+			// 	if (cube.position.x > 0.1) {
+			// 		cube_to_move.push(cube);
+			// 	}
+			// }
 			else {
-			console.log("Invalid movement detected !");
+				console.log("Invalid movement detected !");
 			}
 		}
 		await this.animate_rubik(cube_to_move, {x: x, y: y, z: z});
