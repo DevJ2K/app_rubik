@@ -7,7 +7,7 @@
       <div class="flex min-h-24 w-full items-center justify-center">
         <Transition name="fade">
           <!--:current_moves="rubik3D.current_frame > rubik3D.frames.length - 1 ? rubik3D.frames.length : rubik3D.current_frame" :nb_moves="rubik3D.frames.length - 1"  -->
-          <InstructionsBlock v-show="hasSolution && !isLoading" :current_moves="rubikCurrentFrame > 4 ? rubikCurrentFrame - 1 : rubikCurrentFrame" :nb_moves="rubikResult ? rubikResult.nb_moves : 0" :description="rubikResult && rubikResult.result ? rubikResult.result[rubikCurrentFrame].description : 'null'" @display-modal="toggleSolutionModal" />
+          <InstructionsBlock v-show="hasSolution && !isLoading" :current_moves="rubikCurrentFrame > 4 ? rubikCurrentFrame - 1 : rubikCurrentFrame" :nb_moves="rubikResult ? rubikResult.nb_moves : 0" :description="rubikResult && rubikResult.result && rubikResult.result[rubikCurrentFrame] ? rubikResult.result[rubikCurrentFrame].description : 'null'" @display-modal="toggleSolutionModal" />
           <!-- <InstructionsBlock v-show="hasSolution && !isLoading" description="Stoppppp" @display-modal="toggleSolutionModal" /> -->
 
         </Transition>
