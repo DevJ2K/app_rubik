@@ -4,7 +4,6 @@ from ErrorManager import *
 from parser import check_notation
 import random
 import time
-import copy
 
 from apply_rubik_moves import move_up, move_down, move_back, move_front, move_left, move_right
 
@@ -474,7 +473,7 @@ class Rubik:
 		for phase in range(1, 5):
 			while solver.getPhaseId(self, phase) != solver.phaseGoal[phase]:
 				path = solver.phaseTable[phase - 1][solver.getPhaseId(self, phase)]
-				print(path)
+				# print(path)
 				if path == "":
 					print(f'No solution')
 					return 1
