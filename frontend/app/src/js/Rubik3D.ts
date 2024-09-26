@@ -49,6 +49,7 @@ class Rubik3D {
 	current_tween: TWEEN.Tween | undefined;
 	frames: Array<Object>
 	is_playing: boolean;
+	animation_type: any;
 
 	readonly COLORS_MAP: Map<string, number> = new Map<string, number>([
 		['-1', 0x979797],  // face undefined
@@ -89,15 +90,16 @@ class Rubik3D {
 		// 	[['-1', '-1', '-1'], ['-1', '-1', '-1'], ['-1', '-1', '-1']],
 		// 	[['-1', '-1', '-1'], ['-1', '-1', '-1'], ['-1', '-1', '-1']],
 		// ]
-		this.second_between_animation = 0;
+		this.second_between_animation = 1;
 		this.animation_speed = 0.5;
+		this.animation_type = TWEEN.Easing.Cubic.InOut;
 
 		this.all_cubes = createRubik({center: {x: this.x, y: this.y, z: this.z}});
 		this.paint_cube(this.face_colors);
 		this.display();
 
 		this.current_frame = 0;
-		console.log(this.current_frame);
+		// console.log(this.current_frame);
 
 		this.frames = [
 			{
@@ -237,6 +239,16 @@ class Rubik3D {
 		return this.is_playing;
 	}
 
+	// go_to_frame_x(frame: number): void {
+	// 	if (this.is_playing) {
+	// 		return ;
+	// 	}
+	// 	this.current_frame = frame;
+	// 	this.paint_cube(this.frames[frame].faces);
+	// 	console.log(frame);
+	// 	console.log(this.frames[frame].faces);
+	// }
+
 	async run_animation(): Promise<void> {
 		if (this.current_frame + 1 > this.frames.length - 1)
 			return
@@ -250,7 +262,7 @@ class Rubik3D {
 			}
 			else
 				await this.apply_move(element.move);
-			console.log(this.current_frame);
+			// console.log(this.current_frame);
 		}
 		// this.current_frame = i + 1;
 		// this.is_animating = false;
@@ -572,7 +584,8 @@ class Rubik3D {
 		return new Promise((resolve) => {
 			this.current_tween = new TWEEN.Tween(group.rotation)
 			.to(targetRotation, 1000 * this.animation_speed)
-			.easing(TWEEN.Easing.Cubic.InOut)
+			// .easing(TWEEN.Easing.Cubic.InOut)
+			.easing(this.animation_type)
 			.onUpdate(() => {})
 			.onComplete(async () => {
 				for (let i = 0; i < cube_to_move.length; i++) {

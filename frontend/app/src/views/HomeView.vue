@@ -132,19 +132,19 @@
 
           <div class="flex w-full flex-col gap-6">
             <div class="flex w-full flex-col items-start gap-4">
-              <label id="range_interval_speed_label" for="range_interval_speed" class="subtitle-modal">Interval Speed : 1s</label>
+              <label id="range_interval_speed_label" for="range_interval_speed" class="subtitle-modal">Interval Speed : 0.5s</label>
               <div class="relative w-full">
                 <input id="range_interval_speed"
-                  @input="updateRangeText('range_interval_speed_label', 'Interval Speed : ' + $event.target.value + 's');"
-                  class="custom-range-input" type="range" min="0.5" max="5" value="1" step="0.5">
+                  @input="updateRangeText('range_interval_speed_label', 'Interval Speed : ' + $event.target.value + 's'); rubik3D.second_between_animation = $event.target.value;"
+                  class="custom-range-input" type="range" min="0" max="5" value="0.5" step="0.5">
               </div>
             </div>
             <div class="flex w-full flex-col items-start gap-4">
-              <label id="range_rotation_speed_label" for="range_rotation_speed" class="subtitle-modal">Rotation Speed : 1s</label>
+              <label id="range_rotation_speed_label" for="range_rotation_speed" class="subtitle-modal">Rotation Speed : 0.5s</label>
               <div class="relative w-full">
                 <input id="range_rotation_speed"
-                  @input="updateRangeText('range_rotation_speed_label', 'Rotation Speed : ' + $event.target.value + 's');"
-                  class="custom-range-input" type="range" min="0.5" max="5" value="1" step="0.5">
+                  @input="updateRangeText('range_rotation_speed_label', 'Rotation Speed : ' + $event.target.value + 's'); rubik3D.animation_speed = $event.target.value;"
+                  class="custom-range-input" type="range" min="0.5" max="5" value="0.5" step="0.5">
               </div>
             </div>
 
@@ -152,7 +152,7 @@
 
 
 
-          <div class="text-button col-span-3 h-12 w-fit px-8 max-sm:mt-8 max-sm:px-12" @click="getBack">BACK</div>
+          <button class="text-button col-span-3 h-12 w-fit px-8 max-sm:mt-8 max-sm:px-12" @click="getBack"  :disabled="rubikIsAnimating || rubikIsPlaying">BACK</button>
         </div>
       </Transition>
 
@@ -233,6 +233,7 @@ import FastFowardIcon from '@/assets/Svg/FastFowardIcon.vue';
 import FirstPageIcon from '@/assets/Svg/FirstPageIcon.vue';
 
 import * as THREE from 'three';
+import * as TWEEN from '@tweenjs/tween.js'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { Rubik3D } from '@/js/Rubik3D';
 import { Deque } from '@/js/Deque';
@@ -363,7 +364,7 @@ const solveRubik = async () => {
       }
     }
     rubikResult.value = data;
-    console.log(data);
+    // console.log(data);
     rubik3D.current_frame = 0;
     rubik3D.frames = data.result;
     hasSolution.value = true;
@@ -398,7 +399,7 @@ const disabledPaint = () => {
 // Rotation
 const applyMoveOnRubik = (move: string) => {
   listMovesToSend.push(move);
-  console.log(listMovesToSend);
+  // console.log(listMovesToSend);
   listMovesToApply.addFront(move);
 }
 
@@ -407,10 +408,20 @@ const handleMoveList = async () => {
   if (rubik3D.is_animating == true) {
     return ;
   }
+  const previous_second_between_animation = rubik3D.second_between_animation;
+  const previous_animation_speed = rubik3D.animation_speed;
+
+
+  rubik3D.second_between_animation = 0;
+  rubik3D.animation_speed = 0.3;
+  rubik3D.animation_type = TWEEN.Easing.Cubic.InOut;
   const value = listMovesToApply.removeBack();
   if (value) {
-    rubik3D.apply_move(value);
+    await rubik3D.apply_move(value);
   }
+  rubik3D.second_between_animation = previous_second_between_animation;
+  rubik3D.animation_speed = previous_animation_speed;
+  rubik3D.animation_type = TWEEN.Easing.Cubic.InOut;
 }
 
 
@@ -486,8 +497,8 @@ const applySequences = () => {
 
 
 const play_rubik_animation = () => {
-  console.log(rubik3D.current_frame);
-  console.log(rubikResult.value);
+  // console.log(rubik3D.current_frame);
+  // console.log(rubikResult.value);
   if (rubik3D.current_frame == rubikResult.value.nb_moves) {
     return ;
   }
