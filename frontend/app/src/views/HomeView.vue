@@ -7,7 +7,7 @@
       <div class="flex min-h-24 w-full items-center justify-center">
         <Transition name="fade">
           <!--:current_moves="rubik3D.current_frame > rubik3D.frames.length - 1 ? rubik3D.frames.length : rubik3D.current_frame" :nb_moves="rubik3D.frames.length - 1"  -->
-          <InstructionsBlock v-show="hasSolution && !isLoading" :current_moves="rubikCurrentFrame > 4 ? rubikCurrentFrame - 1 : rubikCurrentFrame" :nb_moves="rubikResult ? rubikResult.nb_moves : 0" :description="rubikResult && rubikResult.result && rubikResult.result[rubikCurrentFrame] ? rubikResult.result[rubikCurrentFrame].description : 'null'" @display-modal="toggleSolutionModal" />
+          <InstructionsBlock v-show="hasSolution && !isLoading" :current_moves="rubikCurrentFrame" :nb_moves="rubikResult ? rubikResult.nb_moves : 0" :description="rubikResult && rubikResult.result && rubikResult.result[rubikCurrentFrame] ? rubikResult.result[rubikCurrentFrame].description : 'null'" @display-modal="toggleSolutionModal" />
           <!-- <InstructionsBlock v-show="hasSolution && !isLoading" description="Stoppppp" @display-modal="toggleSolutionModal" /> -->
 
         </Transition>
@@ -108,26 +108,28 @@
       <Transition name="fade">
         <div v-show="hasSolution" class="absolute left-0 top-0 flex  w-full flex-col items-center justify-center gap-8">
           <div class=" flex w-full flex-row justify-between">
-            <button @click="rubik3D.firstState" class="icon-button">
+            <button @click="rubik3D.firstState" class="icon-button" :disabled="rubikIsAnimating || rubikIsPlaying">
               <FirstPageIcon size="size-6"/>
             </button>
-            <button @click="rubik3D.play_previous_animation" class="icon-button">
+            <button @click="rubik3D.play_previous_animation" class="icon-button" :disabled="rubikIsAnimating || rubikIsPlaying">
               <FastRewindIcon size="size-6"/>
             </button>
-            <button v-if="!toggleButtonPlay" @click="rubik3D.play_animation" class="icon-button">
+
+            <button v-if="!rubikIsPlaying" @click="play_rubik_animation" class="icon-button">
               <PlayIcon size="size-4"/>
             </button>
-            <button v-else @click="rubik3D.play_animation" class="icon-button">
-              <PauseIcon size="size-4"/>
+            <button v-else @click="pause_rubik_animation" class="icon-button">
+              <PauseIcon size="size-6"/>
             </button>
-            <button @click="rubik3D.play_next_animation" class="icon-button">
+
+            <button @click="rubik3D.play_next_animation" class="icon-button" :disabled="rubikIsAnimating || rubikIsPlaying">
               <FastFowardIcon size="size-6"/>
             </button>
-            <button @click="rubik3D.lastState" class="icon-button">
+            <button @click="rubik3D.lastState" class="icon-button" :disabled="rubikIsAnimating || rubikIsPlaying">
               <LastPageIcon size="size-6"/>
             </button>
           </div>
-<!--
+
           <div class="flex w-full flex-col gap-6">
             <div class="flex w-full flex-col items-start gap-4">
               <label id="range_interval_speed_label" for="range_interval_speed" class="subtitle-modal">Interval Speed : 1s</label>
@@ -146,7 +148,7 @@
               </div>
             </div>
 
-          </div> -->
+          </div>
 
 
 
@@ -264,7 +266,7 @@ const hasSolution = ref<boolean>(false);
 
 const rubikResult = ref<any>(Object());
 const rubikCurrentFrame = ref<any>(1);
-const toggleButtonPlay = ref<boolean>(false);
+const rubikIsPlaying = ref<boolean>(false);
 
 const selectedPaintColors = ref<number | null>(null);
 const listMovesToApply = new Deque();
@@ -294,9 +296,11 @@ function updateRangeText(labelId: string, text: string) {
 
 const getBack = () => {
   // Remettre le cube a l'etat initial
-  // Conserver la liste de mouvements
+  rubik3D.paint_cube(rubik3D.frames[0].faces);
   // Button Play a false
+  rubikIsPlaying.value = false;
   // Rubik solution a null
+  rubikResult.value = null;
   hasSolution.value = false
 }
 
@@ -481,6 +485,19 @@ const applySequences = () => {
 }
 
 
+const play_rubik_animation = () => {
+  console.log(rubik3D.current_frame);
+  console.log(rubikResult.value);
+  if (rubik3D.current_frame == rubikResult.value.nb_moves) {
+    return ;
+  }
+  rubikIsPlaying.value = rubik3D.play_animation();
+}
+
+const pause_rubik_animation = () => {
+  rubikIsPlaying.value = rubik3D.pause_animation();
+}
+
 const getRandom = (arr: Array<any>, n: number) => {
     var result = new Array(n),
         len = arr.length,
@@ -644,6 +661,12 @@ const animate = () => {
   }
   handleMoveList();
   rubikIsAnimating.value = rubik3D.is_animating || listMovesToApply.getLength() != 0;
+  if (rubikResult.value) {
+
+    if (rubik3D.current_frame == rubikResult.value.nb_moves && rubikIsAnimating.value == false && rubikIsPlaying.value == true) {
+      rubikIsPlaying.value = false;
+    }
+  }
   if (rubik3D.is_animating && rubik3D.current_tween) {
     rubik3D.current_tween.update();
   }

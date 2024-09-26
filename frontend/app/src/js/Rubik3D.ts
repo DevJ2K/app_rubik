@@ -48,6 +48,7 @@ class Rubik3D {
 	current_frame: number;
 	current_tween: TWEEN.Tween | undefined;
 	frames: Array<Object>
+	is_playing: boolean;
 
 	readonly COLORS_MAP: Map<string, number> = new Map<string, number>([
 		['-1', 0x979797],  // face undefined
@@ -123,6 +124,7 @@ class Rubik3D {
 		]
 
 		this.is_animating = false;
+		this.is_playing = false;
 	}
 
 	set change_rotation_speed(speed: number) {
@@ -222,29 +224,38 @@ class Rubik3D {
 			await this.apply_move(element.move);
 	}
 
+	play_animation(): boolean {
+		if (this.is_playing) {
+			return this.is_playing;
+		}
+		this.is_playing = true;
+		this.run_animation();
+		return this.is_playing;
+	}
+	pause_animation(): boolean {
+		this.is_playing = false;
+		return this.is_playing;
+	}
 
-	async play_animation(): Promise<void> {
-		// console.log(this.current_frame, this.frames.length);
-		// this.is_animating = true;
+	async run_animation(): Promise<void> {
 		if (this.current_frame + 1 > this.frames.length - 1)
 			return
 		this.current_frame += 1;
-		// if (!this.current_frame)
-		// 	this.current_frame = 1;
-		for (let i = this.current_frame; i < this.frames.length; i++) {
+		for (let i = this.current_frame; i < this.frames.length && this.is_playing; i++) {
 			const element = this.frames[i];
+			this.current_frame = i;
 			if (element.move.indexOf("2") != -1) {
 				await this.apply_move(element.move.slice(0, 1));
 				await this.apply_move(element.move.slice(0, 1));
 			}
 			else
 				await this.apply_move(element.move);
-			this.current_frame = i;
 			console.log(this.current_frame);
 		}
 		// this.current_frame = i + 1;
 		// this.is_animating = false;
 		this.current_tween = undefined;
+		this.is_playing = false;
 		// this.sort_cubes_by_position();
 		// this.paint_cube([
 		// 	[['1', '1', '1'], ['1', '1', '1'], ['1', '1', '1']], // UP
