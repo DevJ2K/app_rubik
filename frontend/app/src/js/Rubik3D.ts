@@ -63,10 +63,10 @@ class Rubik3D {
 
 		['W', 0xFFFFFF],  // face 1
 		['Y', 0xFFFF00], // face 2
-		['G', 0x0000FF],   // face 3
-		['B', 0x00FF00],  // face 4
-		['O', 0xFF0000],    // face 5
-		['R', 0xff9700], // face 6
+		['B', 0x0000FF],   // face 3
+		['G', 0x00FF00],  // face 4
+		['R', 0xFF0000],    // face 5
+		['O', 0xff9700], // face 6
 	]);
 	constructor(scene: THREE.Scene, default_face_colors?: Array<Array<Array<string>>>, center_x?: number, center_y?: number, center_z?: number) {
 		this.x = center_x ?? 0;

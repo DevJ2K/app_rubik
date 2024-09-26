@@ -1,11 +1,11 @@
-# Project Name
+# Rubik
 
-![Python version](https://img.shields.io/badge/Python-3.9%2B-blue) 
+![Python version](https://img.shields.io/badge/Python-3.9%2B-blue)
 <!-- ![License](https://img.shields.io/badge/License-MIT-green) -->
 
 ## Description
 
-A brief description of the project goes here. Explain the purpose, goals, and key features of the project in a concise manner. This could be a tool, a script, or an application, and this section should provide enough context to understand its utility.
+This project is a Rubik's Cube Solver designed to find the most efficient solution using the fewest possible moves. The purpose is to implement a powerful algorithm that can analyze a given cube state and generate an optimal sequence of spins to solve it. Key features include advanced pathfinding techniques, handling various cube configurations, and minimizing the number of moves required to reach the solved state.
 
 ## Installation
 
@@ -18,8 +18,8 @@ Ensure you have Python 3.9 or newer installed. You can download the latest versi
 1. **Clone the Repository:**
 
     ```bash
-    git clone https://github.com/DevJ2K/template_webapp.git
-    cd template_webapp/backend/project_name
+    git clone https://github.com/DevJ2K/app_rubik.git
+    cd app_rubik/backend/rubik
     ```
 
 2. **(Optional) Create a Virtual Environment:**
@@ -54,13 +54,13 @@ You can run the script in one of the following ways:
     Then execute it directly:
 
     ```bash
-    ./main.py
+    ./main.py "F U B' D2"
     ```
 
 2. **Using the Python command:**
 
     ```bash
-    python3 main.py
+    python3 main.py "F U B' D2"
     ```
 
 ### Expected Output
@@ -68,7 +68,9 @@ You can run the script in one of the following ways:
 Once the script is run successfully, you should see the following output:
 
 ```
-It's work !
+Solution: B' U' F' R' U' L2 U R' R2 L2 U' L2 D R2 B2 U L2 D' B2 F2 U2 B2 L2 U2 R2 D2 F2 D2
+Nombre de coups: 28
+Temps écoulé: 0.652 secondes
 ```
 
 ### Use Case
@@ -77,7 +79,7 @@ It's work !
 
 <!--# Example -->
 ```bash
-./main.py
+./main.py "your-sequences"
 ```
 
 ### Visual Overview

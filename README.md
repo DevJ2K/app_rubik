@@ -1,10 +1,10 @@
-# Template WebApp
+# Rubik3D
 
 <img src="/gitimages/miniature.png" alt="Project Overview" width="100%">
 
 ## Overview
 
-Welcome to my development template for running a Python project as a web application. This template combines a Python backend with a Vue.js frontend, providing a solid foundation to kickstart your projects.
+This project is focused on creating a program that solves Rubik's Cubes using the fewest possible spins.
 
 ## Try the Project - WebApp
 
@@ -44,7 +44,7 @@ docker-compose -f docker-compose.yml build
 
 **Navigate to the Project Folder**
 
-You can access the project folder by using [this link](https://github.com/DevJ2K/template_webapp/tree/main/backend/project_name).
+You can access the project folder by using [this link](https://github.com/DevJ2K/app_rubik/tree/main/backend/rubik).
 
 <!-- ## Todo-list
 - [ ] Update current and project README.md.

@@ -8,7 +8,7 @@ def basic_function():
 	print("It's work !")
 
 def usage(err: str) -> None:
-	print(f"\033[1m\033[31m{err} arguments\n\t\033[1m\033[36mUsage: ./main \"F U B' 2D\"\033[0m")
+	print(f"\033[1m\033[31m{err} arguments\n\t\033[1m\033[36mUsage: ./main \"F U B' D2\"\033[0m")
 	exit(1)
 
 def main():
