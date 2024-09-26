@@ -90,7 +90,7 @@ class Rubik3D {
 		// 	[['-1', '-1', '-1'], ['-1', '-1', '-1'], ['-1', '-1', '-1']],
 		// 	[['-1', '-1', '-1'], ['-1', '-1', '-1'], ['-1', '-1', '-1']],
 		// ]
-		this.second_between_animation = 1;
+		this.second_between_animation = 0.5;
 		this.animation_speed = 0.5;
 		this.animation_type = TWEEN.Easing.Cubic.InOut;
 
