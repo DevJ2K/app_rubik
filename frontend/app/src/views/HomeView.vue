@@ -14,10 +14,10 @@
       </div>
     </div>
 
-    <div class="flex w-full flex-col items-center justify-around gap-8 md:flex-row md:gap-0">
+    <div class="flex w-full flex-col items-center justify-around gap-8 md:flex-col md:gap-0">
 
       <!-- Colors Palette -->
-      <Transition name="fade">
+      <!-- <Transition name="fade">
         <div v-show="!isLoading && !hasSolution"
           class="flex flex-row items-center justify-center gap-4 max-md:order-2 md:w-1/6 md:flex-col">
           <button class=" color-choose bg-[#FFFFFF]" @click="paintRubikWith(0xFFFFFF)"></button>
@@ -27,7 +27,7 @@
           <button class=" color-choose bg-[#00FF00]" @click="paintRubikWith(0x00FF00)"></button>
           <button class=" color-choose bg-[#2558ff]" @click="paintRubikWith(0x0000FF)"></button>
         </div>
-      </Transition>
+      </Transition> -->
 
       <!-- Canvas -->
       <!-- <div class="w-1/3 "> -->
@@ -52,8 +52,8 @@
       <!-- Movements -->
       <Transition name="fade">
 
-        <div v-show="!isLoading && !hasSolution" class="flex justify-center max-md:order-3 md:w-1/6">
-          <div class="grid w-fit grid-cols-6 gap-4 md:grid-cols-2">
+        <div v-show="!isLoading && !hasSolution" class="flex justify-center max-md:order-3">
+          <div class="grid w-fit grid-cols-6 gap-4 md:grid-cols-6">
             <button class="movements" @click="applyMoveOnRubik('U')">U</button>
             <button class="movements" @click="applyMoveOnRubik('U\'')">U'</button>
             <button class="movements" @click="applyMoveOnRubik('D')">D</button>
@@ -249,7 +249,7 @@ let INTERSECTED_FACE_INDEX: number | undefined | null;
 let mousedown_coordinates: Object = Object.create(null);
 
 // API STATUS
-const baseUrl = "http://127.0.0.1:4000/";
+const apiBaseUrl = "http://127.0.0.1:8000";
 const errorDescription = ref<string | null>(null);
 const errorTitle = ref<string | null>(null);
 const result = ref<any>(null);
@@ -258,6 +258,7 @@ const hasSolution = ref<boolean>(false);
 
 const selectedPaintColors = ref<number | null>(null);
 const listMovesToApply = new Deque();
+let listMovesToSend: Array<string> = [];
 
 result.value = {
   current_move: 5,
@@ -341,16 +342,69 @@ const getBack = () => {
   hasSolution.value = false
 }
 
+const checkIsSolvable = async () => {
+// Check if cube is valid
+try {
+    const urlCubeChecker = apiBaseUrl + '/check_cube';
+
+    const response = await fetch(urlCubeChecker, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ content: rubik3D.face_colors, sequences: [] }),
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      if (data.detail) {
+        throw new Error(data.detail);
+      } else {
+        throw new Error;
+      }
+    }
+    return (data.solvable);
+  } catch (e: any) {
+    errorTitle.value = "Invalid Cube Format"
+    errorDescription.value = e.message || 'An unknown error occurred';
+    return (false);
+  }
+}
+
 const solveRubik = async () => {
-  isLoading.value = true;
+  // console.log(rubik3D.face_colors.toString());
+  errorTitle.value = null;
   errorDescription.value = null;
   result.value = null;
-  // Desactiver la peinture du rubik cube...
-  await new Promise((resolve) => setTimeout(resolve, 1000));
+
+  if (await checkIsSolvable() == false) {
+    return ;
+  }
+
+  isLoading.value = true;
+  selectedPaintColors.value = null;
+
+  await new Promise((resolve) => setTimeout(resolve, 500));
   try {
+    const urlSolve = apiBaseUrl + '/solve';
+    const response = await fetch(urlSolve, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ content: rubik3D.face_colors, sequences: listMovesToSend }),
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      if (data.detail) {
+        throw new Error(data.detail);
+      } else {
+        throw new Error;
+      }
+    }
     hasSolution.value = true;
-    console.log("Make requests...")
+    return (data.solvable);
   } catch (e: any) {
+    errorTitle.value = 'Request Error';
     errorDescription.value = e.message || 'An unknown error occurred';
   } finally {
     isLoading.value = false;
@@ -378,6 +432,8 @@ const disabledPaint = () => {
 
 // Rotation
 const applyMoveOnRubik = (move: string) => {
+  listMovesToSend.push(move);
+  console.log(listMovesToSend);
   listMovesToApply.addFront(move);
 }
 
@@ -395,6 +451,7 @@ const handleMoveList = async () => {
 
 // Bottom Button
 const clearRubik = () => {
+  listMovesToSend = [];
   rubik3D.paint_cube([
 			[['-1', '-1', '-1'], ['-1', '-1', '-1'], ['-1', '-1', '-1']],
 			[['-1', '-1', '-1'], ['-1', '-1', '-1'], ['-1', '-1', '-1']],
@@ -406,6 +463,7 @@ const clearRubik = () => {
 }
 
 const resetRubik = () => {
+  listMovesToSend = [];
   rubik3D.paint_cube([
 			[['1', '1', '1'], ['1', '1', '1'], ['1', '1', '1']], // UP
 			[['2', '2', '2'], ['2', '2', '2'], ['2', '2', '2']], // DOWN
@@ -456,7 +514,8 @@ const applySequences = () => {
   // console.log(sequences_list);
   for (const move of sequences_list) {
     // console.log(move);
-    listMovesToApply.addFront(move);
+    applyMoveOnRubik(move);
+    // listMovesToApply.addFront(move);
   }
 }
 
@@ -487,7 +546,8 @@ const generateMix = () => {
   for (let i = 0; i < nb_mixes; i++) {
     const random_moves = getRandom(movements_list, nb_moves);
     for (let index = 0; index < random_moves.length; index++) {
-      listMovesToApply.addFront(random_moves[index]);
+      applyMoveOnRubik(random_moves[index]);
+      // listMovesToApply.addFront(random_moves[index]);
     }
   }
 

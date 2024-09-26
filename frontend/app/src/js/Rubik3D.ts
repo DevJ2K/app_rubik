@@ -137,6 +137,11 @@ class Rubik3D {
 		}
 	}
 
+	setup_frames(result: Object): void {
+		this.current_frame = 0;
+		this.frames = result.frames;
+	}
+
 	async play_animation(): Promise<void> {
 		// console.log(this.all_cubes);
 		// this.is_animating = true;
@@ -434,6 +439,7 @@ class Rubik3D {
 			changeCubeFaceColors({cube: selected_cubes_right[i], new_colors: this.COLORS_MAP.get(face_right[i]), face: "right"})
 		}
 
+		this.update_face_colors();
 		// To highlight selected_cubes_...
 		// let highlight_selected_test_only = selected_cubes_front;
 		// for (let i = 0; i < highlight_selected_test_only.length; i++) {

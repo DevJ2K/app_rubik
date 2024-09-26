@@ -1,6 +1,7 @@
 from Rubik import Rubik
 from collections import deque
 import copy
+import os
 
 class Solver:
 	def __init__(self, cube: Rubik) -> None:
@@ -14,9 +15,11 @@ class Solver:
 
 	def setPhaseTable(self):
 		try:
+			script_dir = os.path.dirname(os.path.abspath(__file__))
 			for i in range(1, 5):
 				tempDict = {}
-				with open('./database/Phase ' + str(i), 'r') as file:
+				file_path = os.path.join(script_dir, 'database', f'Phase {i}')
+				with open(file_path, 'r') as file:
 					for line in file:
 						line = line.strip()
 						if not line:
