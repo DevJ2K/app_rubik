@@ -115,7 +115,7 @@
               <FastRewindIcon size="size-6"/>
             </button>
 
-            <button v-if="!rubikIsPlaying" @click="play_rubik_animation" class="icon-button">
+            <button v-if="!rubikIsPlaying" @click="play_rubik_animation" :disabled="rubikIsAnimating || rubikIsPlaying" class="icon-button">
               <PlayIcon size="size-4"/>
             </button>
             <button v-else @click="pause_rubik_animation" class="icon-button">
