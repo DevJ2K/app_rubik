@@ -6,6 +6,8 @@
 
 This project is focused on creating a program that solves Rubik's Cubes using the fewest possible spins.
 
+**Available here :** [Rubik](https://rubik3d.netlify.app)
+
 ## Try the Project - WebApp
 
 ### 1. Install Docker
