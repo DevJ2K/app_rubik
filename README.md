@@ -41,6 +41,8 @@ If you prefer not to use `make`, you can start the web application by running th
 
 ```bash
 docker-compose -f docker-compose.yml build
+docker-compose -f docker-compose.yml up -d
+
 ```
 ## Try the Project - Script Only
 
